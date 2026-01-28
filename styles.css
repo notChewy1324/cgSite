@@ -1,0 +1,463 @@
+/* ===================== VARIABLES ===================== */
+:root {
+  --bg-dark: #0a0a0f;
+  --bg-light: #f8fafc;
+  --text-light: #e5e7eb;
+  --text-dark: #0f172a;
+  --accent-blue: #00bfff;
+  --accent-purple: #9932cc;
+  --accent-pink: #ff00aa;
+  --accent-green: #00ff9f;
+  --accent-orange: #f97316;
+  --radius: 12px;
+  --transition: 0.3s ease;
+}
+
+/* ===================== BASE ===================== */
+body {
+  margin: 0;
+  font-family: "JetBrains Mono", monospace;
+  background: var(--bg-dark);
+  color: var(--text-light);
+  transition: background var(--transition), color var(--transition);
+  overflow-x: hidden;
+  position: relative;
+}
+
+body[data-theme="light"] {
+  background: var(--bg-light);
+  color: var(--text-dark);
+}
+
+a {
+  color: var(--accent-blue);
+  text-decoration: none;
+  transition: color var(--transition), text-shadow var(--transition);
+}
+
+a:hover {
+  color: var(--accent-purple);
+  text-shadow: 0 0 12px rgba(180,0,255,0.8);
+}
+
+#trail-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none; /* clicks go through */
+  z-index: 9999;
+}
+
+/* ===================== HEADER ===================== */
+.site-header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  backdrop-filter: blur(10px);
+  background: rgba(10,10,15,0.85);
+  z-index: 1000;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: top 0.3s;
+}
+
+.site-header a {
+  margin-left: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* ===================== HERO ===================== */
+.hero {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  text-align: center;
+  color: var(--accent-blue);
+}
+
+.hero h1 {
+  font-family: "Orbitron", "JetBrains Mono", monospace;
+  font-size: 3rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 8px var(--accent-blue);
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  opacity: 0.8;
+  text-shadow: 0 0 4px var(--accent-blue);
+  margin-bottom: 2rem;
+}
+
+.btn {
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  margin-right: 1rem;
+  display: inline-block;
+  border: 2px solid var(--accent-blue);
+  color: var(--accent-blue);
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.btn.primary:hover {
+  background: var(--accent-blue);
+  color: #0a0a0f;
+  box-shadow: 0 0 12px var(--accent-blue);
+}
+
+/* ===================== SECTION ===================== */
+.section {
+  position: relative;
+  padding: 6rem 2rem;
+  max-width: 1000px;
+  margin: auto;
+}
+
+h2 {
+  font-family: "Orbitron", monospace;
+  color: var(--accent-purple);
+  text-shadow: 0 0 6px var(--accent-purple);
+  margin-bottom: 2rem;
+}
+
+/* ===================== CARDS ===================== */
+.skill-grid, .project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.skill-card, .project-card {
+  border-radius: var(--radius);
+  padding: 1rem;
+  background: rgba(10,10,15,0.6);
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all var(--transition);
+  box-shadow: 0 0 4px rgba(0,0,0,0.4);
+}
+
+.skill-card:hover, .project-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-purple);
+  box-shadow: 0 0 12px var(--accent-purple);
+}
+
+.project-card .project-body {
+  display: none;
+  margin-top: 1rem;
+}
+
+.project-card.expanded .project-body {
+  display: block;
+}
+
+/* ===================== HERO PARTICLES & CURSOR ===================== */
+#hero-canvas, body > canvas:last-of-type {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===================== SCROLL ANIMATION ===================== */
+.animate {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.animate.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===================== THEME BUTTON ===================== */
+.theme-btn {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  border: 2px solid var(--accent-blue);
+  background: transparent;
+  color: var(--accent-blue);
+  cursor: pointer;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-right: 4rem; /* pushes it left of the last nav link */
+  margin-left: 1rem;
+}
+
+.theme-btn:hover {
+  background: var(--accent-blue);
+  color: #0a0a0f;
+  box-shadow: 0 0 12px var(--accent-blue);
+}
+
+/* ===================== FLYING SHIPS ===================== */
+.ship {
+  position: absolute;
+  width: 40px;
+  height: 20px;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+/* ================= HERO CYBERPUNK TEXT ================= */
+.hero-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 4rem;
+  color: #00f0ff;
+  text-shadow: 
+    0 0 8px #00f0ff,
+    0 0 16px #8b5cf6,
+    0 0 24px #22c55e,
+    0 0 32px #f97316;
+  animation: neon-flicker 1.5s infinite alternate;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Neon flicker animation */
+@keyframes neon-flicker {
+  0%, 19%, 21%, 50%, 51%, 100% { text-shadow:
+      0 0 4px #00f0ff,
+      0 0 8px #8b5cf6,
+      0 0 12px #22c55e;
+  }
+  20% { text-shadow: 0 0 12px #00f0ff, 0 0 16px #8b5cf6; }
+  50% { text-shadow: 0 0 8px #22c55e, 0 0 12px #f97316; }
+}
+
+/* News feed cards */
+.news-feed .project-card {
+  background: rgba(0, 0, 0, 0.6);
+  border-left: 3px solid #00f0ff;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #e0e0e0;
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.2);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.news-feed .project-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 24px rgba(0, 255, 255, 0.5);
+}
+
+/* Post header */
+.project-header h3 {
+  color: #00f0ff;
+  font-family: 'Orbitron', monospace;
+}
+
+.project-header .post-date {
+  font-size: 0.8rem;
+  color: #8b5cf6;
+  display: block;
+  margin-top: 0.25rem;
+}
+
+/* Links */
+.project-body a {
+  color: #22c55e;
+  text-decoration: none;
+  font-weight: bold;
+}
+.project-body a:hover {
+  color: #f97316;
+  text-shadow: 0 0 8px #f97316;
+}
+
+/* Optional: slight scanline overlay for cyberpunk feel */
+.hero::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.02),
+    rgba(255,255,255,0.02) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+}
+ 
+/* ===================== CONTACT CARD ===================== */
+.contact-card {
+  position: relative;
+  background: rgba(15, 15, 25, 0.85); /* dark glass panel */
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 650px;
+  margin: 4rem auto;
+  text-align: center;
+  color: #e0e0e0;
+  box-shadow: 0 0 12px rgba(0,0,0,0.4), 0 0 32px rgba(100,100,255,0.1);
+  overflow: hidden;
+  backdrop-filter: blur(6px);
+  font-family: 'Orbitron', monospace;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Title */
+.contact-title {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: #88f;
+  letter-spacing: 1px;
+  text-shadow: 0 0 4px rgba(136,136,255,0.4);
+}
+
+/* Subtitle / text */
+.contact-text {
+  font-size: 1.05rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.8;
+}
+
+/* Links buttons */
+.contact-links a.contact-btn {
+  display: inline-block;
+  margin: 0.5rem 0.75rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(136, 136, 255, 0.5);
+  color: #88f;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s;
+  background: rgba(10, 10, 20, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.contact-links a.contact-btn:hover {
+  background: rgba(136, 136, 255, 0.15);
+  box-shadow: 0 0 12px rgba(136,136,255,0.4), 0 0 24px rgba(88,200,255,0.2);
+  transform: translateY(-2px);
+}
+
+/* ===================== HOLOGRAPHIC PANEL EFFECT ===================== */
+.holo-panel {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border-radius: 16px;
+  pointer-events: none;
+  box-shadow: inset 0 0 6px rgba(88, 200, 255, 0.3);
+  background: linear-gradient(45deg, rgba(88,200,255,0.02), transparent 70%);
+  mix-blend-mode: overlay;
+}
+
+/* ===================== PARTICLES CANVAS ===================== */
+#contact-particles {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+
+/* ===================== BD-1 HOLO ORB ===================== */
+.bd1-orb {
+  position: absolute;
+  width: 40px;      /* bigger orb */
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(88,200,255,0.9) 0%, rgba(88,200,255,0.2) 70%);
+  box-shadow: 0 0 20px rgba(88,200,255,0.6), 0 0 40px rgba(88,200,255,0.3);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 10;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+/* Hover interaction */
+.contact-btn:hover ~ .bd1-orb {
+  box-shadow: 0 0 28px rgba(88,200,255,1), 0 0 56px rgba(88,200,255,0.6);
+  transform: scale(1.7);
+}
+
+/* ===================== ABOUT POSTER ===================== */
+.about-poster {
+  position: relative;
+  background: rgba(15, 10, 25, 0.9);
+  border: 2px solid rgba(180, 100, 220, 0.4);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 800px;
+  margin: 4rem auto;
+  box-shadow: 0 0 12px rgba(180,100,220,0.3), 0 0 24px rgba(200,150,250,0.2);
+  overflow: hidden;
+}
+
+.poster-header h2 {
+  font-family: 'Orbitron', sans-serif;
+  color: #d9a3ff;
+  font-weight: 700;
+  text-shadow: 0 0 6px rgba(180,100,220,0.5), 0 0 12px rgba(200,150,250,0.3);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+.poster-body p {
+  color: #e0d6f0;
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 2px rgba(200,150,250,0.2);
+}
+
+/* ===================== SCAN LINES ===================== */
+.scan-lines {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    rgba(255,255,255,0.03) 0 1px,
+    transparent 1px 3px
+  );
+  animation: scan 3s linear infinite;
+}
+
+@keyframes scan {
+  0% { background-position-y: 0; }
+  100% { background-position-y: 6px; }
+}
+
+/* ===================== GLYPHS CANVAS ===================== */
+.poster-glyphs {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+html {
+  scroll-behavior: smooth;
+}
