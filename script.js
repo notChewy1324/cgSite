@@ -376,16 +376,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const bootOverlay = document.getElementById("boot-sequence");
   const bootText = document.getElementById("boot-text");
 
+  // Cookie helpers
+  function setCookie(name, value, days) {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString();
+    document.cookie = `${name}=${value}; expires=${expires}; path=/`;
+  }
+
+  function getCookie(name) {
+    return document.cookie
+      .split("; ")
+      .find(row => row.startsWith(name + "="))
+      ?.split("=")[1];
+  }
+
+  function deleteCookie(name) {
+    document.cookie = `${name}=; Max-Age=0; path=/`;
+  }
+
+  // Boot sequence
   function sysBoot() {
-
-    // If no boot UI on this page → do nothing
-    if (!bootOverlay || !bootText) return;
-
-    // Already booted this session → skip instantly
-    if (sessionStorage.getItem("booted") === "true") {
-      bootOverlay.style.display = "none";
-      return;
-    }
+    if (!bootOverlay || !bootText) return; // Skip pages without boot UI
 
     const bootLines = [
       "Initializing system kernel...",
@@ -397,8 +407,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "SYSTEM STATUS: ONLINE"
     ];
 
-    let line = 0;
-    let char = 0;
+    let line = 0, char = 0;
     bootText.textContent = "";
 
     function typeBoot() {
@@ -413,31 +422,35 @@ document.addEventListener("DOMContentLoaded", () => {
           setTimeout(typeBoot, 300);
         }
       } else {
-        // Mark session as booted ONLY when finished
-        sessionStorage.setItem("booted", "true");
-
-        setTimeout(() => {
-          bootOverlay.classList.add("hidden");
-        }, 700);
+        // Boot finished → mark cookie
+        setCookie("booted", "true", 90);
+        localStorage.setItem("booted", "true"); // LOCAL TESTING ONLY
+        setTimeout(() => bootOverlay.classList.add("hidden"), 700);
       }
     }
 
     typeBoot();
   }
 
-  sysBoot();
+  // Run boot if cookie not set         // LOCAL TESTING ONLY
+  if (getCookie("booted") === "true" || localStorage.getItem("booted") === "true") {
+    if (bootOverlay) bootOverlay.style.display = "none";
+  } else {
+    sysBoot();
+  }
 
-
-  /* ===================== REBOOT BUTTON ===================== */
-  document.querySelectorAll("#reboot-btn").forEach(btn => {
+  // Reboot button: attach to all instances (desktop + mobile)
+  const rebootBtns = document.querySelectorAll("#reboot-btn");
+  rebootBtns.forEach(btn => {
     btn.addEventListener("click", () => {
-      console.log("System rebooting...");
-      sessionStorage.removeItem("booted");
-      location.reload();
+      deleteCookie("booted");  // Remove boot cookie
+      localStorage.removeItem("booted"); // LOCAL TESTING ONLY
+      location.reload();        // Reload page
     });
   });
 
 });
+
 
 
 const hudStatus = document.getElementById("hud-status");
@@ -446,7 +459,7 @@ const hudStatus = document.getElementById("hud-status");
 const sections = [
   { id: "hero", status: "Boot Interface Active" },
   { id: "about", status: "User Profile Loaded" },
-  { id: "projects", status: "Deployments Indexed" },
+  { id: "currentFocus", status: "Active Missions" },
   { id: "contact", status: "Secure Channel Open" }
 ];
 

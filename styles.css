@@ -1598,3 +1598,45 @@ html {
     text-align: center;
   }
 }
+
+/* ===================== MISSION SECTION ===================== */
+
+.mission-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+}
+
+.mission-card {
+  position: relative;
+  padding: 22px;
+  border-radius: 14px;
+
+  background: rgba(20, 30, 40, 0.55);
+  border: 1px solid rgba(120,180,255,0.18);
+
+  backdrop-filter: blur(10px);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.mission-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 22px rgba(120,180,255,0.25);
+}
+
+.mission-card h3 {
+  margin-top: 10px;
+  margin-bottom: 8px;
+}
+
+.mission-tag {
+  display: inline-block;
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: 999px;
+
+  background: rgba(80,200,255,0.15);
+  border: 1px solid rgba(80,200,255,0.45);
+  color: rgba(140,220,255,0.95);
+}
