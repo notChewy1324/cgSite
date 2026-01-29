@@ -349,3 +349,115 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
     }
   });
 });
+
+/* ===================== TERMINAL TYPE EFFECT ===================== */
+const terminalText = document.getElementById("terminal-text");
+
+const subtitle = "Cybersecurity & Network Systems Administration Student";
+let index = 0;
+
+const typeTerminal = () => {
+  if (index < subtitle.length) {
+    terminalText.textContent += subtitle.charAt(index);
+    index++;
+    setTimeout(typeTerminal, 40); // typing speed
+  }
+};
+
+window.addEventListener("load", () => {
+  setTimeout(typeTerminal, 600); // delay after title reveal
+});
+
+document.querySelector(".cursor").style.display = "none";
+
+/* ===================== SYSTEM BOOT ===================== */
+const bootOverlay = document.getElementById("boot-sequence");
+const bootText = document.getElementById("boot-text");
+
+// Only run once per session
+if (!sessionStorage.getItem("booted")) {
+  const bootLines = [
+    "Initializing system kernel...",
+    "Loading neural interface modules...",
+    "Mounting encrypted storage...",
+    "Establishing secure uplink...",
+    "Syncing user profile: CAM GARRISON",
+    "",
+    "SYSTEM STATUS: ONLINE"
+  ];
+
+  let line = 0;
+  let char = 0;
+
+  const typeBoot = () => {
+    if (line < bootLines.length) {
+      if (char < bootLines[line].length) {
+        bootText.textContent += bootLines[line][char];
+        char++;
+        setTimeout(typeBoot, 35);
+      } else {
+        bootText.textContent += "\n";
+        line++;
+        char = 0;
+        setTimeout(typeBoot, 300);
+      }
+    } else {
+      // End sequence
+      sessionStorage.setItem("booted", "true");
+      setTimeout(() => {
+        bootOverlay.classList.add("hidden");
+      }, 700);
+    }
+  };
+
+  typeBoot();
+} else {
+  // Skip boot if already seen
+  bootOverlay.style.display = "none";
+}
+
+//Reboot button
+const rebootBtn = document.getElementById("reboot-btn");
+
+if (rebootBtn) {
+  rebootBtn.addEventListener("click", () => {
+    console.log("System rebooting...");
+    sessionStorage.removeItem("booted");
+    window.location.reload();
+  });
+}
+
+const hudStatus = document.getElementById("hud-status");
+
+//HUD Section Status
+const sections = [
+  { id: "hero", status: "Boot Interface Active" },
+  { id: "about", status: "User Profile Loaded" },
+  { id: "projects", status: "Deployments Indexed" },
+  { id: "contact", status: "Secure Channel Open" }
+];
+
+window.addEventListener("scroll", () => {
+  let current = "Idle";
+
+  sections.forEach(section => {
+    const el = document.getElementById(section.id);
+    if (!el) return;
+
+    const rect = el.getBoundingClientRect();
+    if (rect.top <= window.innerHeight / 2) {
+      current = section.status;
+    }
+  });
+
+  hudStatus.textContent = current;
+});
+
+function randomRange(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+setInterval(() => {
+  document.getElementById("cpu-usage").textContent = randomRange(8, 38) + "%";
+  document.getElementById("ram-usage").textContent = randomRange(32, 68) + "%";
+}, 2500);

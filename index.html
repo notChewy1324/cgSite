@@ -8,29 +8,42 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
+
 <body data-theme="dark">
+  <div id="boot-sequence">
+    <div class="boot-terminal">
+      <pre id="boot-text"></pre>
+    </div>
+  </div>
 
 <header class="site-header">
-  <div class="logo">Cam Garrison</div>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="skills.html">Skills</a>
-    <a href="projects.html">Projects</a>
-    <a href="experience.html">Experience</a>
-    <a href="education.html">Education</a>
-    <a href="blog.html">Blog</a>
+  <button id="reboot-btn" class="action-chip btn secondary">Reboot System</button>
+  <nav class="nav-holo">
+    <a href="index.html" class="nav-link">Home</a>
+    
+    <a href="projects.html" class="nav-link">Projects</a>
+    <a href="experience.html" class="nav-link">Experience</a>
+    <a href="education.html" class="nav-link">Education</a>
+    <a href="blog.html" class="nav-link">Blog</a>
     <button id="theme-toggle" class="theme-btn">Dark Mode: On</button>
   </nav>
+  <div class="holo-overlay"></div>
 </header>
 
 <section class="hero full-height">
   <canvas id="hero-canvas"></canvas>
   <div class="hero-content">
-    <h1>Cam Garrison</h1>
-    <p class="hero-subtitle animate">Cybersecurity & Network Systems Administration Student</p>
-    <a href="index.html#about" class="btn primary">About Me</a>
-    <a href="index.html#contact" class="btn primary">Contact Me</a>
-    <a href="blog.html" class="btn primary">Read Blog</a>
+    <h1 class="cyberpunk-title reveal">Cam Garrison</h1>
+    <p class="hero-subtitle animate terminal">
+      <span id="terminal-text"></span><span class="cursor">▮</span>
+    </p>
+    </div>
+    <div class="hero-actions">
+      <p class="ui-label">QUICK ACCESS</p>
+      <a href="#about" class="action-chip">ABOUT</a>
+      <a href="#contact" class="action-chip">CONTACT</a>
+      <a href="blog.html" class="action-chip">BLOG</a>
+
   </div>
 </section>
 
@@ -68,6 +81,16 @@
     <div class="bd1-orb"></div>
   </div>
 </section>
+
+<div id="system-hud">
+  <p class="hud-title">SYSTEM STATUS</p>
+  <p id="hud-status">Idle</p>
+  <div id="system-monitor">
+    <span>CPU: <strong id="cpu-usage">17%</strong></span>
+    <span>RAM: <strong id="ram-usage">42%</strong></span>
+    <span class="security">SECURITY: <strong>STABLE</strong></span>
+  </div>
+</div>
 
 
 <script src="script.js"></script>
