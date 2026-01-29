@@ -461,3 +461,10 @@ setInterval(() => {
   document.getElementById("cpu-usage").textContent = randomRange(8, 38) + "%";
   document.getElementById("ram-usage").textContent = randomRange(32, 68) + "%";
 }, 2500);
+
+const navToggle = document.getElementById("nav-toggle");
+const navHolo = document.querySelector(".nav-holo");
+
+navToggle.addEventListener("click", () => {
+  navHolo.classList.toggle("show");
+});
