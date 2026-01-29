@@ -481,3 +481,31 @@ const navHolo = document.querySelector(".nav-holo");
 navToggle.addEventListener("click", () => {
   navHolo.classList.toggle("show");
 });
+
+/* ===================== AUTO NEW BADGE ===================== */
+
+(function () {
+  const NEW_DAYS = 14;
+  const now = new Date();
+
+  document.querySelectorAll("[data-date]").forEach(card => {
+    const dateStr = card.getAttribute("data-date");
+    if (!dateStr) return;
+
+    const postDate = new Date(dateStr);
+    if (isNaN(postDate)) return;
+
+    const diffDays = (now - postDate) / (1000 * 60 * 60 * 24);
+
+    if (diffDays <= NEW_DAYS) {
+      const title = card.querySelector("h3");
+      if (!title) return;
+
+      const badge = document.createElement("span");
+      badge.className = "new-badge";
+      badge.textContent = "NEW";
+
+      title.appendChild(badge);
+    }
+  });
+})();

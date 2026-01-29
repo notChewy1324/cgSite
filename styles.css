@@ -1014,3 +1014,587 @@ html {
     max-height: 500px; /* big enough to show all links */
   }
 }
+
+/* ================= PROJECT GRID ================= */
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 28px;
+  margin-top: 40px;
+}
+
+/* ================= PROJECT CARD ================= */
+
+.project-card {
+  position: relative;
+  background: rgba(10, 16, 28, 0.75);
+  border: 1px solid rgba(120,180,255,0.25);
+  border-radius: 14px;
+  padding: 26px;
+  overflow: hidden;
+  backdrop-filter: blur(6px);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 30px rgba(120,180,255,0.25);
+}
+
+/* holographic sweep */
+
+.project-scan {
+  position: absolute;
+  inset: -100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(120,180,255,0.15),
+    transparent
+  );
+  transform: rotate(25deg);
+  transition: 0.8s;
+}
+
+.project-card:hover .project-scan {
+  inset: 100%;
+}
+
+/* ================= PROJECT TEXT ================= */
+
+.project-desc {
+  opacity: .9;
+  line-height: 1.5;
+}
+
+.project-impact {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  opacity: .75;
+}
+
+/* ================= PROJECT BADGES ================= */
+
+.project-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.project-badges span {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(120,180,255,0.15);
+  border: 1px solid rgba(120,180,255,0.35);
+}
+
+/* ================= PROJECT BUTTON ROW ================= */
+
+.project-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+/* ================= EXPERIENCE TIMELINE ================= */
+
+.exp-timeline {
+  display: grid;
+  gap: 28px;
+  margin-top: 40px;
+  position: relative;
+}
+
+/* vertical timeline line */
+
+.exp-timeline::before {
+  content: "";
+  position: absolute;
+  left: 18px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(120,180,255,0.25);
+}
+
+/* ================= EXPERIENCE CARD ================= */
+
+.exp-card {
+  position: relative;
+  margin-left: 48px;
+  padding: 24px;
+  border-radius: 14px;
+  background: rgba(10,16,28,0.75);
+  border: 1px solid rgba(120,180,255,0.25);
+  backdrop-filter: blur(6px);
+  overflow: hidden;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.exp-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 26px rgba(120,180,255,0.25);
+}
+
+/* timeline node */
+
+.exp-card::before {
+  content: "";
+  position: absolute;
+  left: -34px;
+  top: 26px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(120,180,255,0.9);
+  box-shadow: 0 0 10px rgba(120,180,255,0.9);
+}
+
+/* holo sweep */
+
+.exp-scan {
+  position: absolute;
+  inset: -120%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(120,180,255,0.12),
+    transparent
+  );
+  transform: rotate(25deg);
+  transition: .9s;
+}
+
+.exp-card:hover .exp-scan {
+  inset: 120%;
+}
+
+/* ================= HEADER ================= */
+
+.exp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.exp-status {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(120,180,255,0.4);
+  background: rgba(120,180,255,0.15);
+}
+
+/* ================= META ================= */
+
+.exp-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 0.85rem;
+  opacity: 0.75;
+  margin: 8px 0 14px;
+}
+
+/* ================= BULLETS ================= */
+
+.exp-bullets {
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.6;
+}
+
+/* ================= TAGS ================= */
+
+.exp-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.exp-tags span {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(120,180,255,0.15);
+  border: 1px solid rgba(120,180,255,0.35);
+}
+
+/* ================= EDUCATION GRID ================= */
+
+.edu-grid {
+  display: grid;
+  gap: 28px;
+  margin-top: 40px;
+}
+
+@media (min-width: 900px) {
+  .edu-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ================= CARD ================= */
+
+.edu-card {
+  position: relative;
+  padding: 26px;
+  border-radius: 16px;
+  background: rgba(12,18,30,0.75);
+  border: 1px solid rgba(140,170,255,0.25);
+  backdrop-filter: blur(6px);
+  overflow: hidden;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.edu-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 24px rgba(140,170,255,0.25);
+}
+
+/* holo sweep */
+
+.edu-scan {
+  position: absolute;
+  inset: -120%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(140,170,255,0.12),
+    transparent
+  );
+  transform: rotate(25deg);
+  transition: .9s;
+}
+
+.edu-card:hover .edu-scan {
+  inset: 120%;
+}
+
+/* ================= HEADER ================= */
+
+.edu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.edu-status {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(140,170,255,0.4);
+  background: rgba(140,170,255,0.15);
+}
+
+/* ================= META ================= */
+
+.edu-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 0.85rem;
+  opacity: 0.75;
+  margin: 8px 0 14px;
+}
+
+/* ================= DESCRIPTION ================= */
+
+.edu-desc {
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+/* ================= COLUMNS ================= */
+
+.edu-columns {
+  display: grid;
+  gap: 18px;
+  margin-top: 16px;
+}
+
+@media (min-width: 700px) {
+  .edu-columns {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.edu-columns h4 {
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.edu-columns ul {
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.6;
+}
+
+/* ================= CERTIFICATIONS ================= */
+
+.cert-list {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0;
+  display: grid;
+  gap: 12px;
+}
+
+.cert-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(140,170,255,0.12);
+  border: 1px solid rgba(140,170,255,0.25);
+}
+
+.cert-tag {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(140,170,255,0.18);
+  border: 1px solid rgba(140,170,255,0.4);
+}
+
+/* =============== BLOG POSTER DESIGN =============== */
+.news-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.filter-chips {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(160,120,255,0.35);
+  background: rgba(160,120,255,0.12);
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: .25s;
+}
+
+.chip:hover,
+.chip.active {
+  background: rgba(160,120,255,0.22);
+}
+
+.news-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.filter-chips {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(160,120,255,0.35);
+  background: rgba(160,120,255,0.12);
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: .25s;
+}
+
+.chip:hover,
+.chip.active {
+  background: rgba(160,120,255,0.22);
+}
+
+.featured-poster {
+  position: relative;
+  margin: 36px 0;
+  padding: 40px;
+  border-radius: 18px;
+  overflow: hidden;
+
+  background:
+    radial-gradient(circle at 20% 20%, rgba(160,120,255,0.15), transparent),
+    rgba(15,18,30,0.9);
+
+  border: 1px solid rgba(160,120,255,0.3);
+}
+
+.poster-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      transparent,
+      transparent 3px,
+      rgba(255,255,255,0.03) 4px
+    );
+  pointer-events: none;
+}
+
+.poster-label {
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  opacity: 0.7;
+}
+
+.poster-content h3 {
+  font-size: 2rem;
+  margin: 10px 0;
+}
+
+.poster-meta {
+  display: flex;
+  gap: 14px;
+  margin: 14px 0;
+  opacity: 0.75;
+}
+
+.news-grid {
+  display: grid;
+  gap: 22px;
+}
+
+@media (min-width: 900px) {
+  .news-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.news-card {
+  position: relative;
+  padding: 22px;
+  border-radius: 14px;
+  background: rgba(12,18,30,0.75);
+  border: 1px solid rgba(160,120,255,0.25);
+  transition: .25s;
+  overflow: hidden;
+}
+
+.news-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 22px rgba(160,120,255,0.2);
+}
+
+/* signal bar animation */
+
+.signal-bar {
+  height: 4px;
+  width: 40%;
+  margin-bottom: 12px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(160,120,255,0.8),
+    transparent
+  );
+  animation: signalMove 3s linear infinite;
+}
+
+@keyframes signalMove {
+  from { transform: translateX(-40%); }
+  to { transform: translateX(200%); }
+}
+
+.news-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.news-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.tag {
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(160,120,255,0.18);
+  border: 1px solid rgba(160,120,255,0.35);
+}
+
+.new-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  border-radius: 999px;
+
+  background: rgba(80,255,180,0.18);
+  border: 1px solid rgba(80,255,180,0.5);
+  color: rgba(120,255,200,0.95);
+
+  animation: badgePulse 2.2s infinite;
+}
+
+@keyframes badgePulse {
+  0% { box-shadow: 0 0 0 rgba(80,255,180,0.0); }
+  50% { box-shadow: 0 0 10px rgba(80,255,180,0.35); }
+  100% { box-shadow: 0 0 0 rgba(80,255,180,0.0); }
+}
+
+/* ===================== BLOG MOBILE ===================== */
+
+@media (max-width: 700px) {
+
+  .featured-poster {
+    padding: 22px;
+  }
+
+  .poster-content h3 {
+    font-size: 1.4rem;
+  }
+
+  .news-card {
+    padding: 18px;
+  }
+
+  .news-card-header {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .post-date {
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
+
+  .news-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .filter-chips {
+    width: 100%;
+  }
+
+  .chip {
+    flex: 1;
+    text-align: center;
+  }
+}

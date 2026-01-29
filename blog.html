@@ -33,46 +33,117 @@
   <canvas id="hero-canvas"></canvas>
   <div class="hero-content">
     <h1 class="hero-title animate">SYSTEM LOG</h1>
-    <p class="hero-subtitle animate">Internal logs on IT infrastructure, cyber research, and system updates.</p>
+    <p class="hero-subtitle animate">
+      Internal logs on IT infrastructure, cyber research, and system updates.
+    </p>
   </div>
 </section>
 
-<section class="section news-feed animate">
-  <h2>Latest Reports</h2>
-  <div class="project-grid">
-    <div class="project-card animate">
-      <div class="project-header">
-        <h3>Cybersecurity Trends 2026</h3>
-        <span class="post-date">Jan 28, 2026</span>
-      </div>
-      <div class="project-body">
-        <p>Exploring the most relevant tools, practices, and threats in modern cybersecurity.</p>
-        <a href="#">Read More →</a>
-      </div>
-    </div>
 
-    <div class="project-card animate">
-      <div class="project-header">
+<section class="section news-feed animate">
+
+  <div class="news-header">
+    <h2>Incoming Reports</h2>
+
+    <div class="filter-chips">
+      <button class="chip active">All</button>
+      <button class="chip">Security</button>
+      <button class="chip">Systems</button>
+      <button class="chip">Cloud</button>
+      <button class="chip">Research</button>
+    </div>
+  </div>
+
+
+  <!-- ================= FEATURED POSTER ================= -->
+
+  <article class="featured-poster">
+    <div class="poster-overlay"></div>
+
+    <div class="poster-content">
+      <span class="poster-label">PRIMARY TRANSMISSION</span>
+      <h3>Cybersecurity Trends 2026</h3>
+
+      <p>
+        Tools, threat models, and defensive strategies shaping modern
+        infrastructure security this year.
+      </p>
+
+      <div class="poster-meta">
+        <span>Jan 28, 2026</span>
+        <span class="tag">Security</span>
+      </div>
+
+      <a href="#" class="btn primary">Open Report</a>
+    </div>
+  </article>
+
+
+  <!-- ================= NEWS GRID ================= -->
+
+  <div class="news-grid">
+
+    <article class="news-card" data-date="2026-01-15">
+      <div class="signal-bar"></div>
+
+      <div class="news-card-header">
         <h3>Building a Futuristic Portfolio</h3>
         <span class="post-date">Jan 15, 2026</span>
       </div>
-      <div class="project-body">
-        <p>Sharing my approach to designing a cyberpunk, neon-inspired portfolio site.</p>
+
+      <p>
+        Designing a cyber-style portfolio without sacrificing clarity,
+        usability, or recruiter readability.
+      </p>
+
+      <div class="news-footer">
+        <span class="tag">Design</span>
         <a href="#">Read More →</a>
       </div>
-    </div>
+    </article>
 
-    <div class="project-card animate">
-      <div class="project-header">
+
+    <article class="news-card" data-date="2026-12-20">
+      <div class="signal-bar"></div>
+
+      <div class="news-card-header">
         <h3>System Hardening Practices</h3>
         <span class="post-date">Dec 20, 2025</span>
       </div>
-      <div class="project-body">
-        <p>Step-by-step breakdown of improving security and resilience for IT systems.</p>
+
+      <p>
+        Practical steps for reducing attack surface across Linux and
+        Windows infrastructure.
+      </p>
+
+      <div class="news-footer">
+        <span class="tag">Security</span>
         <a href="#">Read More →</a>
       </div>
-    </div>
+    </article>
+
+
+    <article class="news-card" data-date="2026-12-05">
+      <div class="signal-bar"></div>
+
+      <div class="news-card-header">
+        <h3>Homelab Monitoring Stack</h3>
+        <span class="post-date">Dec 05, 2025</span>
+      </div>
+
+      <p>
+        Observability tools and dashboards used to monitor distributed
+        services and containers.
+      </p>
+
+      <div class="news-footer">
+        <span class="tag">Systems</span>
+        <a href="#">Read More →</a>
+      </div>
+    </article>
+
   </div>
+
 </section>
 
 

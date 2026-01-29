@@ -32,48 +32,105 @@
 <section class="hero full-height">
   <canvas id="hero-canvas"></canvas>
   <div class="hero-content">
-    <h1 class="hero-title animate">Projects</h1>
-    <p class="hero-subtitle animate">Click to expand for more info</p>
+    <h1 class="hero-title animate">Project Archive</h1>
+    <p class="hero-subtitle animate">Systems • Infrastructure • Security • Software</p>
   </div>
 </section>
 
-<section class="section animate">
-  <h2>My Work</h2>
+<section class="section">
+  <h2 class="section-title">Featured Projects</h2>
+
   <div class="project-grid">
-    <div class="project-card animate">
-      <div class="project-header">
-        <h3>Portfolio Website</h3>
-        <button class="expand-btn">+</button>
-      </div>
-      <div class="project-body">
-        <p>Custom-coded, cyberpunk-inspired portfolio site with JS/CSS animations, particles, and neon glow.</p>
-        <a href="#">View Source</a>
-      </div>
-    </div>
 
-    <div class="project-card animate">
-      <div class="project-header">
-        <h3>Network Automation Tool</h3>
-        <button class="expand-btn">+</button>
-      </div>
-      <div class="project-body">
-        <p>Python scripts for automating network monitoring, backups, and configuration checks.</p>
-        <a href="#">View Source</a>
-      </div>
-    </div>
+    <!-- Project Card -->
+    <article class="project-card">
+      <div class="project-scan"></div>
 
-    <div class="project-card animate">
-      <div class="project-header">
-        <h3>Cybersecurity Lab</h3>
-        <button class="expand-btn">+</button>
+      <h3>Linux Server Automation Suite</h3>
+
+      <p class="project-desc">
+        Automated server provisioning and monitoring toolkit using Bash and Python.
+        Reduced manual setup time and improved repeatability.
+      </p>
+
+      <div class="project-badges">
+        <span>Bash</span>
+        <span>Python</span>
+        <span>Linux</span>
+        <span>Automation</span>
       </div>
-      <div class="project-body">
-        <p>Hands-on projects including vulnerability scanning, penetration testing, and secure configuration practices.</p>
-        <a href="#">View Source</a>
+
+      <p class="project-impact">
+        Impact: Automated multi-step deployment workflows
+      </p>
+
+      <div class="project-actions">
+        <a href="#" class="btn primary">GitHub</a>
+        <a href="#" class="btn secondary">Details</a>
       </div>
-    </div>
+    </article>
+
+
+    <!-- Project Card -->
+    <article class="project-card">
+      <div class="project-scan"></div>
+
+      <h3>Network Security Lab</h3>
+
+      <p class="project-desc">
+        Built segmented virtual networks and performed vulnerability
+        analysis with packet inspection and scanning tools.
+      </p>
+
+      <div class="project-badges">
+        <span>Wireshark</span>
+        <span>Nmap</span>
+        <span>VLAN</span>
+        <span>Security</span>
+      </div>
+
+      <p class="project-impact">
+        Impact: Identified attack surfaces and hardened configs
+      </p>
+
+      <div class="project-actions">
+        <a href="#" class="btn primary">Report</a>
+        <a href="#" class="btn secondary">Lab Notes</a>
+      </div>
+    </article>
+
+
+    <!-- Project Card -->
+    <article class="project-card">
+      <div class="project-scan"></div>
+
+      <h3>Cloud Deployment Sandbox</h3>
+
+      <p class="project-desc">
+        Deployed containerized services and monitoring stack
+        in a cloud test environment.
+      </p>
+
+      <div class="project-badges">
+        <span>AWS</span>
+        <span>Docker</span>
+        <span>Git</span>
+        <span>DevOps</span>
+      </div>
+
+      <p class="project-impact">
+        Impact: Repeatable container deployment pipeline
+      </p>
+
+      <div class="project-actions">
+        <a href="#" class="btn primary">GitHub</a>
+        <a href="#" class="btn secondary">Architecture</a>
+      </div>
+    </article>
+
   </div>
 </section>
+
 
 <script src="script.js"></script>
 </body>
