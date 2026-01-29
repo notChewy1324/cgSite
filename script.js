@@ -371,61 +371,74 @@ window.addEventListener("load", () => {
 document.querySelector(".cursor").style.display = "none";
 
 /* ===================== SYSTEM BOOT ===================== */
-const bootOverlay = document.getElementById("boot-sequence");
-const bootText = document.getElementById("boot-text");
+document.addEventListener("DOMContentLoaded", () => {
 
-// Only run once per session
-if (!sessionStorage.getItem("booted")) {
-  const bootLines = [
-    "Initializing system kernel...",
-    "Loading neural interface modules...",
-    "Mounting encrypted storage...",
-    "Establishing secure uplink...",
-    "Syncing user profile: CAM GARRISON",
-    "",
-    "SYSTEM STATUS: ONLINE"
-  ];
+  const bootOverlay = document.getElementById("boot-sequence");
+  const bootText = document.getElementById("boot-text");
 
-  let line = 0;
-  let char = 0;
+  function sysBoot() {
 
-  const typeBoot = () => {
-    if (line < bootLines.length) {
-      if (char < bootLines[line].length) {
-        bootText.textContent += bootLines[line][char];
-        char++;
-        setTimeout(typeBoot, 35);
-      } else {
-        bootText.textContent += "\n";
-        line++;
-        char = 0;
-        setTimeout(typeBoot, 300);
-      }
-    } else {
-      // End sequence
-      sessionStorage.setItem("booted", "true");
-      setTimeout(() => {
-        bootOverlay.classList.add("hidden");
-      }, 700);
+    // If no boot UI on this page → do nothing
+    if (!bootOverlay || !bootText) return;
+
+    // Already booted this session → skip instantly
+    if (sessionStorage.getItem("booted") === "true") {
+      bootOverlay.style.display = "none";
+      return;
     }
-  };
 
-  typeBoot();
-} else {
-  // Skip boot if already seen
-  bootOverlay.style.display = "none";
-}
+    const bootLines = [
+      "Initializing system kernel...",
+      "Loading neural interface modules...",
+      "Mounting encrypted storage...",
+      "Establishing secure uplink...",
+      "Syncing user profile: CAM GARRISON",
+      "",
+      "SYSTEM STATUS: ONLINE"
+    ];
 
-//Reboot button
-const rebootBtn = document.getElementById("reboot-btn");
+    let line = 0;
+    let char = 0;
+    bootText.textContent = "";
 
-if (rebootBtn) {
-  rebootBtn.addEventListener("click", () => {
-    console.log("System rebooting...");
-    sessionStorage.removeItem("booted");
-    window.location.reload();
+    function typeBoot() {
+      if (line < bootLines.length) {
+        if (char < bootLines[line].length) {
+          bootText.textContent += bootLines[line][char++];
+          setTimeout(typeBoot, 35);
+        } else {
+          bootText.textContent += "\n";
+          line++;
+          char = 0;
+          setTimeout(typeBoot, 300);
+        }
+      } else {
+        // Mark session as booted ONLY when finished
+        sessionStorage.setItem("booted", "true");
+
+        setTimeout(() => {
+          bootOverlay.classList.add("hidden");
+        }, 700);
+      }
+    }
+
+    typeBoot();
+  }
+
+  sysBoot();
+
+
+  /* ===================== REBOOT BUTTON ===================== */
+  document.querySelectorAll("#reboot-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      console.log("System rebooting...");
+      sessionStorage.removeItem("booted");
+      location.reload();
+    });
   });
-}
+
+});
+
 
 const hudStatus = document.getElementById("hud-status");
 
