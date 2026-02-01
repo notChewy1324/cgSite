@@ -399,7 +399,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const bootLines = [
       "Initializing system kernel...",
-      "Loading neural interface modules...",
       "Mounting encrypted storage...",
       "Establishing secure uplink...",
       "Syncing user profile: CAM GARRISON",
