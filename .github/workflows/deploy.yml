@@ -29,5 +29,5 @@ jobs:
 
       - name: Invalidate CloudFront Cache
         run: |
-          aws cloudfront create-invalidation --distribution-id E2GS8P4JBPPFZ4 --paths "/*"
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_DISTRIBUTION_ID }} --paths "/*"
         # Tells CloudFront to refresh its cache so new changes appear immediately
