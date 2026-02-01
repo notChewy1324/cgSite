@@ -1,0 +1,33 @@
+name: Deploy to S3 + CloudFront   # Name of the workflow
+
+on:
+  push:
+    branches:
+      - main  # Trigger workflow when code is pushed to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # Use a fresh Linux environment for each run
+
+    steps:
+      - uses: actions/checkout@v3
+        # Checks out your repository so the workflow can access your files
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+        # Sets up AWS CLI access with credentials stored as GitHub Secrets
+
+      - name: Sync files to S3
+        run: |
+          aws s3 sync ./ s3://cgsite --delete
+        # Syncs your local repo files to S3
+        # --delete removes files from S3 that no longer exist in the repo
+
+      - name: Invalidate CloudFront Cache
+        run: |
+          aws cloudfront create-invalidation --distribution-id E2GS8P4JBPPFZ4 --paths "/*"
+        # Tells CloudFront to refresh its cache so new changes appear immediately
