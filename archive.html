@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wallace Registry // NX-1324</title>
+<meta name="description" content="Restricted access registry — Wallace Corp / Nexus-9.">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/svg+xml" href="imgs/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="imgs/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="imgs/apple-touch-icon.png">
+<meta name="theme-color" content="#050608">
+<script>
+  (function(){
+    try {
+      var t = localStorage.getItem('nx-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    } catch(e) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script>
+</head>
+<body class="page-archive">
+
+<!-- PAGE TRANSITION OVERLAY -->
+<div id="page-transition">
+  <div class="pt-grid"></div>
+  <div class="pt-scanline"></div>
+  <div class="pt-text">
+    ESTABLISHING UPLINK<span class="pt-blink"></span>
+    <div class="pt-target"></div>
+  </div>
+</div>
+
+<div class="haze-layer"></div>
+<canvas id="dust-canvas"></canvas>
+<canvas id="rain-canvas"></canvas>
+<div class="scanlines"></div>
+<div class="grain"></div>
+<div class="vignette"></div>
+
+<canvas id="cursor-trail-canvas"></canvas>
+<div id="cursor-arrow">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="cur-grad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#8fc0e8"/>
+        <stop offset="100%" stop-color="#1d3a5f"/>
+      </linearGradient>
+    </defs>
+    <path d="M2 1 L2 19 L7 14.5 L10.5 22 L13.5 20.5 L10 13 L17 13 Z"
+          fill="url(#cur-grad)" stroke="#050608" stroke-width="0.7" stroke-linejoin="miter"/>
+    <path d="M3 3 L3 16 L7 12 L10 12 Z" fill="rgba(184,214,237,0.3)"/>
+  </svg>
+</div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">CG // NX-1324</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="background.html">Background</a></li>
+    <li><a href="blog.html">Field Notes</a></li>
+    <li><a href="uses.html">Uses</a></li>
+    <li><a href="uplink.html">Uplink</a></li>
+    <li><a href="archive.html" class="active">Archive</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="nav-status"><span>UPLINK 00:00:00 UTC</span></div>
+    <button class="theme-toggle" aria-label="Toggle theme">
+      <span class="dot"></span>
+      <span class="label">DAY</span>
+    </button>
+    <button class="transition-toggle off" aria-label="Toggle warp transitions">
+      <span class="dot"></span>
+      <span class="label">WARP OFF</span>
+    </button>
+  </div>
+  <div class="nav-clock-mobile"><span>00:00:00 UTC</span></div>
+  <button class="nav-burger" id="nav-burger" aria-label="Open menu">
+    <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+  </button>
+</nav>
+<!-- NAV DRAWER (mobile/small-desktop) -->
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<aside class="nav-drawer" id="nav-drawer" aria-hidden="true">
+  <div class="nav-drawer-tag">▣ NAVIGATION CHANNEL ▣</div>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="background.html">Background</a></li>
+    <li><a href="blog.html">Field Notes</a></li>
+    <li><a href="uses.html">Uses</a></li>
+    <li><a href="uplink.html">Uplink</a></li>
+    <li><a href="archive.html" class="active">Archive</a></li>
+  </ul>
+  <div class="nav-drawer-toggles">
+    <button class="theme-toggle" aria-label="Toggle theme">
+      <span class="dot"></span>
+      <span class="label">DAY</span>
+    </button>
+    <button class="transition-toggle off" aria-label="Toggle warp transitions">
+      <span class="dot"></span>
+      <span class="label">WARP OFF</span>
+    </button>
+    <div class="nav-drawer-status">UPLINK STABLE</div>
+  </div>
+</aside>
+
+
+<main>
+
+  <section class="page-intro">
+    <div class="page-intro-tag">RESTRICTED ▸ WALLACE CORP REGISTRY ▸ TIER-9</div>
+    <h1 class="page-intro-title">the <em>archive</em></h1>
+    <p class="page-intro-sub">
+      Off-the-record. Lore, fragments, half-thoughts, and the parts of the file that don't belong on a résumé. Continue at your own discretion — there is no point pretending otherwise.
+    </p>
+  </section>
+
+  <!-- VOIGHT-KAMPFF STATS -->
+  <section style="padding-top: 30px;">
+    <header class="section-header">
+      <div class="section-num"><strong>α</strong> /// METRICS</div>
+      <h2 class="section-title">vk readings</h2>
+      <div class="section-subtitle">// passive scan — values updated on uplink</div>
+    </header>
+
+    <div class="vk-grid">
+      <div class="vk-stat reveal">
+        <div class="vk-stat-label">Fragments Logged</div>
+        <div class="vk-stat-value" id="vk-frags">113</div>
+        <div class="vk-stat-unit">entries</div>
+      </div>
+      <div class="vk-stat reveal teal">
+        <div class="vk-stat-label">Baseline Stable</div>
+        <div class="vk-stat-value" id="vk-baseline">91.20</div>
+        <div class="vk-stat-unit">% nominal</div>
+      </div>
+      <div class="vk-stat reveal ice">
+        <div class="vk-stat-label">Iris Dilation</div>
+        <div class="vk-stat-value" id="vk-iris">0.342</div>
+        <div class="vk-stat-unit">millimeters</div>
+      </div>
+      <div class="vk-stat reveal teal">
+        <div class="vk-stat-label">Years Online</div>
+        <div class="vk-stat-value">17</div>
+        <div class="vk-stat-unit">since first contact</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TERMINAL -->
+  <section>
+    <header class="section-header">
+      <div class="section-num"><strong>β</strong> /// SESSION</div>
+      <h2 class="section-title">terminal access</h2>
+      <div class="section-subtitle">// live shell — read only</div>
+    </header>
+
+    <div class="terminal" id="terminal">
+      <div class="terminal-header">
+        <span>NEXUS-9 // SHELL // tty/0 — INTERACTIVE</span>
+        <span>SESSION 1324-N9</span>
+      </div>
+      <div class="terminal-history" id="terminal-history"></div>
+      <div class="terminal-prompt-row">
+        <span class="terminal-prompt-sigil"><span class="who">cam</span><span class="at">@</span><span class="host">nexus-9</span> ▸</span>
+        <input type="text" class="terminal-input" id="terminal-input" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Terminal input">
+      </div>
+    </div>
+
+    <p style="font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em; color: var(--fg-dim); text-transform: uppercase; margin-bottom: 36px; line-height: 1.7;">
+      Live shell. Type <span style="color: var(--accent);">help</span> for available commands. Tab to autocomplete. Arrow keys for history. Try <span style="color: var(--accent-2);">vk</span>, <span style="color: var(--accent-2);">random</span>, <span style="color: var(--accent-2);">cat profile.txt</span>, or just poke around.
+    </p>
+  </section>
+
+  <!-- INTERROGATION (V-K Q&A) -->
+  <section>
+    <header class="section-header">
+      <div class="section-num"><strong>γ</strong> /// INTERROGATION</div>
+      <h2 class="section-title">voight-kampff</h2>
+      <div class="section-subtitle">// interactive baseline calibration — operator on record</div>
+    </header>
+
+    <div class="interrogation" id="interrogation">
+      <div class="interrogation-progress"></div>
+      <div class="interrogation-q"></div>
+      <div class="interrogation-options"></div>
+      <div class="interrogation-feedback"></div>
+      <div class="interrogation-controls">
+        <button class="interrogation-btn" data-vk="next" data-warn style="display:none;">▸ Next Question</button>
+        <button class="interrogation-btn steel" data-vk="restart" style="display:none;">▸ Restart Test</button>
+        <span class="interrogation-counter">01 / 05</span>
+      </div>
+      <div class="interrogation-stats"></div>
+    </div>
+  </section>
+
+  <!-- MEMORY RECONSTRUCTION -->
+  <section>
+    <header class="section-header">
+      <div class="section-num"><strong>δ</strong> /// RECONSTRUCTION</div>
+      <h2 class="section-title">memory reassembly</h2>
+      <div class="section-subtitle">// salvage protocol — three operator memories. complete one to unlock the next.</div>
+    </header>
+
+    <div class="memory-shell" id="memory-reconstruction">
+
+      <div class="memory-picker" style="grid-column: 1 / -1;"></div>
+
+      <div class="memory-board">
+        <svg class="memory-svg"></svg>
+        <!-- nodes are appended by JS -->
+      </div>
+
+      <div class="memory-readout">
+        <div class="memory-readout-tag">OPERATOR MEMORY // FRAG 001</div>
+        <h3 class="memory-readout-title">reconstruction // first contact</h3>
+
+        <div class="memory-complete-banner"></div>
+
+        <div class="memory-text">
+          <!-- text rendered by JS, redacted blocks until nodes are recovered -->
+        </div>
+
+        <div class="memory-meta">
+          <div class="memory-meta-item">
+            <span class="label">Recovered</span>
+            <span class="value" data-mem-stat="recovered">0/7</span>
+          </div>
+          <div class="memory-meta-item">
+            <span class="label">Drift</span>
+            <span class="value" data-mem-stat="drift">+0.00mm</span>
+          </div>
+          <div class="memory-meta-item">
+            <span class="label">Integrity</span>
+            <span class="value" data-mem-stat="integrity">0%</span>
+          </div>
+        </div>
+
+        <div class="memory-controls">
+          <button class="memory-btn" data-mem="hint" data-hover>▸ Hint</button>
+          <button class="memory-btn warn" data-mem="restart" data-warn>▸ Restart</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="lore reveal" style="margin-top: 30px;">
+      <div class="lore-tag">▣ END OF ARCHIVE FEED ▣</div>
+      <p class="lore-text">
+        "The Blade Runner aesthetic is the wrapping paper. What's inside is just a student trying to leave the network better than he found it. The memory above is real. The order in which you put it back together is your own."
+      </p>
+      <span class="lore-cite">— OPERATOR LOG / NX-1324 / FINAL</span>
+    </div>
+  </section>
+
+  <footer class="contact" id="contact">
+    <div class="contact-tag">▣ END OF ACCESS ▣</div>
+    <h2 class="contact-title">return to <em>surface.</em></h2>
+    <p class="contact-sub">
+      The archive closes on its own. If you want to make contact directly, the channels below are still live.
+    </p>
+    <div class="contact-links">
+      <a href="https://github.com/notChewy1324" target="_blank" rel="noopener" class="contact-link">
+        <svg viewBox="0 0 24 24"><path d="M12 .5C5.65.5.5 5.65.5 12.02c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55 0-.27-.01-.99-.02-1.95-3.2.69-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.72-1.53-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.9-.39.98 0 1.97.13 2.9.39 2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.83 1.18 3.09 0 4.42-2.7 5.39-5.27 5.68.41.35.78 1.05.78 2.12 0 1.53-.01 2.76-.01 3.13 0 .3.21.66.8.55 4.57-1.52 7.85-5.83 7.85-10.91C23.5 5.65 18.35.5 12 .5z"/></svg>
+        GitHub
+      </a>
+      <a href="https://www.linkedin.com/in/camgarrison" target="_blank" rel="noopener" class="contact-link ice">
+        <svg viewBox="0 0 24 24"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43A2.06 2.06 0 113.27 5.37a2.06 2.06 0 012.07 2.06zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45C23.2 24 24 23.23 24 22.28V1.72C24 .77 23.2 0 22.22 0z"/></svg>
+        LinkedIn
+      </a>
+    </div>
+  </footer>
+
+  <div class="footer">
+    <div class="footer-line">
+      © 2026 CAM GARRISON
+      <span class="sep">◊</span>
+      WALLACE CORP REGISTRY
+      <span class="sep">◊</span>
+      <span class="red">THIS RECORD WILL NOT REMEMBER YOU</span>
+    </div>
+  </div>
+
+</main>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="modal-panel">
+    <button class="modal-close" id="modal-close" aria-label="Close">×</button>
+    <div class="modal-meta" id="modal-meta"></div>
+    <h2 class="modal-title" id="modal-title"></h2>
+    <div class="modal-date" id="modal-date"></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>

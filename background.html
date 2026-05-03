@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Background // NX-1324</title>
+<meta name="description" content="Full academic record, coursework, and professional experience for Cam Garrison.">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/svg+xml" href="imgs/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="imgs/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="imgs/apple-touch-icon.png">
+<meta name="theme-color" content="#050608">
+<script>
+  (function(){
+    try {
+      var t = localStorage.getItem('nx-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    } catch(e) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script>
+</head>
+<body>
+
+<!-- PAGE TRANSITION OVERLAY -->
+<div id="page-transition">
+  <div class="pt-grid"></div>
+  <div class="pt-scanline"></div>
+  <div class="pt-text">
+    ESTABLISHING UPLINK<span class="pt-blink"></span>
+    <div class="pt-target"></div>
+  </div>
+</div>
+
+<div class="haze-layer"></div>
+<canvas id="dust-canvas"></canvas>
+<canvas id="rain-canvas"></canvas>
+<div class="scanlines"></div>
+<div class="grain"></div>
+<div class="vignette"></div>
+
+<canvas id="cursor-trail-canvas"></canvas>
+<div id="cursor-arrow">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="cur-grad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#8fc0e8"/>
+        <stop offset="100%" stop-color="#1d3a5f"/>
+      </linearGradient>
+    </defs>
+    <path d="M2 1 L2 19 L7 14.5 L10.5 22 L13.5 20.5 L10 13 L17 13 Z"
+          fill="url(#cur-grad)" stroke="#050608" stroke-width="0.7" stroke-linejoin="miter"/>
+    <path d="M3 3 L3 16 L7 12 L10 12 Z" fill="rgba(184,214,237,0.3)"/>
+  </svg>
+</div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">CG // NX-1324</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="background.html" class="active">Background</a></li>
+    <li><a href="blog.html">Field Notes</a></li>
+    <li><a href="uses.html">Uses</a></li>
+    <li><a href="uplink.html">Uplink</a></li>
+    <li><a href="archive.html">Archive</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="nav-status"><span>UPLINK 00:00:00 UTC</span></div>
+    <button class="theme-toggle" aria-label="Toggle theme">
+      <span class="dot"></span>
+      <span class="label">DAY</span>
+    </button>
+    <button class="transition-toggle off" aria-label="Toggle warp transitions">
+      <span class="dot"></span>
+      <span class="label">WARP OFF</span>
+    </button>
+  </div>
+  <div class="nav-clock-mobile"><span>00:00:00 UTC</span></div>
+  <button class="nav-burger" id="nav-burger" aria-label="Open menu">
+    <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+  </button>
+</nav>
+<!-- NAV DRAWER (mobile/small-desktop) -->
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<aside class="nav-drawer" id="nav-drawer" aria-hidden="true">
+  <div class="nav-drawer-tag">▣ NAVIGATION CHANNEL ▣</div>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="background.html" class="active">Background</a></li>
+    <li><a href="blog.html">Field Notes</a></li>
+    <li><a href="uses.html">Uses</a></li>
+    <li><a href="uplink.html">Uplink</a></li>
+    <li><a href="archive.html">Archive</a></li>
+  </ul>
+  <div class="nav-drawer-toggles">
+    <button class="theme-toggle" aria-label="Toggle theme">
+      <span class="dot"></span>
+      <span class="label">DAY</span>
+    </button>
+    <button class="transition-toggle off" aria-label="Toggle warp transitions">
+      <span class="dot"></span>
+      <span class="label">WARP OFF</span>
+    </button>
+    <div class="nav-drawer-status">UPLINK STABLE</div>
+  </div>
+</aside>
+
+
+<main>
+
+  <section class="page-intro">
+    <div class="page-intro-tag">DOSSIER ▸ NX-1324 ▸ FULL RECORD</div>
+    <h1 class="page-intro-title">background <em>file</em></h1>
+    <p class="page-intro-sub">
+      Academic provenance, coursework, and the complete log of internship deployments. Filed against the Wallace Corp registry. Updated as new entries land.
+    </p>
+  </section>
+
+  <!-- ACADEMIC -->
+  <section>
+    <header class="section-header">
+      <div class="section-num"><strong>01</strong> /// PROVENANCE</div>
+      <h2 class="section-title">academic background</h2>
+      <div class="section-subtitle">// formal training — degree in progress</div>
+    </header>
+
+    <div class="edu-card reveal">
+      <div>
+        <h3 class="edu-degree">b.s. cybersecurity &amp; network systems administration</h3>
+        <div class="edu-school">University of Cincinnati</div>
+        <div class="edu-meta">Expected Graduation ▸ May 2028</div>
+      </div>
+      <div class="edu-status">
+        ◉ In Progress
+      </div>
+    </div>
+
+    <div class="lore reveal" style="margin-top: 70px;">
+      <div class="lore-tag">▣ INSTRUCTOR'S MARGIN NOTE ▣</div>
+      <p class="lore-text">
+        "The work is not learning the systems. The work is unlearning the assumption that systems are ever finished. The good operators come to terms with this early."
+      </p>
+      <span class="lore-cite">— REGISTRY FRAGMENT 11</span>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section>
+    <header class="section-header">
+      <div class="section-num"><strong>02</strong> /// FIELD LOG</div>
+      <h2 class="section-title">professional experience</h2>
+      <div class="section-subtitle">// internship deployments — fully documented</div>
+    </header>
+
+    <div class="timeline">
+
+      <!-- MEDPACE -->
+      <article class="timeline-item">
+        <div class="timeline-date">
+          <span class="badge">INTERNSHIP</span>
+          <span>MAY 2026 — AUGUST 2026 ▸ ON-SITE</span>
+        </div>
+        <h3 class="timeline-role">systems engineer intern</h3>
+        <div class="timeline-org">
+          MEDPACE
+          <span class="sep">//</span>
+          <span class="loc">enterprise infrastructure</span>
+        </div>
+        <ul class="timeline-list">
+          <li>Assisted in the administration and support of enterprise IT infrastructure across on-premises and cloud environments.</li>
+          <li>Collaborated with senior engineers to maintain Microsoft-based systems including SharePoint, Exchange, Skype for Business, IIS, SQL Server, and Active Directory (DNS, DHCP, Group Policy).</li>
+          <li>Monitored and maintained virtualized environments using VMware across local and international data centers, alongside enterprise storage solutions such as EMC and Pure.</li>
+          <li>Supported backup and recovery processes using Commvault and Symantec Backup Exec, and assisted with network operations including SD-WAN technologies like Silver Peak.</li>
+          <li>Spent a meaningful chunk of the internship doing the unglamorous-but-critical work — documentation, baseline reviews, validating that what we thought was running matched what was actually running.</li>
+        </ul>
+        <div class="timeline-tags">
+          <span class="timeline-tag">Azure</span>
+          <span class="timeline-tag">Microsoft 365</span>
+          <span class="timeline-tag">Active Directory</span>
+          <span class="timeline-tag">VMware</span>
+          <span class="timeline-tag">Windows Server</span>
+          <span class="timeline-tag">Enterprise Infrastructure</span>
+          <span class="timeline-tag">Backup &amp; Recovery</span>
+          <span class="timeline-tag">SD-WAN</span>
+        </div>
+      </article>
+
+      <!-- NCUS -->
+      <article class="timeline-item">
+        <div class="timeline-date">
+          <span class="badge">INTERNSHIP</span>
+          <span>JUNE 2025 — AUGUST 2025 ▸ ON-SITE</span>
+        </div>
+        <h3 class="timeline-role">cybersecurity intern</h3>
+        <div class="timeline-org">
+          NCUS
+          <span class="sep">//</span>
+          <span class="loc">cyber operations</span>
+        </div>
+        <ul class="timeline-list">
+          <li>Supported enterprise IT and cyber operations across multiple facilities, performing device provisioning, system imaging, OS deployment, and endpoint lifecycle management.</li>
+          <li>Designed, installed, and tested custom Ethernet cabling and network drops to support reliable connectivity and infrastructure expansion.</li>
+          <li>Implemented system hardening and baseline security configurations, supporting access controls, firewall rules, and secure configuration practices.</li>
+          <li>Contributed to cyber insurance readiness by gathering documentation, validating security controls, and aligning systems with cybersecurity compliance requirements.</li>
+          <li>Got first-hand experience with what compliance work actually feels like in practice — closer to a long, careful conversation between auditors, controls, and reality than to a checklist.</li>
+        </ul>
+        <div class="timeline-tags">
+          <span class="timeline-tag">Endpoint Management</span>
+          <span class="timeline-tag">Infrastructure Deployment</span>
+          <span class="timeline-tag">Security GRC</span>
+          <span class="timeline-tag">Network Engineering</span>
+          <span class="timeline-tag">NIST / Framework Compliance</span>
+          <span class="timeline-tag">System Hardening</span>
+          <span class="timeline-tag">Network Security</span>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <footer class="contact" id="contact">
+    <div class="contact-tag">▣ ESTABLISH UPLINK ▣</div>
+    <h2 class="contact-title">open a <em>channel</em></h2>
+    <p class="contact-sub">
+      Reach out for collaboration, work, internship leads, or to compare notes on whatever obscure infrastructure topic is currently keeping you up at night.
+    </p>
+    <div class="contact-links">
+      <a href="https://github.com/notChewy1324" target="_blank" rel="noopener" class="contact-link">
+        <svg viewBox="0 0 24 24"><path d="M12 .5C5.65.5.5 5.65.5 12.02c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55 0-.27-.01-.99-.02-1.95-3.2.69-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.72-1.53-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.9-.39.98 0 1.97.13 2.9.39 2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.83 1.18 3.09 0 4.42-2.7 5.39-5.27 5.68.41.35.78 1.05.78 2.12 0 1.53-.01 2.76-.01 3.13 0 .3.21.66.8.55 4.57-1.52 7.85-5.83 7.85-10.91C23.5 5.65 18.35.5 12 .5z"/></svg>
+        GitHub
+      </a>
+      <a href="https://www.linkedin.com/in/camgarrison" target="_blank" rel="noopener" class="contact-link ice">
+        <svg viewBox="0 0 24 24"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43A2.06 2.06 0 113.27 5.37a2.06 2.06 0 012.07 2.06zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45C23.2 24 24 23.23 24 22.28V1.72C24 .77 23.2 0 22.22 0z"/></svg>
+        LinkedIn
+      </a>
+    </div>
+  </footer>
+
+  <div class="footer">
+    <div class="footer-line">
+      © 2026 CAM GARRISON
+      <span class="sep">◊</span>
+      ARCHIVE NX-1324
+      <span class="sep">◊</span>
+      <span class="red">DOSSIER VERIFIED</span>
+    </div>
+  </div>
+
+</main>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="modal-panel">
+    <button class="modal-close" id="modal-close" aria-label="Close">×</button>
+    <div class="modal-meta" id="modal-meta"></div>
+    <h2 class="modal-title" id="modal-title"></h2>
+    <div class="modal-date" id="modal-date"></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>

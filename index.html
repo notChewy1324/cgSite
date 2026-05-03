@@ -3,130 +3,332 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/svg" href="imgs/favicon.svg">
-<title>Cam Garrison | Home</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<title>Personnel Archive // NX-1324</title>
+<meta name="description" content="Cam Garrison — Cybersecurity & Network Systems Administration student. Personnel archive and field notes from inside the Wallace Corp registry.">
+<link rel="icon" type="image/svg+xml" href="imgs/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="imgs/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="imgs/apple-touch-icon.png">
+<meta name="theme-color" content="#050608">
+<link rel="stylesheet" href="style.css">
+<script>
+  // Apply theme before paint so there's no flash of wrong theme.
+  (function(){
+    try {
+      var t = localStorage.getItem('nx-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    } catch(e) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script>
 </head>
+<body>
 
-<body data-theme="dark">
-  <div id="boot-sequence">
-    <div class="boot-terminal">
-      <pre id="boot-text"></pre>
-    </div>
-  </div>
-  
-<header class="site-header">
-  <button id="nav-toggle" class="nav-toggle">
-    ☰
-  </button>
-  <button id="reboot-btn" class="action-chip btn secondary">Reboot System</button>
-  <p> </p> <!-- Fixes button spacing on mobile -->
-  <nav class="nav-holo">
-    <a href="index.html" class="nav-link">Home</a>
-    <a href="projects.html" class="nav-link">Projects</a>
-    <a href="experience.html" class="nav-link">Experience</a>
-    <a href="education.html" class="nav-link">Education</a>
-    <a href="blog.html" class="nav-link">Blog</a>
-    <button id="theme-toggle" class="theme-btn">Dark Mode: On</button>
-  </nav>
-  <div class="holo-overlay"></div>
-</header>
-
-<section class="hero full-height">
-  <canvas id="hero-canvas"></canvas>
-  <div class="hero-content">
-    <h1 class="cyberpunk-title reveal">Cam Garrison</h1>
-    <p class="hero-subtitle animate terminal">
-      <span id="terminal-text"></span><span class="cursor">▮</span>
-    </p>
-    </div>
-    <div class="hero-actions">
-      <p class="ui-label">QUICK ACCESS</p>
-      <a href="#about" class="action-chip">ABOUT</a>
-      <a href="#contact" class="action-chip">CONTACT</a>
-      <a href="blog.html" class="action-chip">BLOG</a>
-
-  </div>
-</section>
-
-<section class="section animate" id="about">
-  <div class="about-poster">
-    <div class="poster-header">
-      <h2>About Me</h2>
-    </div>
-    <div class="poster-body">
-      <p>In the neon-lit sprawl of tomorrow's cities, I navigate digital highways, safeguarding networks and infrastructure 
-        from unseen threats. Cybersecurity is not just a career, it's a craft, a way to future proof technology against 
-        evolving dangers.</p>
-      <p>When I'm not defending servers or scripting automations, I explore AI systems, tinker with tech, and design solutions 
-        that bridge the gap between imagination and reality. Think of me as your digital sentinel in the cyber metropolis.</p>
-      <p>Skills span systems administration, IT infrastructure, penetration testing, and crafting secure environments 
-        always aiming for efficiency, resilience, and elegance in every code line and network I touch.</p>
-    </div>
-    <div class="scan-lines"></div>
-  </div>
-</section>
-
-<section class="section animate mission-section" id="currentFocus">
-  <h2>Current Focus</h2>
-
-  <div class="mission-grid">
-
-    <div class="mission-card">
-      <div class="mission-tag">ACTIVE</div>
-      <h3>Systems Engineering & Infrastructure</h3>
-      <p>
-        Deepening knowledge in server systems, virtualization, and enterprise infrastructure design.
-      </p>
-    </div>
-
-    <div class="mission-card">
-      <div class="mission-tag">IN PROGRESS</div>
-      <h3>Cybersecurity Hardening</h3>
-      <p>
-        Practicing system hardening, monitoring strategies, and defensive security workflows.
-      </p>
-    </div>
-
-    <div class="mission-card">
-      <div class="mission-tag">RESEARCH</div>
-      <h3>Automation & Scripting</h3>
-      <p>
-        Expanding automation skills with shell scripting and infrastructure automation tools.
-      </p>
-    </div>
-
-  </div>
-</section>
-
-
-<section class="section animate" id="contact">
-  <div class="contact-card">
-    <h2 class="contact-title">Reach Me</h2>
-    <p class="contact-text">Send a message via secure channels:</p>
-    <div class="contact-links">
-      <a href="mailto:garriscm@mail.uc.edu" class="btn contact-btn">Email</a>
-      <a href="https://github.com/notChewy1324" class="btn contact-btn">GitHub</a>
-      <a href="https://www.linkedin.com/in/camgarrison" class="btn contact-btn">LinkedIn</a>
-    </div>
-
-    <canvas id="contact-particles"></canvas>
-    <div class="holo-panel"></div>
-    <div class="bd1-orb"></div>
-  </div>
-</section>
-
-<div id="system-hud">
-  <p class="hud-title">SYSTEM STATUS</p>
-  <p id="hud-status">Idle</p>
-  <div id="system-monitor">
-    <span>CPU: <strong id="cpu-usage">17%</strong></span>
-    <span>RAM: <strong id="ram-usage">42%</strong></span>
-    <span class="security">SECURITY: <strong>STABLE</strong></span>
+<!-- PAGE TRANSITION OVERLAY -->
+<div id="page-transition">
+  <div class="pt-grid"></div>
+  <div class="pt-scanline"></div>
+  <div class="pt-text">
+    ESTABLISHING UPLINK<span class="pt-blink"></span>
+    <div class="pt-target"></div>
   </div>
 </div>
 
-<script src="script.js"></script>
+<!-- Atmospheric layers -->
+<div class="haze-layer"></div>
+<canvas id="dust-canvas"></canvas>
+<canvas id="rain-canvas"></canvas>
+<div class="scanlines"></div>
+<div class="grain"></div>
+<div class="vignette"></div>
+
+<!-- Custom cursor -->
+<canvas id="cursor-trail-canvas"></canvas>
+<div id="cursor-arrow">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="cur-grad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#8fc0e8"/>
+        <stop offset="100%" stop-color="#1d3a5f"/>
+      </linearGradient>
+    </defs>
+    <path d="M2 1 L2 19 L7 14.5 L10.5 22 L13.5 20.5 L10 13 L17 13 Z"
+          fill="url(#cur-grad)" stroke="#050608" stroke-width="0.7" stroke-linejoin="miter"/>
+    <path d="M3 3 L3 16 L7 12 L10 12 Z" fill="rgba(184,214,237,0.3)"/>
+  </svg>
+</div>
+
+<!-- Navigation -->
+<nav class="nav">
+  <a href="index.html" class="nav-logo">CG // NX-1324</a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="background.html">Background</a></li>
+    <li><a href="blog.html">Field Notes</a></li>
+    <li><a href="uses.html">Uses</a></li>
+    <li><a href="uplink.html">Uplink</a></li>
+    <li><a href="archive.html">Archive</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="nav-status"><span>UPLINK 00:00:00 UTC</span></div>
+    <button class="theme-toggle" aria-label="Toggle theme">
+      <span class="dot"></span>
+      <span class="label">DAY</span>
+    </button>
+    <button class="transition-toggle off" aria-label="Toggle warp transitions">
+      <span class="dot"></span>
+      <span class="label">WARP OFF</span>
+    </button>
+  </div>
+  <div class="nav-clock-mobile"><span>00:00:00 UTC</span></div>
+  <button class="nav-burger" id="nav-burger" aria-label="Open menu">
+    <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+  </button>
+</nav>
+<!-- NAV DRAWER (mobile/small-desktop) -->
+<div class="nav-backdrop" id="nav-backdrop"></div>
+<aside class="nav-drawer" id="nav-drawer" aria-hidden="true">
+  <div class="nav-drawer-tag">▣ NAVIGATION CHANNEL ▣</div>
+  <ul>
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="background.html">Background</a></li>
+    <li><a href="blog.html">Field Notes</a></li>
+    <li><a href="uses.html">Uses</a></li>
+    <li><a href="uplink.html">Uplink</a></li>
+    <li><a href="archive.html">Archive</a></li>
+  </ul>
+  <div class="nav-drawer-toggles">
+    <button class="theme-toggle" aria-label="Toggle theme">
+      <span class="dot"></span>
+      <span class="label">DAY</span>
+    </button>
+    <button class="transition-toggle off" aria-label="Toggle warp transitions">
+      <span class="dot"></span>
+      <span class="label">WARP OFF</span>
+    </button>
+    <div class="nav-drawer-status">UPLINK STABLE</div>
+  </div>
+</aside>
+
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-tag">PERSONNEL FILE // WALLACE-TYRELL ARCHIVE</div>
+    <div class="hero-id">REG. NX-1324 <span class="pipe">▸</span> CLEARANCE: TIER-9 <span class="pipe">▸</span> STATUS: ACTIVE</div>
+
+    <h1 class="hero-name">
+      <span>cam</span>
+      <span>garrison</span>
+    </h1>
+
+    <p class="hero-subtitle">
+      <em>Cybersecurity &amp; network systems administration student.</em>
+      Currently learning the <span class="ice">quiet machinery</span> underneath enterprise IT — one internship, one lab, and one slightly-broken VLAN at a time. This page is the public-facing record.
+    </p>
+
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Discipline</span>
+        <span class="hero-meta-value">Cybersec &amp; NetSys Admin</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">School</span>
+        <span class="hero-meta-value">Univ. of Cincinnati</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Class Of</span>
+        <span class="hero-meta-value">May 2028</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Sector</span>
+        <span class="hero-meta-value">Cincinnati, OH</span>
+      </div>
+    </div>
+
+    <div class="marquee">
+      <div class="marquee-track">
+        <span>WALLACE CORP REGISTRY</span>
+        <span class="ice">NEXUS-9 PERSONNEL CHANNEL</span>
+        <span>VOIGHT-KAMPFF: CLEARED</span>
+        <span class="red">BASELINE STABLE</span>
+        <span>ACCESS GRANTED — NX-1324</span>
+        <span class="ice">"CELLS INTERLINKED WITHIN CELLS INTERLINKED"</span>
+        <span>UPLINK NOMINAL</span>
+        <span class="red">REPLICANT QUOTIENT 0.000</span>
+        <span>WALLACE CORP REGISTRY</span>
+        <span class="ice">NEXUS-9 PERSONNEL CHANNEL</span>
+        <span>VOIGHT-KAMPFF: CLEARED</span>
+        <span class="red">BASELINE STABLE</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- LORE STRIP -->
+  <div class="lore reveal">
+    <div class="lore-tag">▣ ARCHIVE TRANSMISSION ▣</div>
+    <p class="lore-text">
+      "We were brought up to believe everything could be diagnosed, patched, hardened. The truth is messier. Networks dream too — they just dream in packets, in retransmits, in the static between heartbeats."
+    </p>
+    <span class="lore-cite">— OPERATOR LOG / NX-1324 / FRAGMENT 07</span>
+  </div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <header class="section-header">
+      <div class="section-num"><strong>01</strong> /// FILE</div>
+      <h2 class="section-title">identity</h2>
+      <div class="section-subtitle">// who is registered to this archive</div>
+    </header>
+
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>
+          I'm a <strong>Cybersecurity &amp; Network Systems Administration</strong> student at the University of Cincinnati. Doing the degree by day, running labs and reading writeups by night, and slowly figuring out which corner of this field fits me best. So far the answer is "wherever the infrastructure is most obviously held together by tape, documentation, and somebody's heroic 2014 PowerShell script" — and I mean that as a compliment.
+        </p>
+
+        <p>
+          Outside of class I've spent the last two summers doing internships across cyber operations and enterprise systems engineering. Between them I've gotten to put hands on the parts of IT that nobody puts on a brochure — endpoint imaging at scale, AD policy archaeology, on-prem-to-cloud co-existence, the cabling that holds an office together, and the strange, specific intimacy of debugging a backup job at 11pm on a Thursday.
+        </p>
+
+        <div class="about-pull">
+          "More human than human" is not a slogan. It is a <em>specification</em>. And specifications, in this profession, are the difference between a system and a wish.
+        </div>
+
+        <p>
+          I care most about <em>the unglamorous parts done well</em> — clean baselines, documented configurations, the small set of habits that make a system survive an audit and a Tuesday at 3am with equal grace. The flashy stuff is downstream of that. I would rather be the engineer who never has to explain why something failed than the one with the best war story.
+        </p>
+
+        <p>
+          This site is a working notebook. Background page is the formal record. <strong>Field Notes</strong> is where I write up things I've learned the hard way. The <strong>Archive</strong> is for the parts that don't belong on a résumé.
+        </p>
+      </div>
+
+      <aside class="id-card reveal">
+        <div class="id-card-header">
+          <span>NEXUS-9 // ID PROFILE</span>
+          <span>v.4.7</span>
+        </div>
+        <div class="id-card-row"><span class="key">REG</span><span class="val steel">NX-1324</span></div>
+        <div class="id-card-row"><span class="key">NAME</span><span class="val">CAM GARRISON</span></div>
+        <div class="id-card-row"><span class="key">CLASS</span><span class="val">STUDENT / INTERN</span></div>
+        <div class="id-card-row"><span class="key">FIELD</span><span class="val ice">CYBERSEC // NETSYS ADMIN</span></div>
+        <div class="id-card-row"><span class="key">SECTOR</span><span class="val">CINCINNATI METRO</span></div>
+        <div class="id-card-row"><span class="key">ENROLL</span><span class="val">UC // BS CYBERSEC + NETSYS ADMIN</span></div>
+        <div class="id-card-row"><span class="key">CLASS OF</span><span class="val">2028</span></div>
+        <div class="id-card-row"><span class="key">STATUS</span><span class="val red">ACTIVE / IN-PROGRESS</span></div>
+
+        <div class="baseline">
+          <div class="baseline-label">
+            <span class="bl-left">BASELINE 91.20</span>
+            <span class="bl-right">IRIS 0.342 mm</span>
+          </div>
+          <svg class="baseline-wave"></svg>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- SUMMARY: EXPERIENCE PREVIEW -->
+  <section id="summary">
+    <header class="section-header">
+      <div class="section-num"><strong>02</strong> /// LOG</div>
+      <h2 class="section-title">recent deployments</h2>
+      <div class="section-subtitle">// short summary — full record on the background page</div>
+    </header>
+
+    <div class="timeline">
+      <article class="timeline-item">
+        <div class="timeline-date">
+          <span class="badge">INTERNSHIP</span>
+          <span>MAY 2026 — AUGUST 2026 ▸ ON-SITE</span>
+        </div>
+        <h3 class="timeline-role">systems engineer intern</h3>
+        <div class="timeline-org">
+          MEDPACE
+          <span class="sep">//</span>
+          <span class="loc">enterprise infrastructure</span>
+        </div>
+        <ul class="timeline-list">
+          <li>Supporting administration of enterprise IT across on-prem and cloud — Microsoft 365, Azure, virtualized data centers.</li>
+          <li>Maintaining Microsoft-stack systems including SharePoint, Exchange, IIS, SQL Server, and Active Directory (DNS / DHCP / GPO).</li>
+          <li>Working with VMware across local and international DCs, plus enterprise storage on EMC and Pure.</li>
+        </ul>
+      </article>
+
+      <article class="timeline-item">
+        <div class="timeline-date">
+          <span class="badge">INTERNSHIP</span>
+          <span>JUNE 2025 — AUGUST 2025 ▸ ON-SITE</span>
+        </div>
+        <h3 class="timeline-role">cybersecurity intern</h3>
+        <div class="timeline-org">
+          NCUS
+          <span class="sep">//</span>
+          <span class="loc">cyber operations</span>
+        </div>
+        <ul class="timeline-list">
+          <li>Endpoint lifecycle, system imaging, and OS deployment across multiple facilities.</li>
+          <li>System hardening, baseline security configurations, and cyber insurance readiness.</li>
+          <li>NIST-aligned documentation, custom Ethernet runs, and a lot of "why is this not in the GPO yet."</li>
+        </ul>
+      </article>
+
+      <p style="text-align:center; margin-top:48px;">
+        <a href="background.html" class="contact-link" style="font-size:11px; padding:14px 24px;">
+          ▸ Full Background File
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <footer class="contact" id="contact">
+    <div class="contact-tag">▣ ESTABLISH UPLINK ▣</div>
+    <h2 class="contact-title">open a <em>channel</em></h2>
+    <p class="contact-sub">
+      Reach out for collaboration, work, internship leads, or to compare notes on whatever obscure infrastructure topic is currently keeping you up at night. Both inboxes are monitored.
+    </p>
+    <div class="contact-links">
+      <a href="https://github.com/notChewy1324" target="_blank" rel="noopener" class="contact-link">
+        <svg viewBox="0 0 24 24"><path d="M12 .5C5.65.5.5 5.65.5 12.02c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55 0-.27-.01-.99-.02-1.95-3.2.69-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.34.95.1-.74.4-1.24.72-1.53-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.9-.39.98 0 1.97.13 2.9.39 2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.83 1.18 3.09 0 4.42-2.7 5.39-5.27 5.68.41.35.78 1.05.78 2.12 0 1.53-.01 2.76-.01 3.13 0 .3.21.66.8.55 4.57-1.52 7.85-5.83 7.85-10.91C23.5 5.65 18.35.5 12 .5z"/></svg>
+        GitHub
+      </a>
+      <a href="https://www.linkedin.com/in/camgarrison" target="_blank" rel="noopener" class="contact-link ice">
+        <svg viewBox="0 0 24 24"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43A2.06 2.06 0 113.27 5.37a2.06 2.06 0 012.07 2.06zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45C23.2 24 24 23.23 24 22.28V1.72C24 .77 23.2 0 22.22 0z"/></svg>
+        LinkedIn
+      </a>
+    </div>
+  </footer>
+
+  <div class="footer">
+    <div class="footer-line">
+      © 2026 CAM GARRISON
+      <span class="sep">◊</span>
+      ARCHIVE NX-1324
+      <span class="sep">◊</span>
+      <span class="red">ALL FIELDS NOMINAL</span>
+    </div>
+    <div class="footer-line" style="opacity: 0.5;">
+      "MORE HUMAN THAN HUMAN" IS NOT A SLOGAN. IT IS A SPECIFICATION.
+    </div>
+  </div>
+
+</main>
+
+<!-- MODAL -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-panel">
+    <button class="modal-close" id="modal-close" aria-label="Close">×</button>
+    <div class="modal-meta" id="modal-meta">ARCHIVE ENTRY</div>
+    <h2 class="modal-title" id="modal-title"></h2>
+    <div class="modal-date" id="modal-date"></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script src="main.js"></script>
 </body>
 </html>

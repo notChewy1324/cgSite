@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Field Notes // NX-1324</title>
-<meta name="description" content="Field notes, lab writeups, and short technical posts from Cam Garrison's archive.">
+<title>Loadout // NX-1324</title>
+<meta name="description" content="Cam Garrison's hardware, software, and tooling loadout.">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" type="image/svg+xml" href="imgs/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon-32.png">
@@ -61,8 +61,8 @@
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
     <li><a href="background.html">Background</a></li>
-    <li><a href="blog.html" class="active">Field Notes</a></li>
-    <li><a href="uses.html">Uses</a></li>
+    <li><a href="blog.html">Field Notes</a></li>
+    <li><a href="uses.html" class="active">Uses</a></li>
     <li><a href="uplink.html">Uplink</a></li>
     <li><a href="archive.html">Archive</a></li>
   </ul>
@@ -82,6 +82,7 @@
     <span class="bar"></span><span class="bar"></span><span class="bar"></span>
   </button>
 </nav>
+
 <!-- NAV DRAWER (mobile/small-desktop) -->
 <div class="nav-backdrop" id="nav-backdrop"></div>
 <aside class="nav-drawer" id="nav-drawer" aria-hidden="true">
@@ -89,8 +90,8 @@
   <ul>
     <li><a href="index.html">Home</a></li>
     <li><a href="background.html">Background</a></li>
-    <li><a href="blog.html" class="active">Field Notes</a></li>
-    <li><a href="uses.html">Uses</a></li>
+    <li><a href="blog.html">Field Notes</a></li>
+    <li><a href="uses.html" class="active">Uses</a></li>
     <li><a href="uplink.html">Uplink</a></li>
     <li><a href="archive.html">Archive</a></li>
   </ul>
@@ -107,34 +108,74 @@
   </div>
 </aside>
 
-
 <main>
 
   <section class="page-intro">
-    <div class="page-intro-tag">CHANNEL ▸ FIELD NOTES ▸ TRANSMISSIONS</div>
-    <h1 class="page-intro-title">field <em>notes</em></h1>
+    <div class="page-intro-tag">DOSSIER ▸ NX-1324 ▸ LOADOUT</div>
+    <h1 class="page-intro-title">operator <em>loadout</em></h1>
     <p class="page-intro-sub">
-      Short transmissions on cybersecurity, networking, and the strange machinery underneath enterprise IT. Real stories, mostly true, occasionally embellished where the details have softened with time. Tap any entry to open the full article — no new tabs, no leaving the channel.
+      Reconstructed schematic of the primary operator workstation. Hover or tap the labeled callouts to inspect each component. Other sections — peripherals, mobile, software stack — deferred to a future build.
     </p>
   </section>
 
   <section>
     <header class="section-header">
-      <div class="section-num"><strong>◉</strong> /// LIVE FEED</div>
-      <h2 class="section-title">transmissions</h2>
-      <div class="section-subtitle">// most recent at top — older entries below</div>
+      <div class="section-num"><strong>01</strong> /// SCHEMATIC</div>
+      <h2 class="section-title">primary workstation</h2>
+      <div class="section-subtitle">// reconstructed model — exterior shell, internal components, callouts</div>
     </header>
 
-    <div class="blog-grid" id="blog-grid">
-      <!-- Cards rendered by JS from window.BLOG_POSTS -->
+    <!-- PC SCHEMATIC -->
+    <div class="pc-schematic" id="pc-schematic">
+
+      <div class="pc-schematic-header">
+        <div class="pc-schematic-id">
+          <span class="key">UNIT</span> <span class="val">NX-RIG-01</span>
+          <span class="key">CLASS</span> <span class="val">DESKTOP / TOWER</span>
+          <span class="key">STATUS</span> <span class="val ok">ACTIVE</span>
+        </div>
+      </div>
+
+      <div class="pc-schematic-stage">
+        <svg class="pc-svg" id="pc-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+
+      <div class="pc-schematic-footer">
+        <div class="pc-spec">
+          <div class="pc-spec-key">OS</div>
+          <div class="pc-spec-val">Linux Mint</div>
+        </div>
+        <div class="pc-spec">
+          <div class="pc-spec-key">GPU</div>
+          <div class="pc-spec-val">RTX 4070 Super</div>
+        </div>
+        <div class="pc-spec">
+          <div class="pc-spec-key">RAM</div>
+          <div class="pc-spec-val">32 GB DDR5</div>
+        </div>
+        <div class="pc-spec">
+          <div class="pc-spec-key">STORAGE</div>
+          <div class="pc-spec-val">1 TB SSD</div>
+        </div>
+        <div class="pc-spec">
+          <div class="pc-spec-key">DISPLAY</div>
+          <div class="pc-spec-val">Dell 27" 4K</div>
+        </div>
+        <div class="pc-spec">
+          <div class="pc-spec-key">COOLING</div>
+          <div class="pc-spec-val">AIO Liquid</div>
+        </div>
+      </div>
+
     </div>
+
   </section>
 
   <footer class="contact" id="contact">
-    <div class="contact-tag">▣ SUBMIT TO THE CHANNEL ▣</div>
-    <h2 class="contact-title">have a <em>tip?</em></h2>
+    <div class="contact-tag">▣ END LOADOUT ▣</div>
+    <h2 class="contact-title">running the <em>same kit?</em></h2>
     <p class="contact-sub">
-      Send signal flares, weird packet captures, or anything you think belongs in the archive. The channel is open.
+      Mint user, 4070 Super owner, AIO loop survivor — if any of those are you, I'd love to compare notes.
     </p>
     <div class="contact-links">
       <a href="https://github.com/notChewy1324" target="_blank" rel="noopener" class="contact-link">
@@ -152,23 +193,13 @@
     <div class="footer-line">
       © 2026 CAM GARRISON
       <span class="sep">◊</span>
-      CHANNEL NX-1324
+      LOADOUT NX-1324
       <span class="sep">◊</span>
-      <span class="red">TRANSMITTING</span>
+      <span class="red">CONFIGURED</span>
     </div>
   </div>
 
 </main>
-
-<div class="modal" id="modal" role="dialog" aria-modal="true">
-  <div class="modal-panel">
-    <button class="modal-close" id="modal-close" aria-label="Close">×</button>
-    <div class="modal-meta" id="modal-meta"></div>
-    <h2 class="modal-title" id="modal-title"></h2>
-    <div class="modal-date" id="modal-date"></div>
-    <div class="modal-body" id="modal-body"></div>
-  </div>
-</div>
 
 <script src="main.js"></script>
 </body>
