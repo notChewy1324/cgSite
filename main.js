@@ -375,7 +375,7 @@ window.PROJECTS = [
     id: 'BUILD-001',
     date: 'EXPERIENCE',
     title: 'bearcast media',
-    tags: ['DevOps', 'SECURITY', 'CMS', 'BROADCAST'],
+    tags: ['FRONT-END', 'SECURITY', 'CMS', 'BROADCAST'],
     color: '',
     live: true,
     domain: 'bearcastmedia.com',
@@ -391,7 +391,7 @@ window.PROJECTS = [
       <p><strong>bearcastmedia.com</strong> is the public face of the University of Cincinnati's student media organization, and I built it from an empty folder as Web Director. It is the closest thing I have to a real "show": a live broadcast product where the technology has to disappear and the experience has to feel effortless.</p>
 
       <div class="build-facts">
-        <div class="build-fact"><span class="k">Pages</span><span class="v">nine</span></div>
+        <div class="build-fact"><span class="k">Pages</span><span class="v">nine, interlinked</span></div>
         <div class="build-fact"><span class="k">CMS</span><span class="v">sanity (headless)</span></div>
         <div class="build-fact"><span class="k">Security Grade</span><span class="v">f &rarr; a</span></div>
         <div class="build-fact"><span class="k">White Paper</span><span class="v">68 pages</span></div>
@@ -449,7 +449,7 @@ window.PROJECTS = [
     id: 'BUILD-002',
     date: 'PRODUCT',
     title: 'netsweep',
-    tags: ['iOS', 'SWIFT', 'SWIFTUI', 'NETWORKING', 'MULTI-PLATFORM'],
+    tags: ['iOS', 'SWIFT', 'NETWORKING', 'MULTI-PLATFORM'],
     color: 'ice',
     live: true,
     domain: 'netsweepapp.com',
@@ -460,7 +460,7 @@ window.PROJECTS = [
 
       <div class="build-facts">
         <div class="build-fact"><span class="k">Platforms</span><span class="v">iphone · ipad · mac · vision pro</span></div>
-        <div class="build-fact"><span class="k">Language</span><span class="v">swiftui</span></div>
+        <div class="build-fact"><span class="k">Language</span><span class="v">swift</span></div>
         <div class="build-fact"><span class="k">Site</span><span class="v">three pages</span></div>
         <div class="build-fact"><span class="k">Deploy</span><span class="v">cloudflare pages</span></div>
       </div>
@@ -493,7 +493,7 @@ window.PROJECTS = [
     stack: ['Vanilla JS', 'Three.js', 'Canvas 2D', 'SVG', 'No Frameworks'],
     excerpt: 'The site you are reading is itself a portfolio piece: a fully themed, in-universe immersive experience with rain, a custom cursor, a live operations console, a 3D model, and an interrogation game — all hand-built, no frameworks.',
     body: `
-      <p>You are already inside the demo. This archive is not a template with my resume poured into it — it is a built <em>experience</em>, themed end to end around the world of <em>Blade Runner 2049</em>, and the most honest single artifact I can show an experience-design team.</p>
+      <p>You are already inside the demo. This archive is not a template with my résumé poured into it — it is a built <em>experience</em>, themed end to end around the world of <em>Blade Runner 2049</em>, and the most honest single artifact I can show an experience-design team.</p>
 
       <h3>what's actually running</h3>
       <p>Animated rain and dust on layered canvases. A custom SVG cursor with a particle trail. A live "operations uplink" console with a wireframe globe, spectrum analyzer, radar sweep, and synthetic syslog feed. A working virtual terminal with a fake filesystem. An interactive Voight-Kampff interrogation. A memory-reconstruction puzzle. A real-time 3D model of my workstation. Three full color themes, including a rain mode. All vanilla — no React, no build step.</p>
@@ -501,14 +501,14 @@ window.PROJECTS = [
       <blockquote>This is what I mean by "hide the technology." Everything here is deliberate. None of it announces itself. The effect arrives before the explanation does.</blockquote>
 
       <h3>why it belongs in this list</h3>
-      <p>Imagineering builds places that tell you a story before you read a single sign. This site is my attempt at the same trick in a browser: atmosphere first, information second, and a consistent fiction holding it all together. The engineering underneath is real.</p>
+      <p>Imagineering builds places that tell you a story before you read a single sign. This site is my attempt at the same trick in a browser: atmosphere first, information second, and a consistent fiction holding it all together. The engineering underneath is real; the wrapping paper is the point.</p>
 
       <div class="build-stack">
         <span>Vanilla JS</span><span>Canvas 2D</span><span>WebGL / Three.js</span><span>SVG</span><span>CSS Theming</span><span>Cloudflare Pages</span><span>No Frameworks</span>
       </div>
 
       <div class="build-links">
-        <a href="https://github.com/notChewy1324/cgSite" target="_blank" rel="noopener">▸ Source on GitHub</a>
+        <a href="https://github.com/notChewy1324" target="_blank" rel="noopener">▸ Source on GitHub</a>
       </div>
     `
   }
@@ -591,16 +591,19 @@ window.PROJECTS = [
       }
     });
 
-    document.addEventListener('mouseleave', () => {
+    const hideCursor = () => {
       cursorActive = false;
       arrow.classList.remove('active');
       trailCanvas.classList.remove('active');
-    });
-    window.addEventListener('blur', () => {
-      cursorActive = false;
-      arrow.classList.remove('active');
-      trailCanvas.classList.remove('active');
-    });
+    };
+    // Hide the custom cursor when the pointer leaves the page. Safari does NOT
+    // fire `mouseleave` on the `document` object, so bind it to <html> AND
+    // catch `mouseout`/`pointerout` with a null relatedTarget (pointer left the
+    // window entirely). Belt-and-suspenders across Safari / Chrome / Firefox.
+    document.documentElement.addEventListener('mouseleave', hideCursor);
+    document.addEventListener('mouseout',   (e) => { if (!e.relatedTarget && !e.toElement) hideCursor(); });
+    document.addEventListener('pointerout', (e) => { if (e.pointerType === 'mouse' && !e.relatedTarget) hideCursor(); });
+    window.addEventListener('blur', hideCursor);
 
     document.addEventListener('mousedown', () => arrow.classList.add('click'));
     document.addEventListener('mouseup',   () => arrow.classList.remove('click'));
@@ -2694,7 +2697,9 @@ do not retry. retry attempts are logged.`,
       idle = 0;
       const dx = p.clientX - lastX, dy = p.clientY - lastY;
       lastX = p.clientX; lastY = p.clientY;
-      view.yaw   += dx * 0.008;
+      // "Grab the model" feel: dragging moves the surface under the pointer,
+      // so the model turns with your hand (matches the grab cursor).
+      view.yaw   -= dx * 0.008;
       view.pitch += dy * 0.008;
       view.pitch = Math.max(-0.75, Math.min(1.1, view.pitch));
       if (e.touches) e.preventDefault();

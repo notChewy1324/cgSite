@@ -149,11 +149,14 @@ html, body {
 *, *::before, *::after { cursor: inherit; }
 
 /* On real-pointer devices, hide the native cursor EVERYWHERE and let the
-   custom SVG arrow do the work. Safari ignores `cursor: none` inherited
-   through the cascade on some elements, so we force it with !important on
-   every element rather than only interactive ones. */
+   custom SVG arrow do the work. `cursor: none` alone is unreliable in WebKit
+   (Safari keeps showing the system cursor), so we hand it a 1x1 fully
+   transparent cursor image and keep `none` only as the final fallback. This
+   hides the native cursor on Safari, Chrome, and Firefox alike. */
 @media (hover: hover) and (pointer: fine) {
-  html, body, *, *::before, *::after { cursor: none !important; }
+  html, body, *, *::before, *::after {
+    cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=") 0 0, none !important;
+  }
 
   /* The 3D PC stage is the one place we WANT the native cursor (a grab hand
      for orbiting). The custom arrow is hidden over the stage via JS. */
