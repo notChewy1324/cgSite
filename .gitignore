@@ -1,4 +1,41 @@
-# wrangler files
+# ── macOS ──────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+Icon?
+
+# ── Windows / Linux ────────────────────────────────────
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*~
+
+# ── Editors / IDEs ─────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# ── Node / tooling ─────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.npm
+.cache/
+
+# ── Logs / temp ────────────────────────────────────────
+*.log
+logs/
+*.tmp
+.tmp/
+
+# ── Wrangler / Cloudflare ──────────────────────────────
 .wrangler
 .dev.vars*
 !.dev.vars.example

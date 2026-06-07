@@ -366,6 +366,155 @@ window.MEMORY_FRAGMENTS = [
 ];
 
 /* ============================================================
+   3.5  FLAGSHIP BUILDS — rendered on builds.html, opened in modal.
+   Same shape as BLOG_POSTS so the existing modal renderer can be
+   reused. `body` is trusted HTML authored here.
+   ============================================================ */
+window.PROJECTS = [
+  {
+    id: 'BUILD-001',
+    date: 'EXPERIENCE',
+    title: 'bearcast media',
+    tags: ['DevOps', 'SECURITY', 'CMS', 'BROADCAST'],
+    color: '',
+    live: true,
+    domain: 'bearcastmedia.com',
+    stack: ['Vanilla JS', 'Sanity CMS', 'Cloudflare', 'Radio.co', 'CSP / XSS'],
+    metrics: [
+      { v: '9', k: 'pages' },
+      { v: 'F&rarr;A', k: 'security' },
+      { v: '68pp', k: 'white paper' },
+      { v: '34', k: 'findings' }
+    ],
+    excerpt: "Built from scratch: the full public platform for UC's student media organization. Nine interconnected pages, a live radio stream, a headless CMS, and a security posture I took from an F to an A — documented in a 68-page white paper.",
+    body: `
+      <p><strong>bearcastmedia.com</strong> is the public face of the University of Cincinnati's student media organization, and I built it from an empty folder as Web Director. It is the closest thing I have to a real "show": a live broadcast product where the technology has to disappear and the experience has to feel effortless.</p>
+
+      <div class="build-facts">
+        <div class="build-fact"><span class="k">Pages</span><span class="v">nine</span></div>
+        <div class="build-fact"><span class="k">CMS</span><span class="v">sanity (headless)</span></div>
+        <div class="build-fact"><span class="k">Security Grade</span><span class="v">f &rarr; a</span></div>
+        <div class="build-fact"><span class="k">White Paper</span><span class="v">68 pages</span></div>
+      </div>
+
+      <h3>the build</h3>
+      <p>A nine-page static site — journalism, music, sports, BTV, schedule, and more — wired to a <strong>Sanity headless CMS</strong> so the student staff can publish without touching code. Live radio is handled through a Radio.co integration with now-playing polling and Media Session API support, so the stream behaves like a native app on a phone's lock screen. Deployed on Cloudflare Pages.</p>
+      <p>The front-end work was relentlessly detail-driven: theme-aware CSS, mobile filter patterns, Safari-specific cursor fixes, image-pipeline bugs across every content type, and a fuzzy 404 that suggests the page you probably meant using Levenshtein distance. The kind of polish nobody notices — which is the point.</p>
+
+      <h3>the security pass</h3>
+      <p>I ran a full audit across the front-end, the Sanity schemas, and the Studio config: <strong>34 findings across three phases</strong>. I patched XSS sink patterns behind a central sanitization module, shipped Content-Security-Policy headers on all nine pages, hardened the schemas, and enforced a strict no-write-token policy for any client-side code. Security-header grade went from <strong>F to A</strong>.</p>
+
+      <blockquote>A broadcast platform is a trust object. People assume it is safe because it looks calm. My job was to make that assumption true.</blockquote>
+
+      <h3>the documentation</h3>
+      <p>An undocumented system is just a rumor. The Bearcast rebuild ships with three documents: a cyber white paper covering the full security audit, a technical white paper on the architecture and build decisions, and a system-architecture diagram. Read any of them inline, or pull the PDF.</p>
+
+      <!-- ============================================================
+           BEARCAST DOCUMENT LIBRARY
+           Commit these three PDFs to the repo (PDFs are fine in GitHub and
+           are served as static files by Cloudflare Pages). Create a /docs
+           folder next to index.html and save them as:
+               docs/bearcast-cyber-whitepaper.pdf
+               docs/bearcast-technical-whitepaper.pdf
+               docs/bearcast-architecture-diagram.pdf
+           To use different names, just edit the data-doc paths + the src below.
+           ============================================================ -->
+      <div class="build-doc" data-doc-viewer>
+        <div class="build-doc-tabs">
+          <button type="button" class="build-doc-tab active" data-doc="docs/bearcast-cyber-whitepaper.pdf" data-meta="PDF · SECURITY AUDIT">Cyber White Paper</button>
+          <button type="button" class="build-doc-tab" data-doc="docs/bearcast-technical-whitepaper.pdf" data-meta="PDF · ARCHITECTURE & BUILD">Technical White Paper</button>
+          <button type="button" class="build-doc-tab" data-doc="docs/bearcast-architecture-diagram.pdf" data-meta="PDF · SYSTEM DIAGRAM">Architecture Diagram</button>
+        </div>
+        <div class="build-doc-bar">
+          <span class="build-doc-name">▤ <span data-doc-name>bearcast-cyber-whitepaper.pdf</span></span>
+          <span class="build-doc-meta" data-doc-meta>PDF · SECURITY AUDIT</span>
+        </div>
+        <iframe class="build-doc-frame" data-doc-frame src="docs/bearcast-cyber-whitepaper.pdf" title="Bearcast documentation" loading="lazy"></iframe>
+        <div class="build-doc-actions">
+          <a data-doc-open href="docs/bearcast-cyber-whitepaper.pdf" target="_blank" rel="noopener">▸ Open Full Screen</a>
+          <a data-doc-download href="docs/bearcast-cyber-whitepaper.pdf" download class="ice">▸ Download PDF</a>
+        </div>
+      </div>
+
+      <div class="build-stack">
+        <span>HTML / CSS / JS</span><span>Sanity CMS</span><span>Cloudflare Pages</span><span>Radio.co</span><span>CSP / XSS Defense</span><span>Media Session API</span>
+      </div>
+
+      <div class="build-links">
+        <a href="https://bearcastmedia.com" target="_blank" rel="noopener">▸ Visit Live Site</a>
+      </div>
+    `
+  },
+  {
+    id: 'BUILD-002',
+    date: 'PRODUCT',
+    title: 'netsweep',
+    tags: ['iOS', 'SWIFT', 'SWIFTUI', 'NETWORKING', 'MULTI-PLATFORM'],
+    color: 'ice',
+    live: true,
+    domain: 'netsweepapp.com',
+    stack: ['Swift', 'SwiftUI', 'Network.framework', 'visionOS', 'Cloudflare'],
+    excerpt: 'A native network-scanning app for iPhone, iPad, Mac, and Vision Pro — consumer-simple on the surface, real network tooling underneath. Shipped with a three-page marketing site.',
+    body: `
+      <p><strong>NetSweep</strong> is a native Apple-platform network scanner: point it at your network and it surfaces what is actually on it. The design brief I gave myself was pure experience design — hide the complexity, surface the wonder. A scan should feel like magic; the packet-level reality should stay backstage.</p>
+
+      <div class="build-facts">
+        <div class="build-fact"><span class="k">Platforms</span><span class="v">iphone · ipad · mac · vision pro</span></div>
+        <div class="build-fact"><span class="k">Language</span><span class="v">swiftui</span></div>
+        <div class="build-fact"><span class="k">Site</span><span class="v">three pages</span></div>
+        <div class="build-fact"><span class="k">Deploy</span><span class="v">cloudflare pages</span></div>
+      </div>
+
+      <h3>the app</h3>
+      <p>A single codebase targeting iPhone, iPad, Mac, and Vision Pro — host discovery and network inspection presented through a clean, calm interface. The hard part of consumer software is never the feature list; it is making something technically dense feel obvious. That is the same instinct that makes a queue feel short or a ride feel safe.</p>
+
+      <h3>the launch surface</h3>
+      <p>NetSweep ships with a three-page marketing site (netsweepapp.com) deployed on Cloudflare Pages — a small, deliberate front door designed to make a technical tool feel approachable to a non-technical visitor.</p>
+
+      <blockquote>"More human than human" is a specification. So is "more obvious than obvious."</blockquote>
+
+      <div class="build-stack">
+        <span>Swift</span><span>SwiftUI</span><span>Network Framework</span><span>visionOS</span><span>Cloudflare Pages</span>
+      </div>
+
+      <div class="build-links">
+        <a href="https://netsweepapp.com" target="_blank" rel="noopener" class="ice">▸ Visit Site</a>
+      </div>
+    `
+  },
+  {
+    id: 'BUILD-003',
+    date: 'THIS SITE',
+    title: 'the nx-1324 archive',
+    tags: ['EXPERIENCE DESIGN', 'WEBGL', 'CANVAS', 'META'],
+    color: '',
+    live: true,
+    domain: 'the experience you are standing inside right now',
+    stack: ['Vanilla JS', 'Three.js', 'Canvas 2D', 'SVG', 'No Frameworks'],
+    excerpt: 'The site you are reading is itself a portfolio piece: a fully themed, in-universe immersive experience with rain, a custom cursor, a live operations console, a 3D model, and an interrogation game — all hand-built, no frameworks.',
+    body: `
+      <p>You are already inside the demo. This archive is not a template with my resume poured into it — it is a built <em>experience</em>, themed end to end around the world of <em>Blade Runner 2049</em>, and the most honest single artifact I can show an experience-design team.</p>
+
+      <h3>what's actually running</h3>
+      <p>Animated rain and dust on layered canvases. A custom SVG cursor with a particle trail. A live "operations uplink" console with a wireframe globe, spectrum analyzer, radar sweep, and synthetic syslog feed. A working virtual terminal with a fake filesystem. An interactive Voight-Kampff interrogation. A memory-reconstruction puzzle. A real-time 3D model of my workstation. Three full color themes, including a rain mode. All vanilla — no React, no build step.</p>
+
+      <blockquote>This is what I mean by "hide the technology." Everything here is deliberate. None of it announces itself. The effect arrives before the explanation does.</blockquote>
+
+      <h3>why it belongs in this list</h3>
+      <p>Imagineering builds places that tell you a story before you read a single sign. This site is my attempt at the same trick in a browser: atmosphere first, information second, and a consistent fiction holding it all together. The engineering underneath is real.</p>
+
+      <div class="build-stack">
+        <span>Vanilla JS</span><span>Canvas 2D</span><span>WebGL / Three.js</span><span>SVG</span><span>CSS Theming</span><span>Cloudflare Pages</span><span>No Frameworks</span>
+      </div>
+
+      <div class="build-links">
+        <a href="https://github.com/notChewy1324/cgSite" target="_blank" rel="noopener">▸ Source on GitHub</a>
+      </div>
+    `
+  }
+];
+
+/* ============================================================
    4. EVERYTHING ELSE — interaction layer
    ============================================================ */
 
@@ -392,6 +541,12 @@ window.MEMORY_FRAGMENTS = [
       const next = THEME_ORDER[(idx + 1) % THEME_ORDER.length];
       applyTheme(next);
     });
+  });
+
+  // Icon-only nav controls hide their labels on desktop — surface a tooltip
+  // from the aria-label so they stay discoverable.
+  document.querySelectorAll('.nav-right .theme-toggle, .nav-right .transition-toggle').forEach(b => {
+    if (!b.title && b.getAttribute('aria-label')) b.title = b.getAttribute('aria-label');
   });
   // Sync labels on first paint
   {
@@ -664,6 +819,46 @@ window.MEMORY_FRAGMENTS = [
     }
   }
 
+  /* -------- BUILDS EXHIBIT RENDER --------- */
+  const buildsGrid = document.getElementById('builds-grid');
+  if (buildsGrid) {
+    const builds = window.PROJECTS || [];
+    buildsGrid.innerHTML = builds.map((p, i) => {
+      const num = String(i + 1).padStart(2, '0');
+      const isFeature = i === 0;
+      const stackChips = (p.stack || []).map(s => `<span>${s}</span>`).join('');
+      const tagChips = p.tags.map(t => `<span class="tag">${t}</span>`).join('');
+      const metrics = isFeature && p.metrics
+        ? `<div class="build-exhibit-metrics">${p.metrics.map(m => `
+            <div class="bx-metric"><span class="v">${m.v}</span><span class="k">${m.k}</span></div>`).join('')}</div>`
+        : '';
+      return `
+      <article class="build-exhibit reveal ${p.color || ''}${isFeature ? ' feature' : ''}" data-build="${i}" data-hover>
+        <div class="build-exhibit-index">
+          <span class="bx-num">${num}</span>
+          <span class="bx-rule"></span>
+          <span class="bx-id">${p.id}</span>
+        </div>
+        <div class="build-exhibit-main">
+          <div class="build-exhibit-kicker">
+            <span class="bx-kick">${p.date}</span>
+            ${p.live ? '<span class="bx-live">● LIVE</span>' : ''}
+          </div>
+          <h3 class="build-exhibit-title">${p.title}</h3>
+          <div class="build-domain">${p.domain}</div>
+          <p class="build-exhibit-excerpt">${p.excerpt}</p>
+          ${metrics}
+          ${stackChips ? `<div class="build-exhibit-stack">${stackChips}</div>` : ''}
+          <div class="build-exhibit-foot">
+            <div class="build-exhibit-tags">${tagChips}</div>
+            <span class="build-exhibit-cta">Open Dossier ▸</span>
+          </div>
+        </div>
+      </article>`;
+    }).join('');
+    document.querySelectorAll('#builds-grid .reveal').forEach((el) => observer.observe(el));
+  }
+
   /* -------- MODAL --------- */
   const modal = document.getElementById('modal');
   const modalBody = document.getElementById('modal-body');
@@ -672,20 +867,58 @@ window.MEMORY_FRAGMENTS = [
   const modalMeta = document.getElementById('modal-meta');
   const modalClose = document.getElementById('modal-close');
 
-  function openModal(post) {
+  function openModal(post, metaLabel) {
     if (!modal) return;
     modalTitle.textContent = post.title;
     modalDate.textContent = post.date;
-    modalMeta.textContent = `ARCHIVE ENTRY ${post.id} // ${post.tags.join(' / ')}`;
+    modalMeta.textContent = `${metaLabel || 'ARCHIVE ENTRY'} ${post.id} // ${post.tags.join(' / ')}`;
     modalBody.innerHTML = post.body;
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
+    wireDocViewer(modalBody);
   }
 
   function closeModal() {
     if (!modal) return;
     modal.classList.remove('open');
     document.body.style.overflow = '';
+    // In case the pointer was over an embedded PDF when the modal closed,
+    // make sure the custom cursor comes back.
+    const a = document.getElementById('cursor-arrow');
+    const t = document.getElementById('cursor-trail-canvas');
+    if (a) a.classList.remove('hidden');
+    if (t) t.classList.remove('hidden');
+  }
+
+  // Tabbed PDF document viewer (used in the Bearcast dossier). Swaps one
+  // shared <iframe> between documents, keeps Open/Download in sync, and hides
+  // the custom cursor while the pointer is over the embedded PDF.
+  function wireDocViewer(scope) {
+    const viewer = scope.querySelector('[data-doc-viewer]');
+    if (!viewer) return;
+    const frame = viewer.querySelector('[data-doc-frame]');
+    const nameEl = viewer.querySelector('[data-doc-name]');
+    const metaEl = viewer.querySelector('[data-doc-meta]');
+    const openA = viewer.querySelector('[data-doc-open]');
+    const dlA = viewer.querySelector('[data-doc-download]');
+    viewer.querySelectorAll('.build-doc-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        viewer.querySelectorAll('.build-doc-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const src = tab.getAttribute('data-doc');
+        if (frame) frame.src = src;
+        if (openA) openA.href = src;
+        if (dlA) dlA.href = src;
+        if (nameEl) nameEl.textContent = src.split('/').pop();
+        if (metaEl && tab.dataset.meta) metaEl.textContent = tab.dataset.meta;
+      });
+    });
+    if (frame) {
+      const a = document.getElementById('cursor-arrow');
+      const t = document.getElementById('cursor-trail-canvas');
+      frame.addEventListener('mouseenter', () => { if (a) a.classList.add('hidden'); if (t) t.classList.add('hidden'); });
+      frame.addEventListener('mouseleave', () => { if (a) a.classList.remove('hidden'); if (t) t.classList.remove('hidden'); });
+    }
   }
 
   if (modalClose) modalClose.addEventListener('click', closeModal);
@@ -693,10 +926,17 @@ window.MEMORY_FRAGMENTS = [
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
   document.addEventListener('click', (e) => {
-    const card = e.target.closest('[data-post]');
-    if (!card) return;
-    const idx = parseInt(card.dataset.post, 10);
-    if (window.BLOG_POSTS && window.BLOG_POSTS[idx]) openModal(window.BLOG_POSTS[idx]);
+    const postCard = e.target.closest('[data-post]');
+    if (postCard) {
+      const idx = parseInt(postCard.dataset.post, 10);
+      if (window.BLOG_POSTS && window.BLOG_POSTS[idx]) openModal(window.BLOG_POSTS[idx], 'ARCHIVE ENTRY');
+      return;
+    }
+    const buildCard = e.target.closest('[data-build]');
+    if (buildCard) {
+      const idx = parseInt(buildCard.dataset.build, 10);
+      if (window.PROJECTS && window.PROJECTS[idx]) openModal(window.PROJECTS[idx], 'BUILD DOSSIER');
+    }
   });
 
   /* -------- NAV CLOCK --------- */
@@ -1648,77 +1888,111 @@ do not retry. retry attempts are logged.`,
   const uplinkRoot = document.getElementById('uplink-shell');
   if (uplinkRoot) {
 
-    /* ---- ROTATING GLOBE with ping rings ---- */
+    /* ---- CYBERPUNK EARTH — dotted landmasses, glowing coastlines, atmosphere ---- */
     const mapSvg = uplinkRoot.querySelector('#uplink-map-svg');
     if (mapSvg) {
       const ns = 'http://www.w3.org/2000/svg';
       mapSvg.setAttribute('viewBox', '0 0 800 500');
-      mapSvg.style.color = 'var(--accent)';
+      const el = (tag, attrs) => {
+        const n = document.createElementNS(ns, tag);
+        if (attrs) for (const k in attrs) n.setAttribute(k, attrs[k]);
+        return n;
+      };
 
       const CX = 400, CY = 250, R = 200;
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      // Static layer: outer ring, latitude lines (drawn in static space)
-      const outer = document.createElementNS(ns, 'circle');
-      outer.setAttribute('cx', CX); outer.setAttribute('cy', CY);
-      outer.setAttribute('r', R);
-      outer.setAttribute('fill', 'none');
-      outer.setAttribute('stroke', 'var(--accent)');
-      outer.setAttribute('stroke-width', '1');
-      outer.setAttribute('opacity', '0.6');
-      mapSvg.appendChild(outer);
+      // ---- defs: ocean gradient + soft glow ----
+      const defs = el('defs');
+      const grad = el('radialGradient', { id: 'globe-ocean', cx: '38%', cy: '32%', r: '75%' });
+      const s0 = el('stop', { offset: '0%' });  s0.style.stopColor = 'var(--globe-ocean-core)';
+      const s1 = el('stop', { offset: '70%' });  s1.style.stopColor = 'var(--globe-ocean-edge)';
+      const s2 = el('stop', { offset: '100%' }); s2.style.stopColor = 'var(--globe-ocean-edge)';
+      grad.append(s0, s1, s2);
+      const clip = el('clipPath', { id: 'globe-clip' });
+      clip.appendChild(el('circle', { cx: CX, cy: CY, r: R }));
+      defs.append(grad, clip);
+      mapSvg.appendChild(defs);
 
-      // Glow halo
-      const halo = document.createElementNS(ns, 'circle');
-      halo.setAttribute('cx', CX); halo.setAttribute('cy', CY);
-      halo.setAttribute('r', R + 8);
-      halo.setAttribute('fill', 'none');
-      halo.setAttribute('stroke', 'var(--accent)');
-      halo.setAttribute('stroke-width', '0.6');
-      halo.setAttribute('opacity', '0.25');
-      halo.style.filter = 'blur(3px)';
+      // ---- atmosphere halo (outer glow) ----
+      const halo = el('circle', { cx: CX, cy: CY, r: R + 12, fill: 'none', stroke: 'var(--globe-rim)', 'stroke-width': '2', opacity: '0.4' });
+      halo.style.filter = 'blur(6px)';
       mapSvg.appendChild(halo);
+      const halo2 = el('circle', { cx: CX, cy: CY, r: R + 3, fill: 'none', stroke: 'var(--globe-rim)', 'stroke-width': '1', opacity: '0.55' });
+      mapSvg.appendChild(halo2);
 
-      // Inner shadow ring for depth
-      const shadow = document.createElementNS(ns, 'circle');
-      shadow.setAttribute('cx', CX); shadow.setAttribute('cy', CY);
-      shadow.setAttribute('r', R - 1);
-      shadow.setAttribute('fill', 'rgba(5, 6, 8, 0.45)');
-      mapSvg.appendChild(shadow);
+      // ---- ocean disc ----
+      mapSvg.appendChild(el('circle', { cx: CX, cy: CY, r: R, fill: 'url(#globe-ocean)' }));
 
-      // Latitude + longitude lines are drawn per-frame in renderFrame() so they
-      // rotate consistently with the tilted globe.
+      // a faint inner limb shade for spherical depth
+      const limb = el('circle', { cx: CX, cy: CY, r: R, fill: 'none', stroke: 'var(--globe-rim)', 'stroke-width': '14', opacity: '0.10' });
+      limb.style.filter = 'blur(8px)';
+      mapSvg.appendChild(limb);
 
-      // Dynamic layer — rotating dots and cities
-      const dynamicLayer = document.createElementNS(ns, 'g');
+      // ---- dynamic, clipped to the disc ----
+      const dynamicLayer = el('g', { 'clip-path': 'url(#globe-clip)' });
       mapSvg.appendChild(dynamicLayer);
+      const gGrid = el('g'), gSweep = el('g'), gLand = el('g'), gCoast = el('g'), gCity = el('g'), gPing = el('g');
+      gCoast.style.filter = 'drop-shadow(0 0 1.5px var(--globe-coast))';
+      gCity.style.filter = 'drop-shadow(0 0 4px var(--globe-land))';
+      dynamicLayer.append(gGrid, gSweep, gLand, gCoast, gCity, gPing);
 
-      // Generate continent dots in lat/lon space.
-      // Approximate continent centers + scatter clouds.
-      function pointInRect(latMin, latMax, lonMin, lonMax) {
-        return {
-          lat: latMin + Math.random() * (latMax - latMin),
-          lon: lonMin + Math.random() * (lonMax - lonMin)
-        };
+      // ---- simplified continent outlines [lon, lat] ----
+      const LAND = [
+        // North America
+        [[-168,65],[-162,70],[-140,70],[-125,72],[-100,73],[-82,73],[-62,66],[-64,60],[-56,52],[-66,46],[-70,43],[-74,40],[-76,35],[-81,31],[-80,25],[-84,30],[-90,29],[-97,28],[-97,22],[-105,21],[-106,24],[-110,24],[-114,29],[-117,33],[-122,37],[-124,42],[-124,48],[-130,55],[-138,58],[-148,60],[-156,58],[-164,60],[-168,65]],
+        // Central America
+        [[-97,18],[-92,15],[-87,16],[-83,11],[-79,9],[-77,8],[-82,14],[-88,17],[-93,18],[-97,18]],
+        // South America
+        [[-78,9],[-72,11],[-62,10],[-52,5],[-50,0],[-44,-2],[-35,-6],[-38,-13],[-39,-18],[-48,-25],[-48,-28],[-58,-35],[-62,-40],[-66,-45],[-72,-50],[-75,-53],[-74,-46],[-72,-40],[-71,-30],[-71,-20],[-76,-14],[-81,-6],[-80,2],[-78,9]],
+        // Greenland
+        [[-46,60],[-30,68],[-22,70],[-20,76],[-30,82],[-45,83],[-58,80],[-54,72],[-50,66],[-46,60]],
+        // Europe
+        [[-9,43],[-2,36],[3,40],[6,44],[12,45],[18,42],[26,40],[28,45],[40,47],[42,52],[38,58],[30,62],[26,66],[20,69],[14,67],[10,60],[6,54],[2,51],[-4,49],[-9,43]],
+        // United Kingdom
+        [[-5,50],[-3,53],[-3,58],[-6,58],[-8,55],[-6,51],[-5,50]],
+        // Africa
+        [[-16,15],[-17,21],[-10,30],[-5,36],[1,37],[10,34],[11,33],[20,32],[25,32],[32,31],[34,28],[35,22],[37,18],[43,12],[51,12],[48,5],[42,0],[40,-8],[40,-16],[35,-22],[27,-34],[20,-35],[18,-30],[15,-22],[13,-15],[12,-6],[9,2],[5,5],[-4,5],[-8,4],[-12,8],[-16,15]],
+        // Madagascar
+        [[43,-25],[45,-22],[49,-15],[50,-18],[48,-23],[45,-25],[43,-25]],
+        // Asia
+        [[28,40],[35,37],[36,33],[40,32],[48,30],[57,25],[60,25],[60,28],[55,32],[52,40],[55,45],[58,55],[60,66],[68,73],[78,73],[100,77],[125,73],[140,72],[160,69],[170,66],[178,68],[170,60],[160,61],[155,57],[143,53],[140,46],[135,44],[130,42],[122,40],[121,33],[122,30],[117,24],[110,21],[108,16],[106,10],[104,8],[100,6],[99,10],[98,16],[94,16],[90,22],[88,21],[80,13],[77,8],[73,18],[70,22],[67,24],[62,25],[57,28],[48,30],[45,36],[40,38],[34,37],[30,38],[28,40]],
+        // Japan
+        [[130,31],[133,34],[138,35],[141,40],[142,44],[140,42],[136,36],[132,33],[130,31]],
+        // Southeast Asia / Indonesia
+        [[95,5],[100,2],[105,-2],[112,-7],[120,-9],[115,-6],[108,-5],[102,0],[97,4],[95,5]],
+        [[109,2],[115,4],[118,1],[117,-3],[112,-3],[109,1],[109,2]],
+        [[120,6],[123,9],[125,13],[126,17],[124,14],[121,11],[120,8],[120,6]],
+        // Australia
+        [[114,-22],[122,-18],[129,-15],[133,-12],[137,-11],[142,-11],[145,-15],[147,-20],[153,-26],[153,-32],[150,-37],[146,-39],[140,-38],[134,-35],[129,-32],[124,-34],[118,-35],[114,-31],[113,-26],[114,-22]],
+        // New Zealand
+        [[167,-46],[170,-44],[173,-41],[175,-37],[178,-38],[174,-41],[171,-44],[167,-46]]
+      ];
+
+      // point-in-polygon (ray casting) in lon/lat
+      function pip(lon, lat, poly) {
+        let inside = false;
+        for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+          const xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1];
+          if (((yi > lat) !== (yj > lat)) && (lon < (xj - xi) * (lat - yi) / (yj - yi) + xi)) inside = !inside;
+        }
+        return inside;
       }
-      const continents = [];
-      // North America
-      for (let i = 0; i < 110; i++) continents.push(pointInRect(20, 60, -130, -65));
-      // South America
-      for (let i = 0; i < 60; i++) continents.push(pointInRect(-50, 10, -75, -40));
-      // Europe
-      for (let i = 0; i < 55; i++) continents.push(pointInRect(38, 65, -10, 35));
-      // Africa
-      for (let i = 0; i < 95; i++) continents.push(pointInRect(-32, 32, -15, 45));
-      // Asia
-      for (let i = 0; i < 150; i++) continents.push(pointInRect(15, 65, 40, 140));
-      // Southeast Asia / Indonesia
-      for (let i = 0; i < 35; i++) continents.push(pointInRect(-10, 18, 95, 145));
-      // Australia
-      for (let i = 0; i < 45; i++) continents.push(pointInRect(-38, -12, 113, 153));
-      // Greenland
-      for (let i = 0; i < 18; i++) continents.push(pointInRect(60, 80, -50, -25));
 
-      // Ping cities (lat, lon)
+      // sample a land-dot grid once (jittered so it doesn't look like a grid)
+      const landDots = [];
+      for (let lat = -56; lat <= 80; lat += 4) {
+        for (let lon = -180; lon < 180; lon += 4) {
+          for (let k = 0; k < LAND.length; k++) {
+            if (pip(lon, lat, LAND[k])) {
+              landDots.push({ lat: lat + (Math.random() - 0.5) * 2.4, lon: lon + (Math.random() - 0.5) * 2.4 });
+              break;
+            }
+          }
+        }
+      }
+
+      // ping cities (lat, lon)
       const pingSites = [
         { lat: 39.10, lon: -84.51, name: 'CINCINNATI' },
         { lat: 51.50, lon: -0.13,  name: 'LONDON' },
@@ -1732,193 +2006,124 @@ do not retry. retry attempts are logged.`,
         { lat: 55.75, lon: 37.62,  name: 'MOSCOW' }
       ];
 
-      // Axial tilt (radians) — gives the globe a sense of orientation so
-      // rotation actually reads visually.
       const TILT = 23 * Math.PI / 180;
-      const COS_T = Math.cos(TILT);
-      const SIN_T = Math.sin(TILT);
+      const COS_T = Math.cos(TILT), SIN_T = Math.sin(TILT);
 
-      // Project a (lat, lon) on a sphere rotated by yaw (radians) around the
-      // local Y axis (polar axis), then tilted by TILT around the screen X axis.
-      // Returns { x, y, z, visible } where z>0 means front-of-sphere.
       function project(lat, lon, yaw) {
         const phi = lat * Math.PI / 180;
         const lambda = lon * Math.PI / 180 + yaw;
-        // Initial position on unit sphere
         let x = Math.cos(phi) * Math.sin(lambda);
         let y = Math.sin(phi);
         let z = Math.cos(phi) * Math.cos(lambda);
-        // Apply X-axis tilt: rotate (y, z) by TILT
         const yt = y * COS_T - z * SIN_T;
         const zt = y * SIN_T + z * COS_T;
         y = yt; z = zt;
-        return {
-          x: CX + x * R,
-          y: CY - y * R, // y inverted for screen coords (north up)
-          z,
-          visible: z > -0.05
+        return { x: CX + x * R, y: CY - y * R, z, visible: z > -0.02 };
+      }
+
+      // draw a projected polyline path (great-circle sampled), breaking at the limb
+      function drawArc(group, samplePts, yaw, stroke, width, baseOp) {
+        let pts = [];
+        const flush = () => {
+          if (pts.length > 1) {
+            group.appendChild(el('polyline', { points: pts.join(' '), fill: 'none', stroke, 'stroke-width': width, 'stroke-linejoin': 'round', opacity: baseOp }));
+          }
+          pts = [];
         };
+        for (const [lat, lon] of samplePts) {
+          const p = project(lat, lon, yaw);
+          if (p.visible) pts.push(`${p.x.toFixed(1)},${p.y.toFixed(1)}`); else flush();
+        }
+        flush();
       }
 
-      let yaw = 0;
-      // Persist active ping rings between frames so they keep animating
+      let yaw = 0, sweepLon = -180;
       const activePings = [];
-
       function spawnPing() {
-        const site = pingSites[Math.floor(Math.random() * pingSites.length)];
-        activePings.push({
-          lat: site.lat, lon: site.lon,
-          life: 1, r: 3, op: 1
-        });
+        const s = pingSites[Math.floor(Math.random() * pingSites.length)];
+        activePings.push({ lat: s.lat, lon: s.lon, r: 3, op: 1 });
       }
-      setInterval(spawnPing, 1100);
+      if (!reduceMotion) setInterval(spawnPing, 1100);
+
+      const LAT_LINES = [-60, -30, 0, 30, 60];
+      const MERIDIANS = [-150, -120, -90, -60, -30, 0, 30, 60, 90, 120, 150, 180];
 
       function renderFrame() {
-        yaw += 0.0024; // slow continuous rotation (~ one full turn / 44s)
-        // Clear dynamic layer
-        while (dynamicLayer.firstChild) dynamicLayer.removeChild(dynamicLayer.firstChild);
+        [gGrid, gSweep, gLand, gCoast, gCity, gPing].forEach(g => { while (g.firstChild) g.removeChild(g.firstChild); });
 
-        // 0a) Latitude lines — projected per-frame so they tilt with the globe.
-        // Drawn first so they sit behind everything else.
-        const latFrag = document.createDocumentFragment();
-        const LAT_LINES = [-60, -30, 0, 30, 60];
+        // 1) graticule — latitude rings + meridians
         for (const lat of LAT_LINES) {
           const pts = [];
-          for (let lon = -180; lon <= 180; lon += 4) {
-            const proj = project(lat, lon, yaw);
-            if (proj.visible) {
-              pts.push(`${proj.x.toFixed(2)},${proj.y.toFixed(2)}`);
-            } else if (pts.length > 0) {
-              const poly = document.createElementNS(ns, 'polyline');
-              poly.setAttribute('points', pts.join(' '));
-              poly.setAttribute('fill', 'none');
-              poly.setAttribute('stroke', 'var(--accent)');
-              poly.setAttribute('stroke-width', lat === 0 ? '0.6' : '0.4');
-              poly.setAttribute('opacity', lat === 0 ? '0.32' : '0.18');
-              latFrag.appendChild(poly);
-              pts.length = 0;
-            }
-          }
-          if (pts.length > 0) {
-            const poly = document.createElementNS(ns, 'polyline');
-            poly.setAttribute('points', pts.join(' '));
-            poly.setAttribute('fill', 'none');
-            poly.setAttribute('stroke', 'var(--accent)');
-            poly.setAttribute('stroke-width', lat === 0 ? '0.6' : '0.4');
-            poly.setAttribute('opacity', lat === 0 ? '0.32' : '0.18');
-            latFrag.appendChild(poly);
-          }
+          for (let lon = -180; lon <= 180; lon += 4) pts.push([lat, lon]);
+          drawArc(gGrid, pts, yaw, 'var(--globe-grid)', lat === 0 ? '0.7' : '0.4', lat === 0 ? '0.34' : '0.16');
         }
-        dynamicLayer.appendChild(latFrag);
-
-        // 0) Rotating longitude meridians — projected great-circle arcs
-        // Drawn first so they sit behind continent dots and cities.
-        const meridianFrag = document.createDocumentFragment();
-        const MERIDIAN_LONS = [-150, -120, -90, -60, -30, 0, 30, 60, 90, 120, 150, 180];
-        for (const lon of MERIDIAN_LONS) {
+        for (const lon of MERIDIANS) {
           const pts = [];
-          // Sample the meridian at fine lat steps
-          for (let lat = -90; lat <= 90; lat += 4) {
-            const proj = project(lat, lon, yaw);
-            if (proj.visible) {
-              pts.push(`${proj.x.toFixed(2)},${proj.y.toFixed(2)}`);
-            } else if (pts.length > 0) {
-              // Break the polyline when meridian crosses to back side
-              const poly = document.createElementNS(ns, 'polyline');
-              poly.setAttribute('points', pts.join(' '));
-              poly.setAttribute('fill', 'none');
-              poly.setAttribute('stroke', 'var(--accent)');
-              poly.setAttribute('stroke-width', '0.4');
-              poly.setAttribute('opacity', '0.18');
-              meridianFrag.appendChild(poly);
-              pts.length = 0;
-            }
-          }
-          if (pts.length > 0) {
-            const poly = document.createElementNS(ns, 'polyline');
-            poly.setAttribute('points', pts.join(' '));
-            poly.setAttribute('fill', 'none');
-            poly.setAttribute('stroke', 'var(--accent)');
-            poly.setAttribute('stroke-width', '0.4');
-            poly.setAttribute('opacity', '0.18');
-            meridianFrag.appendChild(poly);
-          }
+          for (let lat = -88; lat <= 88; lat += 4) pts.push([lat, lon]);
+          drawArc(gGrid, pts, yaw, 'var(--globe-grid)', '0.4', '0.16');
         }
-        dynamicLayer.appendChild(meridianFrag);
 
-        // 1) continent dots
-        const dotFrag = document.createDocumentFragment();
-        for (const p of continents) {
-          const proj = project(p.lat, p.lon, yaw);
-          if (!proj.visible) continue;
-          // Depth-based opacity: brighter near front, dimmer near limb
-          const opacity = 0.15 + Math.max(0, proj.z) * 0.55;
-          const c = document.createElementNS(ns, 'circle');
-          c.setAttribute('cx', proj.x.toFixed(2));
-          c.setAttribute('cy', proj.y.toFixed(2));
-          c.setAttribute('r', '1.4');
-          c.setAttribute('fill', 'currentColor');
-          c.setAttribute('opacity', opacity.toFixed(2));
-          dotFrag.appendChild(c);
+        // 2) scanning meridian (sweep)
+        if (!reduceMotion) {
+          const sw = [];
+          for (let lat = -88; lat <= 88; lat += 3) sw.push([lat, sweepLon]);
+          drawArc(gSweep, sw, yaw, 'var(--globe-coast)', '1.6', '0.5');
         }
-        dynamicLayer.appendChild(dotFrag);
 
-        // 2) city markers + labels
-        const cityFrag = document.createDocumentFragment();
+        // 3) land dots
+        const frag = document.createDocumentFragment();
+        for (const d of landDots) {
+          const p = project(d.lat, d.lon, yaw);
+          if (!p.visible) continue;
+          const op = 0.18 + Math.max(0, p.z) * 0.6;
+          frag.appendChild(el('circle', { cx: p.x.toFixed(1), cy: p.y.toFixed(1), r: '1.5', fill: 'var(--globe-land)', opacity: op.toFixed(2) }));
+        }
+        gLand.appendChild(frag);
+
+        // 4) glowing coastlines
+        for (const poly of LAND) {
+          const closed = poly.concat([poly[0]]).map(([lo, la]) => [la, lo]); // [lat,lon]
+          drawArc(gCoast, closed, yaw, 'var(--globe-coast)', '0.9', '0.85');
+        }
+
+        // 5) cities + labels
         for (const s of pingSites) {
-          const proj = project(s.lat, s.lon, yaw);
-          if (!proj.visible) continue;
-          const opacity = 0.4 + Math.max(0, proj.z) * 0.6;
-
-          const dot = document.createElementNS(ns, 'circle');
-          dot.setAttribute('cx', proj.x.toFixed(2));
-          dot.setAttribute('cy', proj.y.toFixed(2));
-          dot.setAttribute('r', '3');
-          dot.setAttribute('fill', 'var(--accent-3)');
-          dot.setAttribute('opacity', opacity.toFixed(2));
-          dot.style.filter = 'drop-shadow(0 0 4px var(--accent-3))';
-          cityFrag.appendChild(dot);
-
-          // Only label cities near the front
-          if (proj.z > 0.35) {
-            const label = document.createElementNS(ns, 'text');
-            label.setAttribute('x', (proj.x + 8).toFixed(2));
-            label.setAttribute('y', (proj.y + 4).toFixed(2));
-            label.setAttribute('font-family', 'JetBrains Mono, monospace');
-            label.setAttribute('font-size', '9');
-            label.setAttribute('fill', 'var(--accent-2)');
-            label.setAttribute('letter-spacing', '0.1em');
-            label.setAttribute('opacity', (opacity * 0.9).toFixed(2));
+          const p = project(s.lat, s.lon, yaw);
+          if (!p.visible) continue;
+          const op = 0.4 + Math.max(0, p.z) * 0.6;
+          gCity.appendChild(el('circle', { cx: p.x.toFixed(1), cy: p.y.toFixed(1), r: '2.6', fill: 'var(--globe-land)', opacity: op.toFixed(2) }));
+          if (p.z > 0.35) {
+            const label = el('text', { x: (p.x + 7).toFixed(1), y: (p.y + 3.5).toFixed(1), 'font-family': 'JetBrains Mono, monospace', 'font-size': '9', fill: 'var(--globe-coast)', 'letter-spacing': '0.1em', opacity: (op * 0.9).toFixed(2) });
             label.textContent = s.name;
-            cityFrag.appendChild(label);
+            gCity.appendChild(label);
           }
         }
-        dynamicLayer.appendChild(cityFrag);
 
-        // 3) ping rings — only when their city is on the visible side
-        const pingFrag = document.createDocumentFragment();
+        // 6) ping rings
         for (let i = activePings.length - 1; i >= 0; i--) {
-          const p = activePings[i];
-          p.r += 0.8;
-          p.op -= 0.012;
-          if (p.op <= 0) { activePings.splice(i, 1); continue; }
-          const proj = project(p.lat, p.lon, yaw);
-          if (!proj.visible) continue;
-          const ring = document.createElementNS(ns, 'circle');
-          ring.setAttribute('cx', proj.x.toFixed(2));
-          ring.setAttribute('cy', proj.y.toFixed(2));
-          ring.setAttribute('r', p.r.toFixed(1));
-          ring.setAttribute('fill', 'none');
-          ring.setAttribute('stroke', 'var(--accent-2)');
-          ring.setAttribute('stroke-width', '1.4');
-          ring.setAttribute('opacity', (p.op * Math.max(0.2, proj.z)).toFixed(2));
-          pingFrag.appendChild(ring);
+          const pg = activePings[i];
+          pg.r += 0.9; pg.op -= 0.012;
+          if (pg.op <= 0) { activePings.splice(i, 1); continue; }
+          const p = project(pg.lat, pg.lon, yaw);
+          if (!p.visible) continue;
+          gPing.appendChild(el('circle', { cx: p.x.toFixed(1), cy: p.y.toFixed(1), r: pg.r.toFixed(1), fill: 'none', stroke: 'var(--globe-coast)', 'stroke-width': '1.4', opacity: (pg.op * Math.max(0.2, p.z)).toFixed(2) }));
         }
-        dynamicLayer.appendChild(pingFrag);
-
-        requestAnimationFrame(renderFrame);
       }
-      renderFrame();
+
+      if (reduceMotion) {
+        renderFrame();
+      } else {
+        let last = 0;
+        function loop(ts) {
+          requestAnimationFrame(loop);
+          if (ts - last < 33) return;
+          last = ts;
+          yaw += 0.006;
+          sweepLon += 2.2; if (sweepLon > 180) sweepLon -= 360;
+          renderFrame();
+        }
+        requestAnimationFrame(loop);
+      }
     }
 
     /* ---- TELEMETRY FEED (scrolling) ---- */
@@ -2176,339 +2381,432 @@ do not retry. retry attempts are logged.`,
   }
 
   /* ============================================================
-     PC SCHEMATIC — wireframe technical diagram (uses page)
-     Draws a side-3Q view of a tower PC with labeled callouts.
+     PC MODEL — interactive 3D workstation (uses page)
+     Real-time Three.js tower you can orbit, zoom, and inspect.
+     Hovering a component highlights its matching spec card (and
+     vice-versa). Custom orbit/zoom — no OrbitControls dependency,
+     so nothing extra has to load for it to work.
      ============================================================ */
-  const pcSvg = document.getElementById('pc-svg');
-  if (pcSvg) {
-    const ns = 'http://www.w3.org/2000/svg';
+  const pcCanvas = document.getElementById('pc-canvas');
+  if (pcCanvas && typeof THREE !== 'undefined') {
+    const stage   = pcCanvas.closest('.pc-schematic-stage');
+    const loading = stage ? stage.querySelector('.pc-loading') : null;
+    const readout = stage ? stage.querySelector('.pc-readout') : null;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Helpers
-    function el(name, attrs = {}, parent = null) {
-      const node = document.createElementNS(ns, name);
-      for (const k in attrs) node.setAttribute(k, attrs[k]);
-      if (parent) parent.appendChild(node);
-      return node;
+    // --- resolve themed colours via a probe element (var() always resolves on `color`) ---
+    const probe = document.createElement('span');
+    probe.style.display = 'none';
+    document.body.appendChild(probe);
+    function cssColor(varName, fallback) {
+      probe.style.color = '';
+      probe.style.color = `var(${varName})`;
+      const c = getComputedStyle(probe).color;
+      return (c && c.startsWith('rgb')) ? c : (fallback || '#6ba3d8');
     }
-
-    // Layers (drawing order matters)
-    const gMonitor   = el('g', { class: 'pc-component', 'data-part': 'monitor' }, pcSvg);
-    const gCase      = el('g', { class: 'pc-component', 'data-part': 'case' },    pcSvg);
-    const gInternals = el('g', { class: 'pc-component', 'data-part': 'internals'}, pcSvg);
-    const gCallouts  = el('g', {},                                                 pcSvg);
-
-    /* ---------- Monitor (right side of stage) ---------- */
-    // Stand base
-    el('path', {
-      d: 'M 760 540 L 920 540 L 900 558 L 780 558 Z',
-      class: 'pc-fill'
-    }, gMonitor);
-    // Stand neck
-    el('path', {
-      d: 'M 830 540 L 850 540 L 855 470 L 825 470 Z',
-      class: 'pc-fill'
-    }, gMonitor);
-    // Monitor bezel
-    el('rect', {
-      x: 600, y: 200, width: 320, height: 220,
-      class: 'pc-fill', rx: 4
-    }, gMonitor);
-    // Inner screen
-    el('rect', {
-      x: 612, y: 212, width: 296, height: 196,
-      class: 'pc-screen', rx: 2
-    }, gMonitor);
-    // Connection between bezel and stand neck
-    el('path', {
-      d: 'M 760 420 L 760 470 L 855 470 L 855 420',
-      class: 'pc-edge-dim'
-    }, gMonitor);
-    // Screen pixel grid (subtle)
-    for (let y = 220; y < 405; y += 14) {
-      el('line', { x1: 612, y1: y, x2: 908, y2: y, class: 'pc-edge-dim', opacity: 0.15 }, gMonitor);
+    const palette = {};
+    function loadPalette() {
+      palette.accent  = new THREE.Color(cssColor('--accent',   '#6ba3d8'));
+      palette.accent2 = new THREE.Color(cssColor('--accent-2', '#2dd4bf'));
+      palette.accent3 = new THREE.Color(cssColor('--accent-3', '#b8d6ed'));
+      palette.bg      = new THREE.Color(cssColor('--bg',        '#050608'));
+      palette.elev    = new THREE.Color(cssColor('--bg-elev',   '#0a0d12'));
     }
-    // 4K logo on screen
-    el('text', {
-      x: 760, y: 308,
-      'text-anchor': 'middle',
-      'font-family': 'Major Mono Display, monospace',
-      'font-size': 38,
-      fill: 'var(--accent-3)',
-      opacity: 0.8,
-      'letter-spacing': '0.1em'
-    }, gMonitor).textContent = '4k';
-    el('text', {
-      x: 760, y: 332,
-      'text-anchor': 'middle',
-      'font-family': 'JetBrains Mono, monospace',
-      'font-size': 9,
-      fill: 'var(--accent-2)',
-      'letter-spacing': '0.32em'
-    }, gMonitor).textContent = 'DELL 27" / 60HZ';
+    loadPalette();
 
-    /* ---------- Tower case (left side of stage) ---------- */
-    // Outer shell (3Q view — front face + side face slanted right)
-    // Front face
-    el('path', {
-      d: 'M 200 130 L 420 130 L 420 580 L 200 580 Z',
-      class: 'pc-fill'
-    }, gCase);
-    // Side face (perspective)
-    el('path', {
-      d: 'M 420 130 L 470 105 L 470 555 L 420 580 Z',
-      class: 'pc-fill',
-      opacity: 0.85
-    }, gCase);
-    // Top face
-    el('path', {
-      d: 'M 200 130 L 250 105 L 470 105 L 420 130 Z',
-      class: 'pc-fill',
-      opacity: 0.7
-    }, gCase);
+    // --- scene / camera / renderer ---
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(palette.bg.getHex(), 0.018);
 
-    // Tempered-glass side panel (shows internals through it)
-    el('rect', {
-      x: 215, y: 145, width: 195, height: 420,
-      fill: 'color-mix(in srgb, var(--accent-3) 6%, transparent)',
-      stroke: 'var(--accent)',
-      'stroke-width': 1,
-      opacity: 0.85
-    }, gCase);
+    const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 200);
+    const HOME = { yaw: -0.62, pitch: 0.28, dist: 27 };
+    const view = { yaw: HOME.yaw, pitch: HOME.pitch, dist: HOME.dist };
+    const target = new THREE.Vector3(0, 0.5, 0);
 
-    // Top vent slats
-    for (let i = 0; i < 8; i++) {
-      el('line', {
-        x1: 215 + i * 22, y1: 116,
-        x2: 235 + i * 22, y2: 105,
-        class: 'pc-vent'
-      }, gCase);
-    }
-    el('text', {
-      x: 320, y: 99,
-      'text-anchor': 'middle',
-      class: 'pc-callout-sub'
-    }, gCase).textContent = 'TOP MESH // INTAKE';
+    const renderer = new THREE.WebGLRenderer({ canvas: pcCanvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
-    // Front I/O strip (small)
-    el('rect', { x: 215, y: 555, width: 60, height: 14, class: 'pc-edge' }, gCase);
-    // Power button (with LED)
-    el('circle', { cx: 230, cy: 562, r: 3.5, class: 'pc-edge' }, gCase);
-    el('circle', { cx: 230, cy: 562, r: 1.6, class: 'pc-led' }, gCase);
-    el('circle', { cx: 230, cy: 562, r: 5,   class: 'pc-led-glow' }, gCase);
-    // USB ports
-    el('rect', { x: 240, y: 559, width: 8, height: 6, class: 'pc-edge' }, gCase);
-    el('rect', { x: 252, y: 559, width: 8, height: 6, class: 'pc-edge' }, gCase);
-    el('rect', { x: 264, y: 559, width: 6, height: 6, class: 'pc-edge' }, gCase);
+    // --- lights ---
+    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+    const key = new THREE.DirectionalLight(palette.accent3.getHex(), 0.9);
+    key.position.set(6, 10, 8); scene.add(key);
+    const rim = new THREE.DirectionalLight(palette.accent.getHex(), 0.7);
+    rim.position.set(-8, 4, -6); scene.add(rim);
+    const fill = new THREE.PointLight(palette.accent2.getHex(), 0.8, 40);
+    fill.position.set(0, 2, 6); scene.add(fill);
 
-    /* ---------- Internals (visible through glass) ---------- */
-    // Motherboard plate
-    el('rect', {
-      x: 230, y: 165, width: 165, height: 290,
-      class: 'pc-edge-dim'
-    }, gInternals);
+    // --- model root (everything rotates together) ---
+    const root = new THREE.Group();
+    scene.add(root);
 
-    // CPU + AIO pump block (top-center of mobo)
-    el('rect', {
-      x: 280, y: 230, width: 64, height: 64,
-      class: 'pc-edge'
-    }, gInternals);
-    el('circle', { cx: 312, cy: 262, r: 22, class: 'pc-edge' }, gInternals);
-    el('circle', { cx: 312, cy: 262, r: 14, class: 'pc-edge-dim' }, gInternals);
-    el('text', {
-      x: 312, y: 266,
-      'text-anchor': 'middle',
-      'font-family': 'JetBrains Mono, monospace',
-      'font-size': 9,
-      fill: 'var(--accent-2)',
-      'letter-spacing': '0.18em'
-    }, gInternals).textContent = 'CPU';
-
-    // AIO tubes (curved, going up to radiator at top)
-    el('path', {
-      d: 'M 300 232 C 295 200 240 175 245 155',
-      class: 'pc-aio-tube'
-    }, gInternals);
-    el('path', {
-      d: 'M 324 232 C 330 200 380 175 380 155',
-      class: 'pc-aio-tube'
-    }, gInternals);
-    // AIO radiator (top of case)
-    el('rect', {
-      x: 245, y: 145, width: 135, height: 16,
-      class: 'pc-edge'
-    }, gInternals);
-    // Radiator fin lines
-    for (let i = 0; i < 25; i++) {
-      el('line', {
-        x1: 248 + i * 5.2, y1: 147,
-        x2: 248 + i * 5.2, y2: 159,
-        class: 'pc-vent'
-      }, gInternals);
-    }
-    // Coolant flow indicator (decorative dashes following tube path)
-    el('path', {
-      d: 'M 302 234 C 297 202 242 177 247 157',
-      class: 'pc-coolant'
-    }, gInternals);
-
-    // RAM sticks (right of CPU)
-    for (let i = 0; i < 4; i++) {
-      el('rect', {
-        x: 354 + i * 8, y: 215, width: 5, height: 80,
-        class: 'pc-edge'
-      }, gInternals);
-    }
-
-    // GPU (bottom horizontal slot — large block)
-    el('rect', {
-      x: 240, y: 350, width: 145, height: 50,
-      class: 'pc-edge'
-    }, gInternals);
-    // GPU fans
-    el('circle', { cx: 268, cy: 375, r: 16, class: 'pc-edge' }, gInternals);
-    el('circle', { cx: 313, cy: 375, r: 16, class: 'pc-edge' }, gInternals);
-    el('circle', { cx: 358, cy: 375, r: 16, class: 'pc-edge' }, gInternals);
-    // GPU fan blade hints
-    [268, 313, 358].forEach(cx => {
-      for (let a = 0; a < 6; a++) {
-        const ang = (a / 6) * Math.PI * 2;
-        el('line', {
-          x1: cx, y1: 375,
-          x2: cx + Math.cos(ang) * 14,
-          y2: 375 + Math.sin(ang) * 14,
-          class: 'pc-vent'
-        }, gInternals);
-      }
-    });
-    // GPU label
-    el('text', {
-      x: 312, y: 410,
-      'text-anchor': 'middle',
-      'font-family': 'JetBrains Mono, monospace',
-      'font-size': 8,
-      fill: 'var(--accent-2)',
-      'letter-spacing': '0.22em'
-    }, gInternals).textContent = 'RTX 4070 SUPER';
-
-    // SSD (small block, top right of mobo)
-    el('rect', {
-      x: 350, y: 308, width: 40, height: 14,
-      class: 'pc-edge'
-    }, gInternals);
-    el('text', {
-      x: 370, y: 318,
-      'text-anchor': 'middle',
-      'font-family': 'JetBrains Mono, monospace',
-      'font-size': 7,
-      fill: 'var(--accent-2)',
-      'letter-spacing': '0.22em'
-    }, gInternals).textContent = 'NVMe SSD';
-
-    // PSU (bottom of case)
-    el('rect', {
-      x: 230, y: 480, width: 165, height: 60,
-      class: 'pc-edge'
-    }, gInternals);
-    el('circle', { cx: 260, cy: 510, r: 22, class: 'pc-edge' }, gInternals);
-    for (let a = 0; a < 8; a++) {
-      const ang = (a / 8) * Math.PI * 2;
-      el('line', {
-        x1: 260, y1: 510,
-        x2: 260 + Math.cos(ang) * 20,
-        y2: 510 + Math.sin(ang) * 20,
-        class: 'pc-vent'
-      }, gInternals);
-    }
-    el('text', {
-      x: 340, y: 514,
-      'text-anchor': 'middle',
-      'font-family': 'JetBrains Mono, monospace',
-      'font-size': 8,
-      fill: 'var(--accent-2)',
-      'letter-spacing': '0.22em'
-    }, gInternals).textContent = 'PSU 850W';
-
-    /* ---------- CALLOUTS ----------
-       Each callout: { partId, partLabel, target {x,y}, label {x,y, text, sub} }
-       Lines drawn from the part's anchor point out to the label.
-    */
-    const callouts = [
-      { id: 'os',       label: 'LINUX MINT',    sub: 'OS',         tx: 760, ty: 308, lx: 580, ly: 130, side: 'right' },
-      { id: 'cpu',      label: 'CPU + AIO',     sub: '01',         tx: 312, ty: 262, lx:  90, ly: 230, side: 'left' },
-      { id: 'gpu',      label: 'RTX 4070 SUPER',sub: '02',         tx: 312, ty: 375, lx:  90, ly: 380, side: 'left' },
-      { id: 'ram',      label: '32 GB DDR5',    sub: '03',         tx: 372, ty: 250, lx:  90, ly: 480, side: 'left' },
-      { id: 'ssd',      label: '1 TB NVMe SSD', sub: '04',         tx: 370, ty: 315, lx: 580, ly: 480, side: 'right' },
-      { id: 'aio',      label: 'AIO LIQUID',    sub: '05',         tx: 312, ty: 152, lx: 580, ly:  80, side: 'right' },
-      { id: 'psu',      label: 'PSU 850W',      sub: '06',         tx: 312, ty: 510, lx: 580, ly: 580, side: 'right' },
-      { id: 'monitor',  label: 'DELL 27" / 4K', sub: '07',         tx: 760, ty: 220, lx: 920, ly: 100, side: 'right-far' }
-    ];
-
-    callouts.forEach(c => {
-      const g = el('g', { class: 'pc-callout-group', 'data-callout': c.id, 'data-hover': '' }, gCallouts);
-
-      // Calculate elbow path: from target → mid-point → label anchor
-      const isLeft = c.side === 'left';
-      const isRightFar = c.side === 'right-far';
-      const elbowX = isLeft ? c.tx - 60 : (isRightFar ? c.lx - 30 : c.lx - 30);
-      const elbowY = c.ly;
-
-      // Dot at the part
-      el('circle', {
-        cx: c.tx, cy: c.ty, r: 2.5,
-        class: 'pc-callout-dot'
-      }, g);
-
-      // Line: target → elbow → label
-      el('path', {
-        d: `M ${c.tx} ${c.ty} L ${elbowX} ${c.ty} L ${elbowX} ${elbowY} L ${c.lx} ${elbowY}`,
-        class: 'pc-callout-line'
-      }, g);
-
-      // Label end-cap bracket
-      const bx = isLeft ? c.lx - 110 : c.lx + 4;
-      const by = elbowY - 18;
-      el('path', {
-        d: isLeft
-          ? `M ${bx} ${by} L ${bx} ${by + 36} L ${bx + 8} ${by + 36}`
-          : `M ${bx + 8} ${by} L ${bx + 8} ${by + 36} L ${bx} ${by + 36}`,
-        class: 'pc-callout-bracket'
-      }, g);
-
-      // Label text
-      el('text', {
-        x: isLeft ? bx - 6 : bx + 14,
-        y: by + 14,
-        'text-anchor': isLeft ? 'end' : 'start',
-        class: 'pc-callout-sub'
-      }, g).textContent = c.sub;
-
-      el('text', {
-        x: isLeft ? bx - 6 : bx + 14,
-        y: by + 30,
-        'text-anchor': isLeft ? 'end' : 'start',
-        class: 'pc-callout-text'
-      }, g).textContent = c.label;
+    // Track parts for hover + spec mapping. specIndex maps to the footer cards:
+    // 0 OS · 1 GPU · 2 RAM · 3 STORAGE · 4 DISPLAY · 5 COOLING
+    const parts = [];
+    const mat = (color, opacity, metal, rough) => new THREE.MeshStandardMaterial({
+      color, transparent: opacity < 1, opacity,
+      metalness: metal == null ? 0.4 : metal,
+      roughness: rough == null ? 0.55 : rough,
+      emissive: new THREE.Color(0x000000)
     });
 
-    /* ---------- Hover behavior ---------- */
-    const specCards = Array.from(document.querySelectorAll('.pc-spec'));
-    const specMap = {
-      os: 0, gpu: 1, ram: 2, ssd: 3, monitor: 4, aio: 5
+    // wireframe edge overlay for the technical/schematic feel
+    function addEdges(mesh, color) {
+      const eg = new THREE.EdgesGeometry(mesh.geometry, 25);
+      const lm = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.85 });
+      const lines = new THREE.LineSegments(eg, lm);
+      mesh.add(lines);
+      mesh.userData.edges = lm;
+      return lines;
+    }
+
+    // helper: build a labelled part
+    function part(geo, material, pos, meta) {
+      const m = new THREE.Mesh(geo, material);
+      m.position.set(pos[0], pos[1], pos[2]);
+      addEdges(m, meta.edge || palette.accent.getHex());
+      m.userData = Object.assign({ baseMat: material }, meta);
+      root.add(m);
+      if (meta.part) parts.push(m);
+      return m;
+    }
+
+    // ============================================================
+    // WHITE BUILD — modelled on the real MUSETEX panoramic rig:
+    // 360 top radiator + 3 fans, 2 side intakes, 3 bottom fans,
+    // white ASUS RTX (horizontal), AORUS board, white AIO + tubes.
+    // ============================================================
+    const fans = [];
+    const COL = {
+      white:  new THREE.Color(0xe9f1fb),
+      white2: new THREE.Color(0xd2ddee),
+      dark:   new THREE.Color(0x182230)
     };
+    const fm = () => mat(COL.white2, 1, 0.35, 0.6);
+    const caseW = 10, caseH = 12, caseD = 11;
 
-    document.querySelectorAll('.pc-callout-group').forEach(group => {
-      group.addEventListener('mouseenter', () => {
-        const id = group.dataset.callout;
-        // Highlight matching spec card
-        specCards.forEach(s => s.classList.remove('active'));
-        if (specMap[id] !== undefined && specCards[specMap[id]]) {
-          specCards[specMap[id]].classList.add('active');
-        }
+    // reusable MUSETEX-style square fan with a spinning rotor (faces +Z)
+    function makeFan(radius, color) {
+      const g = new THREE.Group();
+      g.add(new THREE.Mesh(new THREE.TorusGeometry(radius, radius * 0.09, 8, 22), mat(color, 1, 0.3, 0.6)));
+      const half = radius * 1.02;
+      [[half, half], [half, -half], [-half, half], [-half, -half]].forEach(([x, y]) => {
+        const c = new THREE.Mesh(new THREE.BoxGeometry(radius * 0.2, radius * 0.2, radius * 0.5), mat(color, 1, 0.3, 0.6));
+        c.position.set(x, y, 0); g.add(c);
       });
-      group.addEventListener('mouseleave', () => {
-        specCards.forEach(s => s.classList.remove('active'));
-      });
+      const rotor = new THREE.Group();
+      const hub = new THREE.Mesh(new THREE.CylinderGeometry(radius * 0.26, radius * 0.26, radius * 0.18, 14), mat(color.clone().multiplyScalar(0.92), 1, 0.4, 0.5));
+      hub.rotation.x = Math.PI / 2; rotor.add(hub);
+      for (let i = 0; i < 7; i++) {
+        const blade = new THREE.Mesh(new THREE.BoxGeometry(radius * 0.8, radius * 0.34, 0.05), mat(color, 1, 0.2, 0.7));
+        const a = (i / 7) * Math.PI * 2;
+        blade.position.set(Math.cos(a) * radius * 0.46, Math.sin(a) * radius * 0.46, 0);
+        blade.rotation.z = a + 0.6;
+        rotor.add(blade);
+      }
+      g.add(rotor);
+      fans.push(rotor);
+      return g;
+    }
+
+    // ---- chassis (white, open panoramic frame) ----
+    part(new THREE.BoxGeometry(caseW, 0.3, caseD), fm(), [0, -caseH / 2, 0],
+      { part: 'os', spec: 0, name: 'MUSETEX Chassis', sub: 'panoramic · tempered glass', edge: palette.accent.getHex() });
+    part(new THREE.BoxGeometry(caseW, 0.3, caseD), fm(), [0, caseH / 2, 0],
+      { part: 'cool', spec: 5, name: 'Top Mount', sub: '360mm radiator bay', edge: palette.accent2.getHex() });
+    part(new THREE.BoxGeometry(0.3, caseH, caseD), fm(), [-caseW / 2, 0, 0],
+      { name: 'Motherboard Tray', sub: 'rear panel', edge: palette.accent.getHex() });
+
+    // vertical corner posts at the open glass edges
+    [[caseW / 2, caseD / 2], [caseW / 2, -caseD / 2], [-caseW / 2, caseD / 2]].forEach(([x, z]) => {
+      const post = new THREE.Mesh(new THREE.BoxGeometry(0.25, caseH, 0.25), fm());
+      post.position.set(x, 0, z); root.add(post);
     });
+
+    // faint panoramic glass on the front (+z) and right (+x)
+    const glassMat = new THREE.MeshStandardMaterial({
+      color: palette.accent3, transparent: true, opacity: 0.06,
+      metalness: 0.1, roughness: 0.05, side: THREE.DoubleSide
+    });
+    const gFront = new THREE.Mesh(new THREE.PlaneGeometry(caseW, caseH), glassMat);
+    gFront.position.set(0, 0, caseD / 2); root.add(gFront);
+    const gRight = new THREE.Mesh(new THREE.PlaneGeometry(caseD, caseH), glassMat);
+    gRight.rotation.y = Math.PI / 2; gRight.position.set(caseW / 2, 0, 0); root.add(gRight);
+
+    // ---- AORUS motherboard on the back wall ----
+    part(new THREE.BoxGeometry(0.25, caseH - 3, caseD - 3), mat(COL.white, 1, 0.3, 0.7), [-caseW / 2 + 0.6, 0.5, 0],
+      { name: 'AORUS Motherboard', sub: 'system board', edge: palette.accent.getHex() });
+    const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.06, caseH - 3.5, 0.9), mat(palette.accent2, 1, 0.2, 0.5));
+    stripe.position.set(-caseW / 2 + 0.78, 0.5, -2.3); root.add(stripe);
+
+    // ---- CPU + AIO pump block ----
+    part(new THREE.BoxGeometry(1.0, 2.0, 2.0), mat(COL.white, 1, 0.5, 0.4), [-caseW / 2 + 1.4, 3.0, 0.4],
+      { part: 'cool', spec: 5, name: 'AIO Pump Block', sub: 'CPU · liquid-cooled', edge: palette.accent2.getHex() });
+
+    // ---- two white braided AIO tubes curving up to the top radiator ----
+    [-0.5, 0.5].forEach(dz => {
+      const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 4.8, 10), mat(COL.white, 1, 0.2, 0.5));
+      tube.position.set(-caseW / 2 + 1.5, 4.7, 0.4 + dz);
+      tube.rotation.z = 0.14;
+      root.add(tube);
+    });
+
+    // ---- top radiator block beneath the 3 top fans ----
+    part(new THREE.BoxGeometry(caseW - 2.4, 0.7, 2.6), mat(COL.white2, 1, 0.4, 0.5), [0.3, caseH / 2 - 0.95, 0],
+      { part: 'cool', spec: 5, name: '360mm Radiator', sub: 'top-mounted AIO', edge: palette.accent2.getHex() });
+
+    // ---- RAM ----
+    for (let i = 0; i < 2; i++) {
+      part(new THREE.BoxGeometry(0.22, 2.8, 0.6), mat(COL.white, 1, 0.4, 0.5), [-caseW / 2 + 1.05, 1.7, 1.5 + i * 0.8],
+        { part: 'ram', spec: 2, name: '32 GB DDR5', sub: `DIMM ${i + 1}`, edge: palette.accent3.getHex() });
+    }
+
+    // ---- GPU (ASUS RTX, horizontal white shroud) ----
+    part(new THREE.BoxGeometry(caseD - 3.5, 1.7, 4.4), mat(COL.white, 1, 0.5, 0.4), [0.6, -0.9, 0],
+      { part: 'gpu', spec: 1, name: 'ASUS RTX 4070 Super', sub: 'graphics · 12 GB', edge: palette.accent.getHex() });
+    const gStrip = new THREE.Mesh(new THREE.BoxGeometry(caseD - 3.5, 0.5, 0.12), mat(COL.dark, 1, 0.6, 0.4));
+    gStrip.position.set(0.6, -1.3, 2.2); root.add(gStrip);
+    const gLed = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 10), new THREE.MeshBasicMaterial({ color: palette.accent2 }));
+    gLed.position.set(3.0, -0.6, 2.25); root.add(gLed);
+    // two small fans on the GPU shroud (face up)
+    [-1.5, 1.5].forEach(dx => {
+      const f = makeFan(0.95, COL.white); f.rotation.x = Math.PI / 2; f.position.set(0.6 + dx, 0.05, 0); root.add(f);
+    });
+
+    // ---- SSD ----
+    part(new THREE.BoxGeometry(0.35, 1.0, 1.6), mat(COL.white, 1, 0.4, 0.5), [-caseW / 2 + 0.95, -1.6, -2.6],
+      { part: 'ssd', spec: 3, name: '1 TB NVMe SSD', sub: 'primary storage', edge: palette.accent2.getHex() });
+
+    // ---- PSU shroud (rear-bottom chamber) ----
+    part(new THREE.BoxGeometry(caseW - 1.4, 1.6, 3.2), mat(COL.white2, 1, 0.4, 0.5), [0, -caseH / 2 + 1.4, -caseD / 2 + 2.4],
+      { name: 'PSU Shroud', sub: 'power · rear chamber', edge: palette.accent.getHex() });
+
+    // ---- fan banks ----
+    // top radiator: 3 fans facing down
+    [-3, 0, 3].forEach(x => { const f = makeFan(1.35, COL.white); f.rotation.x = Math.PI / 2; f.position.set(x + 0.3, caseH / 2 - 1.7, 0); root.add(f); });
+    // right side intake: 2 fans facing into the case
+    [2.6, -2.6].forEach(y => { const f = makeFan(1.5, COL.white); f.rotation.y = Math.PI / 2; f.position.set(caseW / 2 - 0.5, y, 0); root.add(f); });
+    // bottom intake: 3 fans facing up
+    [-3, 0, 3].forEach(x => { const f = makeFan(1.3, COL.white); f.rotation.x = Math.PI / 2; f.position.set(x + 0.3, -caseH / 2 + 0.9, 1.2); root.add(f); });
+
+    // ---- front power LED (pulses; recoloured each frame) ----
+    const led = new THREE.Mesh(new THREE.SphereGeometry(0.16, 12, 12), new THREE.MeshBasicMaterial({ color: palette.accent2 }));
+    led.position.set(-caseW / 2 + 0.4, caseH / 2 - 0.5, caseD / 2 - 0.4);
+    root.add(led);
+
+    // ---- monitor (display spec), slim white, off to the right ----
+    const monitor = new THREE.Group();
+    const mScreen = new THREE.Mesh(
+      new THREE.BoxGeometry(8, 4.6, 0.3),
+      new THREE.MeshStandardMaterial({ color: palette.accent3, emissive: palette.accent.clone().multiplyScalar(0.22), metalness: 0.2, roughness: 0.3, transparent: true, opacity: 0.5 })
+    );
+    addEdges(mScreen, palette.accent3.getHex());
+    Object.assign(mScreen.userData, { part: 'monitor', spec: 4, name: 'Dell 27" 4K', sub: 'display · 60 Hz' });
+    monitor.add(mScreen); parts.push(mScreen);
+    const mStand = new THREE.Mesh(new THREE.BoxGeometry(0.5, 3, 0.5), mat(COL.white2, 1, 0.4, 0.6));
+    mStand.position.y = -3.6; monitor.add(mStand);
+    const mBase = new THREE.Mesh(new THREE.BoxGeometry(3, 0.3, 1.8), mat(COL.white2, 1, 0.4, 0.6));
+    mBase.position.y = -5.1; monitor.add(mBase);
+    monitor.position.set(12.5, -1.5, -1);
+    monitor.rotation.y = -0.5;
+    root.add(monitor);
+
+    // ---- spec-card cross-highlight wiring ----
+    const specCards = Array.from(document.querySelectorAll('.pc-spec'));
+    function setSpecActive(idx) {
+      specCards.forEach((s, i) => s.classList.toggle('active', i === idx));
+    }
+    function clearSpecActive() { specCards.forEach(s => s.classList.remove('active')); }
+
+    let hovered = null;
+    function highlightPart(mesh) {
+      if (hovered === mesh) return;
+      clearHighlight();
+      hovered = mesh;
+      if (!mesh) { setReadout(null); clearSpecActive(); return;
+      }
+      if (mesh.material && mesh.material.emissive) {
+        mesh.material.emissive.copy(palette.accent2).multiplyScalar(0.55);
+      }
+      if (mesh.userData.edges) mesh.userData.edges.color.copy(palette.accent2);
+      setReadout(mesh.userData);
+      if (typeof mesh.userData.spec === 'number') setSpecActive(mesh.userData.spec);
+    }
+    function clearHighlight() {
+      if (hovered && hovered.material && hovered.material.emissive) hovered.material.emissive.setHex(0x000000);
+      if (hovered && hovered.userData.edges && hovered.userData.baseEdge) hovered.userData.edges.color.copy(hovered.userData.baseEdge);
+      hovered = null;
+    }
+    // remember base edge colors so we can restore them
+    parts.forEach(p => { if (p.userData.edges) p.userData.baseEdge = p.userData.edges.color.clone(); });
+
+    function setReadout(data) {
+      if (!readout) return;
+      if (!data) {
+        readout.innerHTML = '<span class="pc-readout-name">nx-rig-01</span><span class="pc-readout-sub">hover a component to inspect</span>';
+        return;
+      }
+      readout.innerHTML = `<span class="pc-readout-name">${data.name}</span><span class="pc-readout-sub">${data.sub || ''}</span>`;
+    }
+    setReadout(null);
+
+    // hovering a spec card highlights the matching mesh
+    specCards.forEach((card, i) => {
+      card.addEventListener('mouseenter', () => {
+        const m = parts.find(p => p.userData.spec === i);
+        if (m) highlightPart(m);
+        else { clearHighlight(); setSpecActive(i); }
+      });
+      card.addEventListener('mouseleave', () => { highlightPart(null); });
+    });
+
+    // --- raycaster for pointer hover ---
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    let pointerInside = false;
+    function updateRaycast() {
+      if (!pointerInside || dragging) return;
+      raycaster.setFromCamera(pointer, camera);
+      const hits = raycaster.intersectObjects(parts, false);
+      highlightPart(hits.length ? hits[0].object : null);
+    }
+
+    // --- custom orbit + zoom controls ---
+    let dragging = false, lastX = 0, lastY = 0, idle = 0;
+    let autoSpin = !reduceMotion;
+    const spinBtn = document.getElementById('pc-ctl-spin');
+    const wireBtn = document.getElementById('pc-ctl-wire');
+    const resetBtn = document.getElementById('pc-ctl-reset');
+
+    function onDown(e) {
+      dragging = true; idle = 0;
+      stage && stage.classList.add('grabbing');
+      const p = e.touches ? e.touches[0] : e;
+      lastX = p.clientX; lastY = p.clientY;
+      clearHighlight(); setReadout(null); clearSpecActive();
+    }
+    function onMove(e) {
+      const rect = pcCanvas.getBoundingClientRect();
+      const p = e.touches ? e.touches[0] : e;
+      pointer.x = ((p.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((p.clientY - rect.top) / rect.height) * 2 + 1;
+      pointerInside = true;
+      if (!dragging) return;
+      idle = 0;
+      const dx = p.clientX - lastX, dy = p.clientY - lastY;
+      lastX = p.clientX; lastY = p.clientY;
+      view.yaw   += dx * 0.008;
+      view.pitch += dy * 0.008;
+      view.pitch = Math.max(-0.75, Math.min(1.1, view.pitch));
+      if (e.touches) e.preventDefault();
+    }
+    function onUp() { dragging = false; stage && stage.classList.remove('grabbing'); }
+    function onWheel(e) {
+      e.preventDefault();
+      idle = 0;
+      view.dist += e.deltaY * 0.02;
+      view.dist = Math.max(15, Math.min(50, view.dist));
+    }
+
+    pcCanvas.addEventListener('mousedown', onDown);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    pcCanvas.addEventListener('mouseleave', () => { pointerInside = false; if (!dragging) highlightPart(null); });
+
+    // Hide the custom SVG cursor while over the stage — the native grab hand
+    // takes over so it's obvious you can orbit the model.
+    if (stage) {
+      const arrowEl = document.getElementById('cursor-arrow');
+      const trailEl = document.getElementById('cursor-trail-canvas');
+      stage.addEventListener('mouseenter', () => {
+        if (arrowEl) arrowEl.classList.add('hidden');
+        if (trailEl) trailEl.classList.add('hidden');
+      });
+      stage.addEventListener('mouseleave', () => {
+        if (arrowEl) arrowEl.classList.remove('hidden');
+        if (trailEl) trailEl.classList.remove('hidden');
+      });
+    }
+    pcCanvas.addEventListener('wheel', onWheel, { passive: false });
+    pcCanvas.addEventListener('touchstart', onDown, { passive: true });
+    pcCanvas.addEventListener('touchmove', onMove, { passive: false });
+    pcCanvas.addEventListener('touchend', onUp);
+    // pinch-zoom
+    let pinchDist = 0;
+    pcCanvas.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 2) {
+        const a = e.touches[0], b = e.touches[1];
+        const d = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+        if (pinchDist) { view.dist += (pinchDist - d) * 0.04; view.dist = Math.max(15, Math.min(50, view.dist)); }
+        pinchDist = d; idle = 0; e.preventDefault();
+      }
+    }, { passive: false });
+    pcCanvas.addEventListener('touchend', () => { pinchDist = 0; });
+
+    if (spinBtn) {
+      spinBtn.classList.toggle('active', autoSpin);
+      spinBtn.addEventListener('click', () => { autoSpin = !autoSpin; spinBtn.classList.toggle('active', autoSpin); });
+    }
+    let wire = false;
+    if (wireBtn) {
+      wireBtn.addEventListener('click', () => {
+        wire = !wire; wireBtn.classList.toggle('active', wire);
+        root.traverse(o => {
+          if (o.isMesh && o.material && 'wireframe' in o.material) o.material.wireframe = wire;
+        });
+      });
+    }
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => { view.yaw = HOME.yaw; view.pitch = HOME.pitch; view.dist = HOME.dist; idle = 0; });
+    }
+
+    // --- recolour materials when the theme changes ---
+    const themeObserver = new MutationObserver(() => {
+      loadPalette();
+      scene.fog.color.copy(palette.bg);
+      key.color.copy(palette.accent3); rim.color.copy(palette.accent); fill.color.copy(palette.accent2);
+    });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+    // --- resize ---
+    function resize() {
+      const w = pcCanvas.clientWidth, h = pcCanvas.clientHeight;
+      if (!w || !h) return;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    if (window.ResizeObserver && stage) new ResizeObserver(resize).observe(stage);
+    window.addEventListener('resize', resize);
+    resize();
+
+    // --- render loop ---
+    let started = false;
+    function frame() {
+      requestAnimationFrame(frame);
+      idle++;
+      if (autoSpin && !dragging && idle > 90) view.yaw += 0.0022;
+      // ease camera onto the orbit position
+      const cx = target.x + Math.sin(view.yaw) * Math.cos(view.pitch) * view.dist;
+      const cy = target.y + Math.sin(view.pitch) * view.dist;
+      const cz = target.z + Math.cos(view.yaw) * Math.cos(view.pitch) * view.dist;
+      camera.position.lerp(new THREE.Vector3(cx, cy, cz), 0.12);
+      camera.lookAt(target);
+      // gentle LED pulse
+      const t = performance.now() * 0.003;
+      led.material.color.copy(palette.accent2).multiplyScalar(0.6 + 0.4 * (0.5 + 0.5 * Math.sin(t)));
+      if (!reduceMotion) { for (let i = 0; i < fans.length; i++) fans[i].rotation.z += 0.05; }
+      updateRaycast();
+      renderer.render(scene, camera);
+      if (!started) { started = true; if (loading) loading.classList.add('hidden'); }
+    }
+    frame();
+  } else if (pcCanvas && loadingFallback()) { /* THREE missing */ }
+
+  function loadingFallback() {
+    const stage = document.querySelector('.pc-schematic-stage');
+    const loading = stage && stage.querySelector('.pc-loading');
+    if (loading) loading.innerHTML = '<div style="color:var(--fg-dim);text-align:center;line-height:1.8;">3D MODULE OFFLINE<br><span style="font-size:9px;">specs available below</span></div>';
+    return false;
   }
 
 })();

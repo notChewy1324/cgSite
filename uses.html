@@ -61,6 +61,7 @@
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
     <li><a href="background.html">Background</a></li>
+    <li><a href="builds.html">Builds</a></li>
     <li><a href="blog.html">Field Notes</a></li>
     <li><a href="uses.html" class="active">Uses</a></li>
     <li><a href="uplink.html">Uplink</a></li>
@@ -90,6 +91,7 @@
   <ul>
     <li><a href="index.html">Home</a></li>
     <li><a href="background.html">Background</a></li>
+    <li><a href="builds.html">Builds</a></li>
     <li><a href="blog.html">Field Notes</a></li>
     <li><a href="uses.html" class="active">Uses</a></li>
     <li><a href="uplink.html">Uplink</a></li>
@@ -114,7 +116,7 @@
     <div class="page-intro-tag">DOSSIER ▸ NX-1324 ▸ LOADOUT</div>
     <h1 class="page-intro-title">operator <em>loadout</em></h1>
     <p class="page-intro-sub">
-      Reconstructed schematic of the primary operator workstation. Hover or tap the labeled callouts to inspect each component. Other sections — peripherals, mobile, software stack — deferred to a future build.
+      Real-time 3D model of the primary operator workstation. Drag to orbit, scroll or pinch to zoom, and hover any component to inspect it — the matching spec lights up below. Built with WebGL, no pre-rendered frames.
     </p>
   </section>
 
@@ -122,7 +124,7 @@
     <header class="section-header">
       <div class="section-num"><strong>01</strong> /// SCHEMATIC</div>
       <h2 class="section-title">primary workstation</h2>
-      <div class="section-subtitle">// reconstructed model — exterior shell, internal components, callouts</div>
+      <div class="section-subtitle">// live webgl model — drag to orbit · scroll to zoom · hover to inspect</div>
     </header>
 
     <!-- PC SCHEMATIC -->
@@ -137,7 +139,17 @@
       </div>
 
       <div class="pc-schematic-stage">
-        <svg class="pc-svg" id="pc-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet"></svg>
+        <canvas id="pc-canvas"></canvas>
+        <div class="pc-readout"></div>
+        <div class="pc-controls">
+          <button class="pc-ctl" id="pc-ctl-spin" type="button">Spin</button>
+          <button class="pc-ctl" id="pc-ctl-wire" type="button">Wire</button>
+          <button class="pc-ctl" id="pc-ctl-reset" type="button">Reset</button>
+        </div>
+        <div class="pc-loading">
+          <div>INITIALIZING MODEL</div>
+          <div class="pc-loading-bar"></div>
+        </div>
       </div>
 
       <div class="pc-schematic-footer">
@@ -201,6 +213,7 @@
 
 </main>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="main.js"></script>
 </body>
 </html>
