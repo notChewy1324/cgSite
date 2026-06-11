@@ -5,6 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Background // NX-1324</title>
 <meta name="description" content="Full academic record, coursework, and professional experience for Cam Garrison.">
+<link rel="canonical" href="https://camgarrison.com/background.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Personnel Archive // NX-1324">
+<meta property="og:title" content="Background // NX-1324">
+<meta property="og:description" content="Full academic record, coursework, and professional experience for Cam Garrison.">
+<meta property="og:url" content="https://camgarrison.com/background.html">
+<meta property="og:image" content="https://camgarrison.com/imgs/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cam Garrison — Cybersecurity &amp; Network Systems Administration. Personnel archive NX-1324.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Background // NX-1324">
+<meta name="twitter:description" content="Full academic record, coursework, and professional experience for Cam Garrison.">
+<meta name="twitter:image" content="https://camgarrison.com/imgs/og-card.png">
+<link rel="preload" href="fonts/jetbrains-mono-300-800-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/major-mono-display-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/syne-400-800-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 <link rel="icon" type="image/svg+xml" href="imgs/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon-32.png">
@@ -24,15 +41,7 @@
 </head>
 <body>
 
-<!-- PAGE TRANSITION OVERLAY -->
-<div id="page-transition">
-  <div class="pt-grid"></div>
-  <div class="pt-scanline"></div>
-  <div class="pt-text">
-    ESTABLISHING UPLINK<span class="pt-blink"></span>
-    <div class="pt-target"></div>
-  </div>
-</div>
+<a class="skip-link" href="#main">SKIP TO CONTENT ▸</a>
 
 <div class="haze-layer"></div>
 <canvas id="dust-canvas"></canvas>
@@ -59,7 +68,6 @@
 <nav class="nav">
   <a href="index.html" class="nav-logo">CG // NX-1324</a>
   <ul class="nav-links">
-    <li><a href="index.html">Home</a></li>
     <li><a href="background.html" class="active">Background</a></li>
     <li><a href="builds.html">Builds</a></li>
     <li><a href="blog.html">Field Notes</a></li>
@@ -73,9 +81,9 @@
       <span class="dot"></span>
       <span class="label">DAY</span>
     </button>
-    <button class="transition-toggle off" aria-label="Toggle warp transitions">
+    <button class="audio-toggle off" aria-label="Toggle ambient audio">
       <span class="dot"></span>
-      <span class="label">WARP OFF</span>
+      <span class="label">AUDIO OFF</span>
     </button>
   </div>
   <div class="nav-clock-mobile"><span>00:00:00 UTC</span></div>
@@ -101,16 +109,16 @@
       <span class="dot"></span>
       <span class="label">DAY</span>
     </button>
-    <button class="transition-toggle off" aria-label="Toggle warp transitions">
+    <button class="audio-toggle off" aria-label="Toggle ambient audio">
       <span class="dot"></span>
-      <span class="label">WARP OFF</span>
+      <span class="label">AUDIO OFF</span>
     </button>
     <div class="nav-drawer-status">UPLINK STABLE</div>
   </div>
 </aside>
 
 
-<main>
+<main id="main">
 
   <section class="page-intro">
     <div class="page-intro-tag">DOSSIER ▸ NX-1324 ▸ FULL RECORD</div>
@@ -257,6 +265,12 @@
   </div>
 </div>
 
+<!--  WILL UPDATE THIS LATER: CLOUDFLARE WEB ANALYTICS (privacy-friendly, no cookies) WILL UPDATE THIS LATER
+     To activate: Cloudflare dashboard > Analytics & Logs > Web Analytics >
+     add camgarrison.com, copy the token, paste it below, and uncomment.
+     The CSP in _headers already allows the beacon + its endpoint.
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "PASTE-TOKEN-HERE"}'></script>
+-->
 <script src="main.js"></script>
 </body>
 </html>

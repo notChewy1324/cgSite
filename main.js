@@ -545,7 +545,7 @@ window.PROJECTS = [
 
   // Icon-only nav controls hide their labels on desktop — surface a tooltip
   // from the aria-label so they stay discoverable.
-  document.querySelectorAll('.nav-right .theme-toggle, .nav-right .transition-toggle').forEach(b => {
+  document.querySelectorAll('.nav-right .theme-toggle, .nav-right .audio-toggle').forEach(b => {
     if (!b.title && b.getAttribute('aria-label')) b.title = b.getAttribute('aria-label');
   });
   // Sync labels on first paint
@@ -555,6 +555,79 @@ window.PROJECTS = [
       el.textContent = THEME_NEXT_LABEL[cur];
     });
   }
+
+  /* -------- CLEARANCE SYSTEM + TOASTS + INCEPT DATE --------- */
+  // TIER-9 by default. TIER-OMEGA is earned, not granted — via the
+  // override passphrase in the terminal, or the old code. You know the one.
+  const NX = {
+    get clearance() {
+      try { return sessionStorage.getItem('nx-clearance') || 'TIER-9'; }
+      catch(e) { return 'TIER-9'; }
+    },
+    elevate() {
+      if (NX.clearance === 'TIER-OMEGA') return false;
+      try { sessionStorage.setItem('nx-clearance', 'TIER-OMEGA'); } catch(e) {}
+      NX.toast('CLEARANCE ELEVATED ▸ TIER-OMEGA', 'omega');
+      document.documentElement.setAttribute('data-clearance', 'omega');
+      return true;
+    },
+    toast(msg, kind = '') {
+      let stack = document.getElementById('nx-toast-stack');
+      if (!stack) {
+        stack = document.createElement('div');
+        stack.id = 'nx-toast-stack';
+        document.body.appendChild(stack);
+      }
+      const t = document.createElement('div');
+      t.className = `nx-toast ${kind}`;
+      t.setAttribute('role', 'status');
+      t.textContent = msg;
+      stack.appendChild(t);
+      requestAnimationFrame(() => t.classList.add('show'));
+      setTimeout(() => {
+        t.classList.remove('show');
+        setTimeout(() => t.remove(), 600);
+      }, 4200);
+    },
+    incept() {
+      try {
+        let d = localStorage.getItem('nx-incept');
+        if (!d) {
+          d = new Date().toISOString().slice(0, 10);
+          localStorage.setItem('nx-incept', d);
+        }
+        return d;
+      } catch(e) { return 'UNKNOWN'; }
+    }
+  };
+  NX.incept(); // stamp first contact
+  if (NX.clearance === 'TIER-OMEGA') {
+    document.documentElement.setAttribute('data-clearance', 'omega');
+  }
+
+  // Konami sequence → TIER-OMEGA
+  {
+    const SEQ = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+    let pos = 0;
+    document.addEventListener('keydown', (e) => {
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+      const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      pos = (k === SEQ[pos]) ? pos + 1 : (k === SEQ[0] ? 1 : 0);
+      if (pos === SEQ.length) {
+        pos = 0;
+        if (!NX.elevate()) NX.toast('CLEARANCE ALREADY TIER-OMEGA', 'omega');
+      }
+    });
+  }
+
+  /* -------- SHARED ATMOSPHERE STATE ---------
+     Mutated by the live weather feed and scroll depth; read by the
+     rain canvas, the nav clock, and the ambient audio engine. */
+  const ATMO = {
+    rainLive: false,      // live weather says it's raining over the sector
+    rainIntensity: 0.85,  // 0..~1.3 — scroll depth pushes this up
+    weatherTag: ''        // short status appended to the nav clock
+  };
 
   /* -------- CUSTOM CURSOR (cold palette particles) --------- */
   const arrow = document.getElementById('cursor-arrow');
@@ -870,6 +943,8 @@ window.PROJECTS = [
   const modalMeta = document.getElementById('modal-meta');
   const modalClose = document.getElementById('modal-close');
 
+  let modalReturnFocus = null;
+
   function openModal(post, metaLabel) {
     if (!modal) return;
     modalTitle.textContent = post.title;
@@ -879,12 +954,19 @@ window.PROJECTS = [
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
     wireDocViewer(modalBody);
+    // Keyboard a11y: remember where focus came from and move it into the dialog
+    modalReturnFocus = document.activeElement;
+    if (modalClose) modalClose.focus();
   }
 
   function closeModal() {
     if (!modal) return;
     modal.classList.remove('open');
     document.body.style.overflow = '';
+    if (modalReturnFocus && typeof modalReturnFocus.focus === 'function') {
+      modalReturnFocus.focus();
+      modalReturnFocus = null;
+    }
     // In case the pointer was over an embedded PDF when the modal closed,
     // make sure the custom cursor comes back.
     const a = document.getElementById('cursor-arrow');
@@ -928,6 +1010,26 @@ window.PROJECTS = [
   if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
+  // Trap Tab focus inside the dialog while it is open
+  if (modal) {
+    modal.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab' || !modal.classList.contains('open')) return;
+      const focusables = modal.querySelectorAll(
+        'button, [href], input, select, textarea, iframe, [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focusables.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+  }
+
   document.addEventListener('click', (e) => {
     const postCard = e.target.closest('[data-post]');
     if (postCard) {
@@ -948,11 +1050,22 @@ window.PROJECTS = [
     function updateStatus() {
       const now = new Date();
       const t = now.toUTCString().slice(17, 25);
-      navStatus.innerHTML = `<span>UPLINK ${t} UTC</span>`;
+      const wx = ATMO.weatherTag ? ` ▸ ${ATMO.weatherTag}` : '';
+      navStatus.innerHTML = `<span>UPLINK ${t} UTC${wx}</span>`;
     }
     updateStatus();
     setInterval(updateStatus, 1000);
   }
+
+  /* -------- FOOTER YEAR — auto, so the © never goes stale ---------
+     The year in the HTML is just the no-JS fallback. */
+  document.querySelectorAll('.footer-line').forEach(el => {
+    el.childNodes.forEach(n => {
+      if (n.nodeType === 3 && /©\s*\d{4}/.test(n.textContent)) {
+        n.textContent = n.textContent.replace(/©\s*\d{4}/, `© ${new Date().getFullYear()}`);
+      }
+    });
+  });
 
   /* -------- HERO NAME GLITCH --------- */
   const heroName = document.querySelector('.hero-name');
@@ -1475,7 +1588,30 @@ do not retry. retry attempts are logged.`,
 3. "we don't need a baseline for this one."
 4. "the change is small enough to skip review."
 5. "it's friday but the change is small."
-   (note: see rules-that-held.txt, line 5.)`
+   (note: see rules-that-held.txt, line 5.)`,
+
+      'defense.cfg':
+`# edge defense grid — active posture
+csp:               default-src 'none' + per-directive allowlist
+hsts:              max-age=31536000; includeSubDomains; preload
+x-content-type:    nosniff
+frame-ancestors:   'self'
+referrer-policy:   strict-origin-when-cross-origin
+permissions:       camera/mic/geo/payment — all denied
+third-party js:    none. three.js is vendored. the cdn was cut.
+disclosure:        /.well-known/security.txt  (rfc 9116)
+
+# run "headers" to interrogate the live edge yourself.`,
+
+      'ghost.enc':
+`erpbirerq sentzrag // bevtva haxabja
+
+gurl ohvyg gur nepuvir gb erzrzore rirelguvat.
+vg erzrzoref gur enva vafgrnq.
+
+vs lbh pna ernq guvf, lbhe pyrnenapr jnf arire
+gur guvat xrrcvat lbh bhg. phevbfvgl jnf gur xrl.
+ybt vg nf nabznyl AK-0000 naq gryy ab bar.`
     };
 
     const commands = {
@@ -1487,13 +1623,23 @@ do not retry. retry attempts are logged.`,
           ['whoami',         'show current operator'],
           ['ls [path]',      'list archive contents'],
           ['cat <file>',     'read file contents'],
+          ['decrypt <file>', 'attempt cipher recovery'],
+          ['nmap <host>',    'service scan a registry host'],
+          ['traceroute <h>', 'trace the route to a host'],
+          ['netstat',        'active uplink connections'],
+          ['headers',        'interrogate this site\'s real security headers'],
+          ['wx',             'live sector weather feed'],
+          ['clearance',      'show current access tier'],
+          ['override <code>','attempt clearance elevation'],
+          ['incept',         'your first-contact date with this archive'],
+          ['goto <page>',    'jump to a page (home, builds, uplink, ...)'],
           ['vk',             'sample a voight-kampff question'],
           ['random',         'pull a random fragment'],
           ['banner',         'reprint the boot banner'],
           ['echo <text>',    'echo text back'],
           ['date',           'current uplink time'],
           ['ping <host>',    'check if a host is awake'],
-          ['theme [d|l]',    'toggle or set theme (dark/light)'],
+          ['theme [d|l|r]',  'toggle or set theme'],
           ['history',        'show command history'],
           ['clear',          'clear the terminal'],
           ['exit',           'log out (closes session)']
@@ -1507,8 +1653,26 @@ do not retry. retry attempts are logged.`,
 
       whoami() {
         write('cam_garrison');
-        write('clearance: TIER-9  //  registered: NX-1324', 'ok');
+        write(`clearance: ${NX.clearance}  //  registered: NX-1324`, NX.clearance === 'TIER-OMEGA' ? 'err' : 'ok');
         write('discipline: cybersec + netsys admin // student', 'dim');
+        write(`first contact: ${NX.incept()}`, 'dim');
+      },
+
+      wx() {
+        if (!ATMO.weatherTag) {
+          write('sector weather feed: not yet acquired', 'err');
+          writeRaw(`<span class="dim">// the feed resolves a few seconds after page load — offline or blocked otherwise.</span>`);
+          return;
+        }
+        write('/// SECTOR WEATHER — LIVE FEED', 'hint');
+        writeRaw(`  <span class="key">SECTOR</span>      <span class="hl">${esc(ATMO.city || 'UNKNOWN')}</span>`);
+        writeRaw(`  <span class="key">CONDITION</span>   ${ATMO.rainLive
+          ? `<span class="red">${ATMO.snow ? 'SNOWFALL' : 'RAINFALL'} IN PROGRESS</span>`
+          : '<span class="ok">DRY</span>'}`);
+        writeRaw(`  <span class="key">ATMOSPHERE</span>  ${ATMO.rainLive
+          ? '<span class="ok">rain canvas engaged — all themes</span>'
+          : '<span class="dim">rain canvas idle (force it: theme r)</span>'}`);
+        writeRaw(`  <span class="key">SOURCE</span>      <span class="dim">ip locate ▸ open-meteo ▸ cached 30 min</span>`);
       },
 
       ls(args) {
@@ -1517,7 +1681,8 @@ do not retry. retry attempts are logged.`,
           writeRaw(`<span class="hl">fragments/</span>      <span class="hl">voight-kampff/</span>     <span class="hl">field-notes/</span>`);
           writeRaw(`<span class="hl">incidents/</span>      <span class="hl">rules-i-broke/</span>     <span class="hl">rules-that-held/</span>`);
           writeRaw(`<span class="dim">profile.txt    motd             baseline.dat</span>`);
-          writeRaw(`<span class="dim">kipple.log     replicants.idx</span>`);
+          writeRaw(`<span class="dim">kipple.log     replicants.idx   defense.cfg</span>`);
+          writeRaw(`<span class="dim">ghost.enc</span>`);
         } else {
           write(`ls: ${path}: no such directory`, 'err');
         }
@@ -1526,10 +1691,28 @@ do not retry. retry attempts are logged.`,
       cat(args) {
         if (!args[0]) { write('cat: missing file operand', 'err'); return; }
         const name = args[0].replace(/^\.?\//, '').replace(/^archive\//, '');
-        if (FS[name]) {
+        if (name === 'replicants.idx' || name === 'replicants') {
+          if (NX.clearance === 'TIER-OMEGA') {
+            write(
+`/// TIER-OMEGA ACCESS GRANTED
+/// replicant index — nexus-9 production line
+
+records found: 0
+
+the index is empty. it was always empty.
+wallace corp does not keep a list of who is real.
+it keeps a list of who asked.
+
+you are now on that list. welcome.`, 'ok');
+          } else {
+            write(FS['replicants.idx'], 'err');
+            write('(elevation is possible. some codes are older than this archive.)', 'dim');
+          }
+        } else if (name === 'ghost.enc') {
+          write(FS['ghost.enc']);
+          write('(ciphertext detected. try: decrypt ghost.enc)', 'dim');
+        } else if (FS[name]) {
           write(FS[name]);
-        } else if (name === 'replicants.idx' || name === 'replicants') {
-          write(FS['replicants.idx'], 'err');
         } else {
           write(`cat: ${name}: file not found`, 'err');
           write(`(try: ls — to see what's in the archive)`, 'dim');
@@ -1674,6 +1857,180 @@ do not retry. retry attempts are logged.`,
       },
 
       hello() { write('hello, operator.', 'ok'); },
+
+      nmap(args) {
+        const host = (args[0] || 'wallace.corp').slice(0, 48);
+        write(`Starting nx-map 4.7 ( nexus-9 build ) at ${new Date().toTimeString().slice(0,8)}`);
+        write(`Nmap scan report for ${host} (10.${Math.floor(Math.random()*200)+10}.${Math.floor(Math.random()*255)}.7)`);
+        write('Host is up (0.012s latency).', 'ok');
+        writeBlank();
+        writeRaw(`<span class="hl">PORT      STATE     SERVICE</span>`);
+        const rows = [
+          ['22/tcp',   'filtered', 'ssh        // honeypot. you know better.'],
+          ['53/tcp',   'open',     'domain     // resolves everything except doubt'],
+          ['80/tcp',   'open',     'http       // redirects to 443. always.'],
+          ['443/tcp',  'open',     'https      // hsts preloaded'],
+          ['1124/tcp', 'open',     'baseline   // voight-kampff uplink'],
+          ['1982/tcp', 'closed',   'memory     // decommissioned'],
+          ['2049/tcp', 'filtered', 'nexus      // tier-omega required'],
+          ['9090/tcp', 'open',     'telemetry  // synthetic, but persistent']
+        ];
+        let i = 0;
+        const iv = setInterval(() => {
+          if (i >= rows.length) {
+            clearInterval(iv);
+            writeBlank();
+            write(`Nmap done: 1 host up — scanned in ${(0.8 + Math.random()).toFixed(2)}s`, 'ok');
+            write('(scan is simulated. the real ports of this site are 443 and nothing else.)', 'dim');
+            return;
+          }
+          const [p, s, svc] = rows[i++];
+          const cls = s === 'open' ? 'ok' : (s === 'closed' ? 'err' : 'dim');
+          writeRaw(`${esc(p.padEnd(10))}<span class="${cls}">${esc(s.padEnd(10))}</span><span class="dim">${esc(svc)}</span>`);
+        }, 160);
+      },
+      scan(args) { commands.nmap(args); },
+
+      traceroute(args) {
+        const host = (args[0] || 'wallace.corp').slice(0, 48);
+        write(`traceroute to ${host}, 8 hops max, 56 byte packets`);
+        const hops = [
+          'gateway.sector-7        10.0.0.1',
+          'edge.cincinnati-metro   10.14.2.1',
+          'spire.la-2049           10.49.0.12',
+          'smog-layer.transit      10.49.66.3',
+          'wallace-perimeter       10.99.1.1',
+          '* * *                   (request blackholed)',
+          'memory-vault.internal   10.99.13.24',
+          host + '                 10.99.13.7'
+        ];
+        let i = 0;
+        const iv = setInterval(() => {
+          if (i >= hops.length) {
+            clearInterval(iv);
+            write('trace complete. some hops do not want to be found.', 'dim');
+            return;
+          }
+          const ms = (4 + i * 3 + Math.random() * 5).toFixed(2);
+          const blackhole = hops[i].startsWith('*');
+          writeRaw(`<span class="dim">${String(i+1).padStart(2,' ')}</span>  ${blackhole ? `<span class="err">${esc(hops[i])}</span>` : `${esc(hops[i])}  <span class="ok">${ms} ms</span>`}`);
+          i++;
+        }, 220);
+      },
+
+      netstat() {
+        writeRaw(`<span class="hl">Proto  Local            Foreign              State</span>`);
+        const rows = [
+          ['tcp', 'nx-1324:443',  'visitor:ephemeral',   'ESTABLISHED', 'ok'],
+          ['tcp', 'nx-1324:1124', 'baseline.wallace:1124','ESTABLISHED', 'ok'],
+          ['tcp', 'nx-1324:22',   '*:*',                 'LISTEN (trap)','dim'],
+          ['tcp', 'nx-1324:2049', 'tier-omega.only:*',   'FILTERED',    'err'],
+          ['udp', 'nx-1324:53',   'memory.vault:53',     'DREAMING',    'dim']
+        ];
+        rows.forEach(([p, l, f, s, cls]) => {
+          writeRaw(`${esc(p.padEnd(7))}${esc(l.padEnd(17))}${esc(f.padEnd(21))}<span class="${cls}">${esc(s)}</span>`);
+        });
+        write('one of these connections is you.', 'dim');
+      },
+
+      headers() {
+        write('interrogating own edge for real response headers...', 'dim');
+        const WANT = [
+          'content-security-policy', 'strict-transport-security',
+          'x-content-type-options', 'x-frame-options', 'referrer-policy',
+          'permissions-policy', 'cross-origin-opener-policy',
+          'cross-origin-resource-policy'
+        ];
+        fetch(window.location.href, { method: 'HEAD', cache: 'no-store' })
+          .then(res => {
+            writeBlank();
+            WANT.forEach(h => {
+              let v = res.headers.get(h);
+              if (v) {
+                if (v.length > 72) v = v.slice(0, 69) + '...';
+                writeRaw(`<span class="ok">[SHIELDED]</span> <span class="hl">${esc(h)}</span>`);
+                writeRaw(`           <span class="dim">${esc(v)}</span>`);
+              } else {
+                writeRaw(`<span class="err">[EXPOSED ]</span> <span class="dim">${esc(h)} — not present on this origin</span>`);
+              }
+            });
+            writeBlank();
+            write('these are live values, not lore. full grid on the uplink page.', 'dim');
+          })
+          .catch(() => write('edge interrogation failed — offline or local file://', 'err'));
+      },
+
+      decrypt(args) {
+        if (!args[0]) { write('decrypt: missing file operand', 'err'); return; }
+        const name = args[0].replace(/^\.?\//, '');
+        if (name !== 'ghost.enc') {
+          write(`decrypt: ${name}: no recoverable cipher structure`, 'err');
+          return;
+        }
+        write('analyzing cipher... substitution detected... rotating alphabet...', 'dim');
+        setTimeout(() => {
+          const rot13 = s => s.replace(/[a-zA-Z]/g, c => {
+            const base = c <= 'Z' ? 65 : 97;
+            return String.fromCharCode((c.charCodeAt(0) - base + 13) % 26 + base);
+          });
+          write(rot13(FS['ghost.enc']), 'ok');
+          writeBlank();
+          write('// anomaly NX-0000 logged. told no one.', 'dim');
+        }, 700);
+      },
+
+      clearance() {
+        const c = NX.clearance;
+        write(`current clearance: ${c}`, c === 'TIER-OMEGA' ? 'err' : 'ok');
+        if (c !== 'TIER-OMEGA') {
+          write('elevation requires an override code. cells, operator. think about what links them.', 'dim');
+        } else {
+          write('maximum elevation reached. some doors are open now. try cat replicants.idx', 'dim');
+        }
+      },
+
+      override(args) {
+        const code = (args.join(' ') || '').toLowerCase();
+        if (!code) { write('override: usage: override <code>', 'err'); return; }
+        if (code === 'interlinked' || code === 'cells interlinked') {
+          if (NX.elevate()) {
+            write('override accepted.', 'ok');
+            write('clearance elevated: TIER-9 ▸ TIER-OMEGA', 'err');
+            write('the registry will pretend this never happened.', 'dim');
+          } else {
+            write('already at TIER-OMEGA. greed is logged.', 'dim');
+          }
+        } else {
+          write('override rejected. attempt logged.', 'err');
+          write('(hint: it is the word the baseline test keeps coming back to.)', 'dim');
+        }
+      },
+
+      incept() {
+        write(`first contact with this archive: ${NX.incept()}`, 'ok');
+        write('stored locally on your machine. the archive itself remembers nothing.', 'dim');
+      },
+
+      goto(args) {
+        const map = {
+          home: 'index.html', index: 'index.html',
+          background: 'background.html', builds: 'builds.html',
+          notes: 'blog.html', blog: 'blog.html', 'field-notes': 'blog.html',
+          uses: 'uses.html', loadout: 'uses.html',
+          uplink: 'uplink.html', console: 'uplink.html',
+          archive: 'archive.html'
+        };
+        const dest = map[(args[0] || '').toLowerCase()];
+        if (!dest) {
+          write('goto: unknown destination', 'err');
+          write('destinations: home, background, builds, notes, uses, uplink, archive', 'dim');
+          return;
+        }
+        write(`rerouting uplink ▸ ${dest}`, 'ok');
+        setTimeout(() => { window.location.href = dest; }, 450);
+      },
+      open(args) { commands.goto(args); },
+
       hi() { commands.hello(); },
       cells() { writeRaw(`<span class="ok">interlinked.</span>`); },
       interlinked() { writeRaw(`<span class="ok">cells.</span>`); },
@@ -1796,19 +2153,29 @@ do not retry. retry attempts are logged.`,
     }));
 
     function rainTick() {
-      const isRain = document.documentElement.getAttribute('data-theme') === 'rain';
+      const theme = document.documentElement.getAttribute('data-theme');
+      // Rain falls in the rain theme, or in ANY theme when the live
+      // weather feed says it is actually raining over the sector.
+      const isRain = theme === 'rain' || ATMO.rainLive;
       if (!isRain) {
         rctx.clearRect(0, 0, RW, RH);
         requestAnimationFrame(rainTick);
         return;
       }
-      // Use partial clear for slight motion-trail effect
-      rctx.fillStyle = 'rgba(3, 6, 12, 0.18)';
+      // Fade the previous frame with destination-out so the motion trail
+      // works on any theme without tinting the page (the old dark fillRect
+      // only looked right against the near-black rain theme background).
+      rctx.globalCompositeOperation = 'destination-out';
+      rctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
       rctx.fillRect(0, 0, RW, RH);
+      rctx.globalCompositeOperation = 'source-over';
 
+      const streak = theme === 'light' ? '42, 85, 138' : '155, 196, 224';
+      const count = Math.min(drops.length, Math.round(drops.length * ATMO.rainIntensity));
       rctx.lineCap = 'round';
-      for (const d of drops) {
-        rctx.strokeStyle = `rgba(155, 196, 224, ${d.alpha})`;
+      for (let i = 0; i < count; i++) {
+        const d = drops[i];
+        rctx.strokeStyle = `rgba(${streak}, ${d.alpha})`;
         rctx.lineWidth = d.thickness;
         rctx.beginPath();
         rctx.moveTo(d.x, d.y);
@@ -1825,64 +2192,6 @@ do not retry. retry attempts are logged.`,
       requestAnimationFrame(rainTick);
     }
     rainTick();
-  }
-
-  /* ============================================================
-     PAGE TRANSITIONS — "uplink reroute" overlay (multi-instance)
-     ============================================================ */
-  const transitionEl = document.getElementById('page-transition');
-  const transitionToggles = document.querySelectorAll('.transition-toggle');
-
-  function getTransitionsEnabled() {
-    try { return localStorage.getItem('nx-transitions') === 'on'; }
-    catch(e) { return false; }
-  }
-
-  function setTransitionsEnabled(on) {
-    try { localStorage.setItem('nx-transitions', on ? 'on' : 'off'); } catch(e) {}
-    transitionToggles.forEach(toggle => {
-      toggle.classList.toggle('on', on);
-      toggle.classList.toggle('off', !on);
-      const labelEl = toggle.querySelector('.label');
-      if (labelEl) labelEl.textContent = on ? 'WARP ON' : 'WARP OFF';
-    });
-  }
-
-  setTransitionsEnabled(getTransitionsEnabled());
-
-  transitionToggles.forEach(toggle => {
-    toggle.addEventListener('click', () => {
-      setTransitionsEnabled(!getTransitionsEnabled());
-    });
-  });
-
-  // Intercept internal link clicks. Only same-origin .html files.
-  if (transitionEl) {
-    document.addEventListener('click', (e) => {
-      if (!getTransitionsEnabled()) return;
-      const a = e.target.closest('a');
-      if (!a) return;
-      const href = a.getAttribute('href');
-      if (!href) return;
-      // Only intercept simple internal HTML links (not anchors, not external, not new-tab)
-      if (a.target === '_blank') return;
-      if (href.startsWith('#')) return;
-      if (href.startsWith('http')) return;
-      if (href.startsWith('mailto:') || href.startsWith('tel:')) return;
-      if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
-      if (!href.endsWith('.html') && !href.endsWith('/')) return;
-
-      e.preventDefault();
-      const targetText = (a.textContent || href).trim().toUpperCase().slice(0, 24);
-      transitionEl.querySelector('.pt-target').textContent = `▸ ${targetText}`;
-      transitionEl.classList.add('active');
-      // Re-trigger the scanline animation
-      const scan = transitionEl.querySelector('.pt-scanline');
-      scan.style.animation = 'none';
-      void scan.offsetHeight; // reflow
-      scan.style.animation = '';
-      setTimeout(() => { window.location.href = href; }, 2400);
-    });
   }
 
   /* ============================================================
@@ -2377,7 +2686,8 @@ do not retry. retry attempts are logged.`,
     function updateMobileClock() {
       const now = new Date();
       const t = now.toUTCString().slice(17, 25);
-      navClockMobile.innerHTML = `<span>${t} UTC</span>`;
+      const wx = ATMO.weatherTag ? ` ▸ ${ATMO.weatherTag}` : '';
+      navClockMobile.innerHTML = `<span>${t} UTC${wx}</span>`;
     }
     updateMobileClock();
     setInterval(updateMobileClock, 1000);
@@ -2545,11 +2855,14 @@ do not retry. retry attempts are logged.`,
     part(new THREE.BoxGeometry(1.0, 2.0, 2.0), mat(COL.white, 1, 0.5, 0.4), [-caseW / 2 + 1.4, 3.0, 0.4],
       { part: 'cool', spec: 5, name: 'AIO Pump Block', sub: 'CPU · liquid-cooled', edge: palette.accent2.getHex() });
 
-    // ---- two white braided AIO tubes curving up to the top radiator ----
+    // ---- two white braided AIO tubes from the pump up into the radiator ----
+    // Pump block top sits at y=4.0 and the radiator underside at y=4.7, so the
+    // tubes span 3.3 -> 5.1: both ends embed in a part and nothing pokes
+    // through the top panel (y=6).
     [-0.5, 0.5].forEach(dz => {
-      const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 4.8, 10), mat(COL.white, 1, 0.2, 0.5));
-      tube.position.set(-caseW / 2 + 1.5, 4.7, 0.4 + dz);
-      tube.rotation.z = 0.14;
+      const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 1.8, 10), mat(COL.white, 1, 0.2, 0.5));
+      tube.position.set(-caseW / 2 + 1.45, 4.2, 0.4 + dz);
+      tube.rotation.z = -0.12; // slight lean inward, toward the radiator body
       root.add(tube);
     });
 
@@ -2812,6 +3125,405 @@ do not retry. retry attempts are logged.`,
     const loading = stage && stage.querySelector('.pc-loading');
     if (loading) loading.innerHTML = '<div style="color:var(--fg-dim);text-align:center;line-height:1.8;">3D MODULE OFFLINE<br><span style="font-size:9px;">specs available below</span></div>';
     return false;
+  }
+
+  /* ============================================================
+     IMMERSION LAYER
+     Ambient audio, live sector weather, pointer/tilt parallax,
+     decode-in headings, idle veil, scroll depth.
+     ============================================================ */
+
+  /* -------- AMBIENT AUDIO — procedural, muted by default ---------
+     No audio files. Rain is band-limited noise, wind is a slow
+     bandpass swell, the hum is two low sine partials. UI ticks are
+     tiny oscillator blips. Everything hangs off one context that
+     only exists after the user opts in. */
+  const AUDIO = {
+    ctx: null, master: null, bed: null, rainGain: null,
+    enabled: false, started: false, _lastHover: 0,
+    pref() { try { return localStorage.getItem('nx-audio') === 'on'; } catch(e) { return false; } },
+    setPref(on) { try { localStorage.setItem('nx-audio', on ? 'on' : 'off'); } catch(e) {} },
+    syncUI(on) {
+      document.querySelectorAll('.audio-toggle').forEach(t => {
+        t.classList.toggle('on', on);
+        t.classList.toggle('off', !on);
+        const l = t.querySelector('.label');
+        if (l) l.textContent = on ? 'AUDIO ON' : 'AUDIO OFF';
+      });
+    },
+    start() {
+      if (this.started) return;
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      const ctx = this.ctx = new AC();
+      const master = this.master = ctx.createGain();
+      master.gain.value = 0.9;
+      master.connect(ctx.destination);
+      // The ambience bed fades in/out as a group; ticks bypass it.
+      const bed = this.bed = ctx.createGain();
+      bed.gain.value = 0;
+      bed.connect(master);
+
+      // One shared looped noise buffer feeds rain + wind
+      const len = ctx.sampleRate * 2;
+      const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+
+      // Rain
+      const rainSrc = ctx.createBufferSource();
+      rainSrc.buffer = buf; rainSrc.loop = true;
+      const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 420;
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1500;
+      const rg = this.rainGain = ctx.createGain(); rg.gain.value = 0.05;
+      rainSrc.connect(hp); hp.connect(lp); lp.connect(rg); rg.connect(bed);
+      rainSrc.start();
+
+      // Wind swell
+      const windSrc = ctx.createBufferSource();
+      windSrc.buffer = buf; windSrc.loop = true; windSrc.playbackRate.value = 0.45;
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 240; bp.Q.value = 1.1;
+      const wg = ctx.createGain(); wg.gain.value = 0.03;
+      const lfo = ctx.createOscillator(); lfo.frequency.value = 0.07;
+      const lfoG = ctx.createGain(); lfoG.gain.value = 0.018;
+      lfo.connect(lfoG); lfoG.connect(wg.gain);
+      windSrc.connect(bp); bp.connect(wg); wg.connect(bed);
+      windSrc.start(); lfo.start();
+
+      // Machine hum
+      const o1 = ctx.createOscillator(); o1.type = 'sine'; o1.frequency.value = 55;
+      const o2 = ctx.createOscillator(); o2.type = 'sine'; o2.frequency.value = 110.4;
+      const h1 = ctx.createGain(); h1.gain.value = 0.022;
+      const h2 = ctx.createGain(); h2.gain.value = 0.01;
+      o1.connect(h1); h1.connect(bed);
+      o2.connect(h2); h2.connect(bed);
+      o1.start(); o2.start();
+
+      // Rain loudness follows whether it is visually raining
+      setInterval(() => {
+        if (!this.ctx) return;
+        const wet = document.documentElement.getAttribute('data-theme') === 'rain' || ATMO.rainLive;
+        this.rainGain.gain.setTargetAtTime(wet ? 0.13 : 0.05, this.ctx.currentTime, 1.2);
+      }, 2000);
+
+      this.started = true;
+    },
+    enable(on) {
+      this.setPref(on);
+      this.enabled = on;
+      this.syncUI(on);
+      if (on) {
+        this.start();
+        if (!this.ctx) return;
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+        this.bed.gain.setTargetAtTime(1, this.ctx.currentTime, 0.8);
+      } else if (this.ctx) {
+        this.bed.gain.setTargetAtTime(0, this.ctx.currentTime, 0.35);
+      }
+    },
+    tick(kind) {
+      if (!this.enabled || !this.ctx || this.ctx.state !== 'running') return;
+      if (kind === 'hover') {
+        const now = performance.now();
+        if (now - this._lastHover < 90) return;
+        this._lastHover = now;
+      }
+      const t = this.ctx.currentTime;
+      const conf = kind === 'hover' ? [2100, 0.012, 0.03]
+                 : kind === 'key'   ? [2600, 0.02,  0.025]
+                 :                    [1400, 0.05,  0.06];
+      const o = this.ctx.createOscillator();
+      const g = this.ctx.createGain();
+      o.type = 'square';
+      o.frequency.value = conf[0];
+      g.gain.setValueAtTime(conf[1], t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + conf[2]);
+      o.connect(g); g.connect(this.master);
+      o.start(t); o.stop(t + conf[2] + 0.02);
+    }
+  };
+
+  document.querySelectorAll('.audio-toggle').forEach(t => {
+    t.addEventListener('click', () => AUDIO.enable(!AUDIO.enabled));
+  });
+
+  // Restore a saved "on" preference at the first user gesture — browsers
+  // refuse to start an AudioContext before one.
+  if (AUDIO.pref()) {
+    AUDIO.syncUI(true);
+    const arm = () => {
+      document.removeEventListener('pointerdown', arm);
+      document.removeEventListener('keydown', arm);
+      AUDIO.enable(true);
+    };
+    document.addEventListener('pointerdown', arm);
+    document.addEventListener('keydown', arm);
+  }
+
+  // UI ticks: hover, click, terminal keystrokes
+  {
+    const tickSel = 'a, button, .blog-card, .build-exhibit, .signal, .archive-entry, .timeline-tag, .archive-filter, .memory-node, .interrogation-option, [data-hover]';
+    document.addEventListener('mouseover', (e) => {
+      if (e.target.closest(tickSel)) AUDIO.tick('hover');
+    });
+    document.addEventListener('click', (e) => {
+      if (e.target.closest(tickSel)) AUDIO.tick('click');
+    });
+    document.addEventListener('keydown', (e) => {
+      const el = e.target;
+      if (el && el.classList && el.classList.contains('terminal-input')) AUDIO.tick('key');
+    });
+  }
+
+  /* -------- LIVE SECTOR WEATHER — the visitor's own sky ---------
+     Locates the operator by IP (city-level, no permission prompt) via
+     ipwho.is, then reads their sky from Open-Meteo. When it is actually
+     raining (or snowing) where the visitor is, the rain canvas runs in
+     every theme and the nav clock reports the feed. Falls back to
+     Cincinnati HQ if the lookup fails. Cached in sessionStorage for
+     30 minutes. Fails silent offline. */
+  (function liveWeather() {
+    const WET_CODES  = new Set([51,53,55,56,57,61,63,65,66,67,71,73,75,77,80,81,82,85,86,95,96,99]);
+    const SNOW_CODES = new Set([71,73,75,77,85,86]);
+    const HOME = { lat: 39.1031, lon: -84.5120, city: 'CINCINNATI' };
+    function apply(wet, snow, city) {
+      ATMO.rainLive = wet;
+      ATMO.snow = snow;
+      ATMO.city = city || 'UNKNOWN';
+      ATMO.weatherTag = wet ? (snow ? 'WX SNOW LIVE' : 'WX RAIN LIVE') : 'WX DRY';
+      const drawerStatus = document.querySelector('.nav-drawer-status');
+      if (drawerStatus) drawerStatus.textContent = `UPLINK STABLE ▸ ${ATMO.weatherTag}`;
+      if (wet) {
+        let told = false;
+        try { told = sessionStorage.getItem('nx-wx-toast') === '1'; } catch(e) {}
+        if (!told) {
+          try { sessionStorage.setItem('nx-wx-toast', '1'); } catch(e) {}
+          NX.toast(`LIVE FEED ▸ ${snow ? 'SNOW' : 'RAIN'} OVER SECTOR ${city || 'LOCAL'}`);
+        }
+      }
+    }
+    try {
+      const cached = JSON.parse(sessionStorage.getItem('nx-wx') || 'null');
+      if (cached && Date.now() - cached.at < 30 * 60 * 1000) {
+        apply(cached.wet, cached.snow, cached.city);
+        return;
+      }
+    } catch(e) {}
+    fetch('https://ipwho.is/')
+      .then(r => r.json())
+      .then(g => {
+        const lat = parseFloat(g.latitude), lon = parseFloat(g.longitude);
+        return (g.success !== false && isFinite(lat) && isFinite(lon))
+          ? { lat, lon, city: (g.city || 'LOCAL').toUpperCase() }
+          : HOME;
+      })
+      .catch(() => HOME)
+      .then(loc =>
+        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat.toFixed(4)}&longitude=${loc.lon.toFixed(4)}&current=precipitation,weather_code`)
+          .then(r => r.json())
+          .then(j => {
+            const cur = j && j.current ? j.current : {};
+            const wet = WET_CODES.has(cur.weather_code) || (cur.precipitation || 0) > 0;
+            const snow = SNOW_CODES.has(cur.weather_code);
+            try { sessionStorage.setItem('nx-wx', JSON.stringify({ at: Date.now(), wet, snow, city: loc.city })); } catch(e) {}
+            apply(wet, snow, loc.city);
+          })
+      )
+      .catch(() => {}); // offline / blocked: the sky stays as the theme left it
+  })();
+
+  /* -------- POINTER / TILT PARALLAX ---------
+     Haze, dust, and the hero name shift a few px against the pointer
+     (or device tilt on mobile). Uses the standalone `translate`
+     property so it composes with the existing CSS drift/glitch
+     animations instead of overwriting their transforms. */
+  (function parallax() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const layers = [
+      { el: document.querySelector('.haze-layer'),   fx: 26, fy: 18 },
+      { el: document.getElementById('dust-canvas'),  fx: 12, fy: 9  },
+      { el: document.querySelector('.hero-name'),    fx: -9, fy: -6 }
+    ].filter(l => l.el);
+    if (!layers.length) return;
+    let tx = 0, ty = 0, cx = 0, cy = 0;
+    window.addEventListener('mousemove', (e) => {
+      tx = e.clientX / window.innerWidth - 0.5;
+      ty = e.clientY / window.innerHeight - 0.5;
+    }, { passive: true });
+    window.addEventListener('deviceorientation', (e) => {
+      if (e.gamma == null || e.beta == null) return;
+      tx = Math.max(-0.5, Math.min(0.5, e.gamma / 60));
+      ty = Math.max(-0.5, Math.min(0.5, (e.beta - 40) / 60));
+    }, { passive: true });
+    (function step() {
+      cx += (tx - cx) * 0.04;
+      cy += (ty - cy) * 0.04;
+      for (const l of layers) {
+        l.el.style.translate = `${(cx * l.fx).toFixed(2)}px ${(cy * l.fy).toFixed(2)}px`;
+      }
+      requestAnimationFrame(step);
+    })();
+  })();
+
+  /* -------- DECODE-IN HEADINGS ---------
+     Section titles scramble from archive glyphs into the real text
+     when they scroll into view. Walks text nodes so markup like the
+     <em> in the contact title survives. */
+  (function decodeHeadings() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const GLYPHS = '▚▞▟◊╳░▒#%&$+=*<>/01';
+    const els = document.querySelectorAll('.section-title, .contact-title');
+    if (!els.length) return;
+    function run(el) {
+      const nodes = [];
+      (function walk(n) {
+        n.childNodes.forEach(c => {
+          if (c.nodeType === 3 && c.textContent.trim()) nodes.push({ node: c, text: c.textContent });
+          else if (c.nodeType === 1) walk(c);
+        });
+      })(el);
+      const total = nodes.reduce((s, n) => s + n.text.length, 0);
+      if (!total) return;
+      const dur = Math.min(900, 300 + total * 30);
+      const t0 = performance.now();
+      (function frame(now) {
+        const p = Math.min(1, (now - t0) / dur);
+        const cut = Math.floor(p * total);
+        let seen = 0;
+        for (const { node, text } of nodes) {
+          let out = '';
+          for (let i = 0; i < text.length; i++) {
+            const ch = text[i];
+            out += (seen + i < cut || ch === ' ') ? ch : GLYPHS[(Math.random() * GLYPHS.length) | 0];
+          }
+          node.textContent = out;
+          seen += text.length;
+        }
+        if (p < 1) requestAnimationFrame(frame);
+        else for (const { node, text } of nodes) node.textContent = text;
+      })(t0);
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(en => {
+        if (!en.isIntersecting) return;
+        io.unobserve(en.target);
+        run(en.target);
+      });
+    }, { threshold: 0.4 });
+    els.forEach(el => io.observe(el));
+  })();
+
+  /* -------- IDLE VEIL — the archive notices you left ---------
+     90s without input dims the page behind a SIGNAL IDLE readout.
+     Any input clears it. Never shows in a hidden tab. */
+  (function idleVeil() {
+    const IDLE_MS = 90000;
+    let timer = null, veil = null;
+    function show() {
+      if (veil || document.visibilityState !== 'visible') return;
+      veil = document.createElement('div');
+      veil.id = 'idle-veil';
+      veil.setAttribute('aria-hidden', 'true');
+      veil.innerHTML = `
+        <div class="idle-box">
+          <div class="idle-line"></div>
+          <div class="idle-text">SIGNAL IDLE</div>
+          <div class="idle-sub">// awaiting operator input</div>
+        </div>`;
+      document.body.appendChild(veil);
+      requestAnimationFrame(() => veil.classList.add('show'));
+    }
+    function hide() {
+      if (!veil) return;
+      const v = veil;
+      veil = null;
+      v.classList.remove('show');
+      setTimeout(() => v.remove(), 800);
+    }
+    function poke() {
+      hide();
+      clearTimeout(timer);
+      timer = setTimeout(show, IDLE_MS);
+    }
+    ['pointermove', 'pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'].forEach(ev =>
+      document.addEventListener(ev, poke, { passive: true })
+    );
+    document.addEventListener('visibilitychange', poke);
+    poke();
+  })();
+
+  /* -------- SCROLL DEPTH — descend into the archive ---------
+     A radial shade darkens the edges as you scroll deeper, and the
+     rain (when active) falls harder toward the bottom of the page. */
+  (function scrollDepth() {
+    const shade = document.createElement('div');
+    shade.className = 'depth-shade';
+    shade.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(shade);
+    function onScroll() {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const depth = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      shade.style.opacity = (depth * 0.3).toFixed(3);
+      ATMO.rainIntensity = 0.75 + depth * 0.5;
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    onScroll();
+  })();
+
+  /* ============================================================
+     DEFENSE GRID — uplink page
+     The one panel on the console that is NOT synthetic: it reads
+     this site's actual response headers back from the edge and
+     renders the live security posture.
+     ============================================================ */
+  const defenseEl = document.getElementById('uplink-defense');
+  if (defenseEl) {
+    const WANT = [
+      ['content-security-policy',      'CSP'],
+      ['strict-transport-security',    'HSTS'],
+      ['x-content-type-options',       'XCTO'],
+      ['x-frame-options',              'XFO'],
+      ['referrer-policy',              'REFERRER'],
+      ['permissions-policy',           'PERMISSIONS'],
+      ['cross-origin-opener-policy',   'COOP'],
+      ['cross-origin-resource-policy', 'CORP']
+    ];
+    fetch(window.location.href, { method: 'HEAD', cache: 'no-store' })
+      .then(res => {
+        defenseEl.textContent = '';
+        let shielded = 0;
+        WANT.forEach(([h, short]) => {
+          const v = res.headers.get(h);
+          const row = document.createElement('div');
+          row.className = `defense-row ${v ? 'ok' : 'bad'}`;
+          const state = document.createElement('span');
+          state.className = 'defense-state';
+          state.textContent = v ? 'SHIELDED' : 'EXPOSED';
+          const key = document.createElement('span');
+          key.className = 'defense-key';
+          key.textContent = short;
+          const val = document.createElement('span');
+          val.className = 'defense-val';
+          val.textContent = v ? (v.length > 96 ? v.slice(0, 93) + '...' : v) : 'header not present on this origin';
+          row.append(state, key, val);
+          defenseEl.appendChild(row);
+          if (v) shielded++;
+        });
+        const note = document.createElement('div');
+        note.className = 'defense-note';
+        note.textContent = shielded === WANT.length
+          ? `// ${shielded}/${WANT.length} shields up — live values read from this response, not lore`
+          : `// ${shielded}/${WANT.length} shields up — local/dev origins serve fewer headers than the production edge`;
+        defenseEl.appendChild(note);
+      })
+      .catch(() => {
+        defenseEl.textContent = '';
+        const note = document.createElement('div');
+        note.className = 'defense-note';
+        note.textContent = '// edge interrogation failed — offline, or viewing via file://';
+        defenseEl.appendChild(note);
+      });
   }
 
 })();

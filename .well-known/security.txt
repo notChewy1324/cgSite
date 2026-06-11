@@ -1,0 +1,20 @@
+# ============================================================
+# WALLACE CORP — NEXUS-9 PERSONNEL ARCHIVE
+# security.txt (RFC 9116)
+#
+# Found something? Good eye, operator. Report it through the
+# channels below. Retry attempts are logged. Disclosures are
+# appreciated.
+# ============================================================
+
+Contact: https://www.linkedin.com/in/camgarrison
+Contact: https://github.com/notChewy1324
+Expires: 2027-06-09T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://camgarrison.com/.well-known/security.txt
+Policy: https://camgarrison.com/archive.html
+
+# Scope: camgarrison.com is a static site (Cloudflare Pages).
+# No server-side code, no database, no user accounts, no PII.
+# The telemetry on /uplink.html is synthetic. The terminal is
+# read-only. The replicants are hypothetical.

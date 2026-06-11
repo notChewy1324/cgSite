@@ -1,0 +1,50 @@
+# ============================================================
+# WALLACE CORP — EDGE DEFENSE GRID
+# Cloudflare Pages response headers (camgarrison.com)
+#
+# CSP notes:
+#   - script-src: self + a sha256 hash of the single inline
+#     theme-bootstrap script (identical on every page). If you
+#     ever edit that inline script, recompute the hash:
+#       node -e "const c=require('crypto'),f=require('fs');
+#       const m=f.readFileSync('index.html','utf8')
+#         .match(/<script>([\s\S]*?)<\/script>/);
+#       console.log(c.createHash('sha256').update(m[1]).digest('base64'))"
+#   - three.js is self-hosted at /js/three.min.js, so no CDN
+#     appears in script-src at all.
+#   - style-src 'unsafe-inline' covers inline style attributes.
+#   - fonts are self-hosted in /fonts, so font-src is 'self' and
+#     no Google Fonts origins appear anywhere in the policy.
+#   - frame-src/frame-ancestors 'self' so the builds page can
+#     embed its own PDFs and nothing else can frame the site.
+#   - connect-src allows ipwho.is (IP -> city/coords, no
+#     permission prompt) + api.open-meteo.com (current weather):
+#     together they drive the live local-weather rain canvas.
+#   - accelerometer/gyroscope are (self) so deviceorientation
+#     can drive the mobile tilt parallax.
+# ============================================================
+
+/*
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-GWP6yeiMZB+pmxBVRFksUz9WNUfZd5RkSiC9Q/yO7uw=' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://api.open-meteo.com https://ipwho.is https://cloudflareinsights.com; frame-src 'self'; base-uri 'self'; form-action 'none'; frame-ancestors 'self'; manifest-src 'self'; upgrade-insecure-requests
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: accelerometer=(self), camera=(), geolocation=(), gyroscope=(self), magnetometer=(), microphone=(), payment=(), usb=(), interest-cohort=()
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  X-Permitted-Cross-Domain-Policies: none
+
+# Long-cache the vendored library (bump the filename if upgraded)
+/js/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Self-hosted fonts never change in place
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/imgs/*
+  Cache-Control: public, max-age=604800
+
+/docs/*
+  Cache-Control: public, max-age=86400

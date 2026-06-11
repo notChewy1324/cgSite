@@ -1,0 +1,8 @@
+# WALLACE CORP — NEXUS-9 PERSONNEL ARCHIVE
+# Crawlers welcome. Replicants tolerated. Everything is indexed;
+# nothing is remembered.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://camgarrison.com/sitemap.xml
