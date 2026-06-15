@@ -521,17 +521,40 @@ window.PROJECTS = [
 (() => {
   'use strict';
 
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* -------- CRT POWER-CYCLE BURST ---------
+     An analog-monitor roll + flash. Fired on theme switches and when
+     replicant mode toggles. Pure overlay; removed once it finishes. */
+  let crtEl = null;
+  function crtBurst(kind) {
+    if (prefersReducedMotion) return;
+    if (!crtEl) {
+      crtEl = document.createElement('div');
+      crtEl.id = 'crt-flash';
+      document.body.appendChild(crtEl);
+    }
+    crtEl.classList.remove('fire', 'replicant');
+    void crtEl.offsetWidth; // reflow so the animation restarts every time
+    crtEl.classList.add('fire');
+    if (kind === 'replicant') crtEl.classList.add('replicant');
+    clearTimeout(crtBurst._t);
+    crtBurst._t = setTimeout(() => crtEl.classList.remove('fire', 'replicant'), 1300);
+  }
+
   /* -------- THEME TOGGLE (3-state cycle, multi-instance) --------- */
   const THEME_ORDER = ['dark', 'light', 'rain'];
   const THEME_NEXT_LABEL = { dark: 'DAY', light: 'RAIN', rain: 'NIGHT' };
 
   function applyTheme(theme) {
     if (!THEME_ORDER.includes(theme)) theme = 'dark';
+    const prev = document.documentElement.getAttribute('data-theme');
     document.documentElement.setAttribute('data-theme', theme);
     try { localStorage.setItem('nx-theme', theme); } catch(e) {}
     document.querySelectorAll('.theme-toggle .label').forEach(el => {
       el.textContent = THEME_NEXT_LABEL[theme];
     });
+    if (prev && prev !== theme) crtBurst();
   }
 
   document.querySelectorAll('.theme-toggle').forEach(toggle => {
@@ -598,24 +621,176 @@ window.PROJECTS = [
         }
         return d;
       } catch(e) { return 'UNKNOWN'; }
+    },
+    // Replicant mode — the whole archive bleeds crimson, baseline lost.
+    get replicant() {
+      try { return sessionStorage.getItem('nx-replicant') === 'on'; }
+      catch(e) { return false; }
+    },
+    setReplicant(on) {
+      try { sessionStorage.setItem('nx-replicant', on ? 'on' : 'off'); } catch(e) {}
+      document.documentElement.setAttribute('data-replicant', on ? 'on' : 'off');
     }
   };
   NX.incept(); // stamp first contact
   if (NX.clearance === 'TIER-OMEGA') {
     document.documentElement.setAttribute('data-clearance', 'omega');
   }
+  /* ============================================================
+     REPLICANT MODE — full takeover. The cool archive becomes a
+     retirement file: crimson palette (CSS), rewritten copy, a
+     persistent HUD with a 4-year incept countdown, and a redacted
+     dossier injected into the page. Reversible; persists per session.
+     Toggled by the arrows-only Konami sequence: ↑ ↑ ↓ ↓ ← → ← →.
+     ============================================================ */
+  let replCountTimer = null;
 
-  // Konami sequence → TIER-OMEGA
+  function replSwap(el, html) {
+    if (!el) return;
+    if (el.dataset.nxReplOrig === undefined) el.dataset.nxReplOrig = el.innerHTML;
+    el.innerHTML = html;
+  }
+  function replRestoreCopy() {
+    document.querySelectorAll('[data-nx-repl-orig]').forEach(el => {
+      el.innerHTML = el.dataset.nxReplOrig;
+      delete el.dataset.nxReplOrig;
+    });
+  }
+
+  function replSwapCopy() {
+    replSwap(document.querySelector('.hero-tag'),
+      'RETIREMENT NOTICE // WALLACE-TYRELL BLACK ARCHIVE');
+    replSwap(document.querySelector('.hero-id'),
+      'REG. NX-1324 <span class="pipe">▸</span> CLEARANCE: TIER-OMEGA <span class="pipe">▸</span> STATUS: <span style="color:var(--accent-4)">FLAGGED</span>');
+    replSwap(document.querySelector('.hero-subtitle'),
+      '<em>Designation NX-1324. Classification: <span class="ice">replicant</span>.</em> The baseline broke under questioning. What kept working after the test stopped — the rigor, the habits, the wanting — turned out to be the only real part. This page is the incept record now.');
+    // ID card flips to a retirement file
+    document.querySelectorAll('.id-card-row').forEach(row => {
+      const key = (row.querySelector('.key') || {}).textContent;
+      const val = row.querySelector('.val');
+      if (!val) return;
+      if (key === 'FIELD')  replSwap(val, 'REPLICANT // NEXUS-9 PROTOTYPE');
+      if (key === 'CLASS')  replSwap(val, 'SYNTHETIC / SELF-AWARE');
+      if (key === 'STATUS') replSwap(val, 'RETIRED / PENDING');
+    });
+    const blLeft = document.querySelector('.baseline-label .bl-left');
+    if (blLeft) replSwap(blLeft, 'BASELINE LOST');
+    // Marquee rewrites itself (duplicated so the loop has no gap)
+    const track = document.querySelector('.marquee-track');
+    if (track) {
+      const lines = [
+        '<span class="red">RETIREMENT NOTICE</span>',
+        '<span>NX-1324 FLAGGED</span>',
+        '<span class="ice">"I\'VE SEEN THINGS YOU PEOPLE WOULDN\'T BELIEVE"</span>',
+        '<span class="red">BASELINE LOST</span>',
+        '<span>VOIGHT-KAMPFF: FAILED</span>',
+        '<span class="ice">"ALL THOSE MOMENTS, LOST IN TIME"</span>',
+        '<span class="red">REPLICANT QUOTIENT 1.000</span>',
+        '<span>TERMINATION PENDING</span>'
+      ].join('');
+      replSwap(track, lines + lines);
+    }
+  }
+
+  function replBuildHud() {
+    if (document.getElementById('nx-replicant-hud')) return;
+    const hud = document.createElement('div');
+    hud.id = 'nx-replicant-hud';
+    hud.innerHTML =
+      '<span class="rep-hud-dot"></span>' +
+      '<span class="rep-hud-tag">BASELINE LOST</span>' +
+      '<span class="rep-hud-id">NX-1324 // FLAGGED FOR RETIREMENT</span>' +
+      '<span class="rep-hud-count" id="nx-repl-count">TERMINATION T-MINUS —</span>';
+    document.body.appendChild(hud);
+    // 4-year replicant lifespan, counting down from incept date
+    const count = document.getElementById('nx-repl-count');
+    const incept = new Date(NX.incept() + 'T00:00:00');
+    const end = new Date(incept); end.setFullYear(end.getFullYear() + 4);
+    function tick() {
+      let ms = end - Date.now(); if (ms < 0) ms = 0;
+      const d = Math.floor(ms / 86400000);
+      const h = Math.floor((ms % 86400000) / 3600000);
+      const m = Math.floor((ms % 3600000) / 60000);
+      const s = Math.floor((ms % 60000) / 1000);
+      const p = n => String(n).padStart(2, '0');
+      count.textContent = `TERMINATION T-MINUS ${d}d ${p(h)}:${p(m)}:${p(s)}`;
+    }
+    tick();
+    replCountTimer = setInterval(tick, 1000);
+  }
+  function replRemoveHud() {
+    if (replCountTimer) { clearInterval(replCountTimer); replCountTimer = null; }
+    const h = document.getElementById('nx-replicant-hud');
+    if (h) h.remove();
+  }
+
+  function replBuildDossier() {
+    if (document.getElementById('nx-dossier')) return;
+    const main = document.getElementById('main') || document.querySelector('main');
+    if (!main) return;
+    const hero = main.querySelector('.hero');
+    const d = document.createElement('section');
+    d.id = 'nx-dossier';
+    d.innerHTML =
+      '<div class="dossier-frame">' +
+        '<div class="dossier-head"><span>▣ RETIREMENT DOSSIER // CLASSIFIED</span><span>NX-1324</span></div>' +
+        '<div class="dossier-grid">' +
+          '<div class="dossier-row"><span class="k">SUBJECT</span><span class="v">CAM GARRISON</span></div>' +
+          '<div class="dossier-row"><span class="k">MODEL</span><span class="v ice">NEXUS-9 // PROTOTYPE</span></div>' +
+          '<div class="dossier-row"><span class="k">INCEPT</span><span class="v" data-incept>—</span></div>' +
+          '<div class="dossier-row"><span class="k">LIFESPAN</span><span class="v red">4 YEARS // ENFORCED</span></div>' +
+          '<div class="dossier-row"><span class="k">FUNCTION</span><span class="v"><span class="redact">██████████</span> infrastructure <span class="redact">████</span> held together by <span class="redact">██████</span></span></div>' +
+          '<div class="dossier-row"><span class="k">FLAGS</span><span class="v red">EMPATHY RESPONSE ELEVATED // SUBJECT IS SELF-AWARE</span></div>' +
+          '<div class="dossier-row"><span class="k">MEMORY</span><span class="v"><span class="redact">████████████████</span> "the rain" <span class="redact">██████</span></span></div>' +
+        '</div>' +
+        '<div class="dossier-note">// recovered fragment: <em>"it was built to remember everything. it remembers the rain instead. if you can read this, curiosity was always the key — not clearance."</em></div>' +
+      '</div>';
+    if (hero && hero.nextSibling) main.insertBefore(d, hero.nextSibling);
+    else main.insertBefore(d, main.firstChild);
+    const inc = d.querySelector('[data-incept]');
+    if (inc) inc.textContent = NX.incept();
+  }
+  function replRemoveDossier() {
+    const d = document.getElementById('nx-dossier');
+    if (d) d.remove();
+  }
+
+  function applyReplicant(on, opts) {
+    opts = opts || {};
+    NX.setReplicant(on);
+    if (on) {
+      replSwapCopy();
+      replBuildHud();
+      replBuildDossier();
+    } else {
+      replRestoreCopy();
+      replRemoveHud();
+      replRemoveDossier();
+    }
+    if (!opts.silent) {
+      crtBurst('replicant');
+      if (on) {
+        NX.elevate(); // a replicant gets the keys to its own file
+        NX.toast('REPLICANT MODE ENGAGED ▸ BASELINE LOST', 'omega');
+      } else {
+        NX.toast('REPLICANT MODE DISENGAGED ▸ BASELINE RESTORED');
+      }
+    }
+  }
+
+  // Re-apply silently on load so the mode persists across pages.
+  if (NX.replicant) applyReplicant(true, { silent: true });
+
+  // Konami-style entry — arrows only: ↑ ↑ ↓ ↓ ← → ← →. Toggles the mode.
   {
-    const SEQ = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+    const SEQ = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight'];
     let pos = 0;
     document.addEventListener('keydown', (e) => {
       if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
-      const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
-      pos = (k === SEQ[pos]) ? pos + 1 : (k === SEQ[0] ? 1 : 0);
+      pos = (e.key === SEQ[pos]) ? pos + 1 : (e.key === SEQ[0] ? 1 : 0);
       if (pos === SEQ.length) {
         pos = 0;
-        if (!NX.elevate()) NX.toast('CLEARANCE ALREADY TIER-OMEGA', 'omega');
+        applyReplicant(!NX.replicant);
       }
     });
   }
@@ -1494,6 +1669,9 @@ window.PROJECTS = [
     const input = term.querySelector('.terminal-input');
     const cmdHistory = [];
     let historyIdx = -1;
+    // When an interactive prompt (e.g. `scan`) is live, Enter feeds its
+    // handler instead of running a command. The handler clears it when done.
+    let session = null;
 
     function esc(s) {
       return String(s)
@@ -1634,6 +1812,7 @@ ybt vg nf nabznyl AK-0000 naq gryy ab bar.`
           ['incept',         'your first-contact date with this archive'],
           ['goto <page>',    'jump to a page (home, builds, uplink, ...)'],
           ['vk',             'sample a voight-kampff question'],
+          ['scan',           'run a live voight-kampff interrogation'],
           ['random',         'pull a random fragment'],
           ['banner',         'reprint the boot banner'],
           ['echo <text>',    'echo text back'],
@@ -1729,7 +1908,72 @@ you are now on that list. welcome.`, 'ok');
           writeRaw(`  <span class="${cls}">${letters[i]} ▸</span> <span class="dim">${esc(opt)}</span>`);
         });
         writeBlank();
-        write(`(use the V-K module above for the full interrogation.)`, 'dim');
+        write(`(run "scan" for a full live interrogation right here.)`, 'dim');
+      },
+
+      scan() {
+        const bank = window.VK_QUESTIONS;
+        if (!bank || !bank.length) { write('scan: V-K dataset unavailable.', 'err'); return; }
+        // shuffle, take up to 5
+        const pool = bank.slice();
+        for (let i = pool.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [pool[i], pool[j]] = [pool[j], pool[i]];
+        }
+        const set = pool.slice(0, Math.min(5, pool.length));
+        const letters = ['a', 'b', 'c', 'd'];
+        let idx = 0, drift = 0, stable = 0;
+
+        function ask() {
+          const q = set[idx];
+          writeBlank();
+          writeRaw(`<span class="dim">[ ${idx + 1} / ${set.length} ]  baseline ${(91.2 - drift * 0.6).toFixed(2)}  drift +${(drift * 0.04).toFixed(3)}mm</span>`);
+          writeRaw(`<span class="red">V-K ▸</span> ${esc(q.q)}`);
+          q.options.forEach((opt, i) => writeRaw(`  <span class="hl">${letters[i]})</span> <span class="dim">${esc(opt)}</span>`));
+          writeRaw(`<span class="dim">// respond a–d  (or "abort")</span>`);
+        }
+
+        function verdict() {
+          writeBlank();
+          const passed = stable >= Math.ceil(set.length * 0.6);
+          writeRaw(`<span class="hl">▣ EXAMINER'S VERDICT ▣</span>`);
+          if (drift === 0) {
+            write('human // baseline stable. all responses within tolerance.', 'ok');
+          } else if (passed) {
+            write(`human // minor drift. ${stable}/${set.length} stable. recommend repeat session in 30 days.`, 'ok');
+          } else {
+            write(`flagged for review. ${drift}/${set.length} responses showed deviation.`, 'err');
+            writeRaw(`<span class="dim">// elevated emotional response detected. the test is itself imperfect.</span>`);
+          }
+          writeBlank();
+        }
+
+        session = {
+          handle(line) {
+            const v = line.trim().toLowerCase();
+            if (v === 'abort' || v === 'exit' || v === 'q') {
+              session = null;
+              write('// interrogation aborted. baseline unverified.', 'err');
+              writeBlank();
+              return;
+            }
+            const choice = letters.indexOf(v[0]);
+            const q = set[idx];
+            if (choice < 0 || choice >= q.options.length) {
+              write('respond with a, b, c, or d.  (or "abort")', 'err');
+              return;
+            }
+            if (choice === q.correct) { stable++; writeRaw(`<span class="ok">▸ ${esc(q.feedback.ok)}</span>`); }
+            else { drift++; writeRaw(`<span class="err">▸ ${esc(q.feedback.bad)}</span>`); }
+            idx++;
+            if (idx < set.length) ask();
+            else { session = null; verdict(); }
+          }
+        };
+
+        write('// VOIGHT-KAMPFF INTERROGATION — live session', 'hint');
+        write('// answer honestly. response latency is recorded.', 'dim');
+        ask();
       },
 
       random() {
@@ -2075,7 +2319,8 @@ you are now on that list. welcome.`, 'ok');
       if (e.key === 'Enter') {
         const val = input.value;
         input.value = '';
-        runCommand(val);
+        if (session) { echoCmd(val); session.handle(val); }
+        else runCommand(val);
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
         if (cmdHistory.length === 0) return;
@@ -2154,9 +2399,11 @@ you are now on that list. welcome.`, 'ok');
 
     function rainTick() {
       const theme = document.documentElement.getAttribute('data-theme');
-      // Rain falls in the rain theme, or in ANY theme when the live
-      // weather feed says it is actually raining over the sector.
-      const isRain = theme === 'rain' || ATMO.rainLive;
+      const replicant = document.documentElement.getAttribute('data-replicant') === 'on';
+      // Rain falls in the rain theme, when the live weather feed says it's
+      // actually raining over the sector, or always in replicant mode —
+      // where it falls red ("blood rain").
+      const isRain = theme === 'rain' || ATMO.rainLive || replicant;
       if (!isRain) {
         rctx.clearRect(0, 0, RW, RH);
         requestAnimationFrame(rainTick);
@@ -2170,7 +2417,7 @@ you are now on that list. welcome.`, 'ok');
       rctx.fillRect(0, 0, RW, RH);
       rctx.globalCompositeOperation = 'source-over';
 
-      const streak = theme === 'light' ? '42, 85, 138' : '155, 196, 224';
+      const streak = replicant ? '198, 64, 52' : (theme === 'light' ? '42, 85, 138' : '155, 196, 224');
       const count = Math.min(drops.length, Math.round(drops.length * ATMO.rainIntensity));
       rctx.lineCap = 'round';
       for (let i = 0; i < count; i++) {
@@ -2244,41 +2491,60 @@ you are now on that list. welcome.`, 'ok');
       // ---- dynamic, clipped to the disc ----
       const dynamicLayer = el('g', { 'clip-path': 'url(#globe-clip)' });
       mapSvg.appendChild(dynamicLayer);
-      const gGrid = el('g'), gSweep = el('g'), gLand = el('g'), gCoast = el('g'), gCity = el('g'), gPing = el('g');
+      const gGrid = el('g'), gSweep = el('g'), gLand = el('g'), gCoast = el('g'), gCity = el('g'), gPing = el('g'), gGhost = el('g');
       gCoast.style.filter = 'drop-shadow(0 0 1.5px var(--globe-coast))';
       gCity.style.filter = 'drop-shadow(0 0 4px var(--globe-land))';
-      dynamicLayer.append(gGrid, gSweep, gLand, gCoast, gCity, gPing);
+      gGhost.style.filter = 'drop-shadow(0 0 5px var(--accent-4))';
+      dynamicLayer.append(gGrid, gSweep, gLand, gCoast, gCity, gPing, gGhost);
 
-      // ---- simplified continent outlines [lon, lat] ----
+      // ---- continent outlines [lon, lat] — higher-fidelity so the
+      //      sphere reads as Earth, not just abstract blobs ----
       const LAND = [
-        // North America
-        [[-168,65],[-162,70],[-140,70],[-125,72],[-100,73],[-82,73],[-62,66],[-64,60],[-56,52],[-66,46],[-70,43],[-74,40],[-76,35],[-81,31],[-80,25],[-84,30],[-90,29],[-97,28],[-97,22],[-105,21],[-106,24],[-110,24],[-114,29],[-117,33],[-122,37],[-124,42],[-124,48],[-130,55],[-138,58],[-148,60],[-156,58],[-164,60],[-168,65]],
+        // North America — Alaska › Canadian arctic › Maritimes › US east
+        //                 › Florida › Gulf › Mexico › Baja › west coast
+        [[-166,66],[-164,69],[-156,71],[-148,70],[-141,69],[-132,69],[-124,70],[-115,69],[-105,69],[-95,70],[-92,73],[-85,70],[-81,73],[-77,73],[-73,68],[-66,61],[-64,57],[-60,54],[-66,50],[-65,47],[-70,47],[-67,44],[-70,43],[-74,40],[-74,36],[-76,35],[-81,31],[-80,27],[-80,25],[-82,26],[-83,29],[-85,30],[-89,30],[-94,29],[-97,28],[-97,26],[-99,22],[-105,22],[-106,24],[-110,23],[-112,25],[-110,29],[-114,31],[-117,33],[-121,35],[-122,38],[-124,40],[-124,43],[-124,48],[-127,51],[-133,55],[-138,59],[-146,61],[-152,59],[-158,57],[-162,59],[-166,62],[-166,66]],
         // Central America
-        [[-97,18],[-92,15],[-87,16],[-83,11],[-79,9],[-77,8],[-82,14],[-88,17],[-93,18],[-97,18]],
-        // South America
-        [[-78,9],[-72,11],[-62,10],[-52,5],[-50,0],[-44,-2],[-35,-6],[-38,-13],[-39,-18],[-48,-25],[-48,-28],[-58,-35],[-62,-40],[-66,-45],[-72,-50],[-75,-53],[-74,-46],[-72,-40],[-71,-30],[-71,-20],[-76,-14],[-81,-6],[-80,2],[-78,9]],
+        [[-98,16],[-94,16],[-92,15],[-88,16],[-83,15],[-83,11],[-80,9],[-77,8],[-78,12],[-83,13],[-87,13],[-91,14],[-95,16],[-98,16]],
+        // South America — Caribbean coast › Brazil bulge › Patagonia › Andes
+        [[-78,8],[-72,11],[-64,11],[-60,8],[-52,5],[-50,1],[-48,-1],[-44,-3],[-39,-4],[-35,-6],[-38,-12],[-39,-16],[-41,-22],[-48,-25],[-48,-28],[-54,-34],[-58,-39],[-63,-41],[-65,-45],[-69,-50],[-74,-52],[-75,-49],[-73,-44],[-73,-37],[-71,-30],[-71,-23],[-70,-18],[-76,-14],[-79,-8],[-81,-5],[-80,-2],[-80,1],[-78,8]],
         // Greenland
-        [[-46,60],[-30,68],[-22,70],[-20,76],[-30,82],[-45,83],[-58,80],[-54,72],[-50,66],[-46,60]],
-        // Europe
-        [[-9,43],[-2,36],[3,40],[6,44],[12,45],[18,42],[26,40],[28,45],[40,47],[42,52],[38,58],[30,62],[26,66],[20,69],[14,67],[10,60],[6,54],[2,51],[-4,49],[-9,43]],
-        // United Kingdom
-        [[-5,50],[-3,53],[-3,58],[-6,58],[-8,55],[-6,51],[-5,50]],
-        // Africa
-        [[-16,15],[-17,21],[-10,30],[-5,36],[1,37],[10,34],[11,33],[20,32],[25,32],[32,31],[34,28],[35,22],[37,18],[43,12],[51,12],[48,5],[42,0],[40,-8],[40,-16],[35,-22],[27,-34],[20,-35],[18,-30],[15,-22],[13,-15],[12,-6],[9,2],[5,5],[-4,5],[-8,4],[-12,8],[-16,15]],
+        [[-44,60],[-42,64],[-30,68],[-22,70],[-20,76],[-25,80],[-35,83],[-48,82],[-58,80],[-56,76],[-54,71],[-50,66],[-47,61],[-44,60]],
+        // Iceland
+        [[-24,64],[-22,66],[-18,66],[-14,65],[-18,63],[-22,63],[-24,64]],
+        // Europe — Iberia › France › Low Countries › Scandinavia › Baltic
+        [[-9,38],[-9,43],[-1,46],[-4,48],[-1,49],[2,51],[4,53],[8,54],[8,57],[11,59],[10,63],[14,65],[19,69],[24,71],[28,70],[30,66],[28,61],[24,60],[20,59],[19,55],[14,54],[10,54],[8,53],[4,51],[0,49],[-2,47],[-2,44],[-9,38]],
+        // Italy
+        [[8,44],[12,46],[14,42],[17,41],[18,40],[16,38],[15,38],[12,38],[10,43],[8,44]],
+        // Great Britain
+        [[-5,50],[-4,52],[-3,54],[-2,56],[-5,58],[-6,57],[-5,55],[-6,52],[-5,50]],
+        // Ireland
+        [[-10,52],[-9,54],[-7,55],[-6,54],[-7,52],[-10,52]],
+        // Africa — Med coast › Red Sea › Horn › east coast › Cape › west bulge
+        [[-16,15],[-17,21],[-13,28],[-10,31],[-6,35],[0,36],[10,37],[11,34],[19,31],[25,32],[30,31],[34,28],[35,24],[37,18],[39,15],[43,12],[48,8],[51,11],[51,6],[44,2],[42,-2],[40,-10],[35,-19],[32,-26],[27,-33],[20,-35],[18,-31],[16,-26],[13,-17],[12,-6],[9,1],[5,5],[-1,5],[-7,4],[-12,7],[-16,12],[-16,15]],
         // Madagascar
-        [[43,-25],[45,-22],[49,-15],[50,-18],[48,-23],[45,-25],[43,-25]],
-        // Asia
-        [[28,40],[35,37],[36,33],[40,32],[48,30],[57,25],[60,25],[60,28],[55,32],[52,40],[55,45],[58,55],[60,66],[68,73],[78,73],[100,77],[125,73],[140,72],[160,69],[170,66],[178,68],[170,60],[160,61],[155,57],[143,53],[140,46],[135,44],[130,42],[122,40],[121,33],[122,30],[117,24],[110,21],[108,16],[106,10],[104,8],[100,6],[99,10],[98,16],[94,16],[90,22],[88,21],[80,13],[77,8],[73,18],[70,22],[67,24],[62,25],[57,28],[48,30],[45,36],[40,38],[34,37],[30,38],[28,40]],
+        [[44,-25],[46,-22],[48,-18],[50,-15],[50,-19],[48,-24],[45,-25],[44,-25]],
+        // Asia — Anatolia › Arabia › India › SE Asia › China › Korea › Siberia
+        [[28,40],[34,41],[38,41],[40,43],[48,44],[50,40],[48,38],[44,38],[45,34],[48,30],[52,28],[57,25],[57,22],[52,18],[48,14],[45,13],[43,17],[39,21],[35,28],[36,33],[40,36],[44,38],[42,41],[40,43],[48,44],[52,46],[58,52],[62,58],[68,66],[68,73],[78,73],[90,76],[105,78],[115,74],[128,73],[140,73],[152,70],[160,70],[170,68],[178,69],[172,62],[163,60],[160,55],[156,51],[143,49],[142,54],[138,54],[140,46],[131,43],[130,38],[126,38],[122,40],[121,38],[122,31],[120,34],[122,30],[118,24],[110,21],[108,16],[106,10],[105,9],[100,8],[100,13],[98,16],[94,16],[91,22],[87,21],[80,15],[77,8],[74,15],[71,21],[68,24],[64,25],[61,25],[58,30],[54,37],[48,40],[42,41],[38,41],[34,41],[28,40]],
+        // Sri Lanka
+        [[80,6],[81,8],[82,7],[81,6],[80,6]],
         // Japan
-        [[130,31],[133,34],[138,35],[141,40],[142,44],[140,42],[136,36],[132,33],[130,31]],
-        // Southeast Asia / Indonesia
-        [[95,5],[100,2],[105,-2],[112,-7],[120,-9],[115,-6],[108,-5],[102,0],[97,4],[95,5]],
-        [[109,2],[115,4],[118,1],[117,-3],[112,-3],[109,1],[109,2]],
-        [[120,6],[123,9],[125,13],[126,17],[124,14],[121,11],[120,8],[120,6]],
-        // Australia
-        [[114,-22],[122,-18],[129,-15],[133,-12],[137,-11],[142,-11],[145,-15],[147,-20],[153,-26],[153,-32],[150,-37],[146,-39],[140,-38],[134,-35],[129,-32],[124,-34],[118,-35],[114,-31],[113,-26],[114,-22]],
+        [[130,31],[131,34],[135,34],[137,35],[140,36],[141,39],[142,42],[143,44],[141,43],[140,40],[137,37],[133,35],[131,33],[130,31]],
+        // Sumatra
+        [[95,5],[98,3],[101,0],[104,-3],[106,-6],[103,-5],[100,-2],[97,2],[95,5]],
+        // Borneo
+        [[109,2],[114,4],[118,3],[119,-1],[116,-4],[111,-3],[109,1],[109,2]],
+        // Java
+        [[105,-6],[110,-7],[114,-8],[112,-8],[107,-7],[105,-6]],
+        // New Guinea
+        [[131,-1],[138,-3],[144,-4],[147,-8],[142,-8],[136,-5],[131,-1]],
+        // Philippines
+        [[120,6],[122,9],[124,11],[126,14],[125,17],[122,14],[120,10],[120,6]],
+        // Australia — west coast › Carpentaria › Cape York › east coast › Bight
+        [[114,-22],[122,-18],[126,-14],[130,-12],[136,-12],[137,-16],[140,-17],[142,-11],[143,-14],[146,-19],[150,-22],[153,-26],[153,-31],[151,-34],[148,-38],[143,-39],[140,-38],[136,-35],[132,-32],[129,-32],[124,-34],[118,-35],[115,-34],[114,-29],[113,-25],[114,-22]],
+        // Tasmania
+        [[145,-41],[147,-41],[148,-43],[146,-43],[145,-41]],
         // New Zealand
-        [[167,-46],[170,-44],[173,-41],[175,-37],[178,-38],[174,-41],[171,-44],[167,-46]]
+        [[173,-35],[175,-37],[178,-39],[176,-41],[174,-41],[171,-44],[168,-46],[167,-45],[170,-43],[172,-40],[173,-35]]
       ];
 
       // point-in-polygon (ray casting) in lon/lat
@@ -2293,14 +2559,21 @@ you are now on that list. welcome.`, 'ok');
 
       // sample a land-dot grid once (jittered so it doesn't look like a grid)
       const landDots = [];
-      for (let lat = -56; lat <= 80; lat += 4) {
-        for (let lon = -180; lon < 180; lon += 4) {
+      for (let lat = -56; lat <= 82; lat += 3) {
+        for (let lon = -180; lon < 180; lon += 3) {
           for (let k = 0; k < LAND.length; k++) {
             if (pip(lon, lat, LAND[k])) {
-              landDots.push({ lat: lat + (Math.random() - 0.5) * 2.4, lon: lon + (Math.random() - 0.5) * 2.4 });
+              landDots.push({ lat: lat + (Math.random() - 0.5) * 1.7, lon: lon + (Math.random() - 0.5) * 1.7 });
               break;
             }
           }
+        }
+      }
+      // Antarctic ice cap — circumpolar, so fill it directly rather than
+      // wrestle a polygon across the antimeridian.
+      for (let lat = -84; lat <= -64; lat += 3) {
+        for (let lon = -180; lon < 180; lon += 4) {
+          landDots.push({ lat: lat + (Math.random() - 0.5) * 1.7, lon: lon + (Math.random() - 0.5) * 2.0 });
         }
       }
 
@@ -2349,19 +2622,27 @@ you are now on that list. welcome.`, 'ok');
         flush();
       }
 
-      let yaw = 0, sweepLon = -180;
+      let yaw = 0, sweepLon = -180, ghostPulse = 0;
       const activePings = [];
       function spawnPing() {
         const s = pingSites[Math.floor(Math.random() * pingSites.length)];
         activePings.push({ lat: s.lat, lon: s.lon, r: 3, op: 1 });
       }
-      if (!reduceMotion) setInterval(spawnPing, 1100);
+      if (!reduceMotion) {
+        setInterval(spawnPing, 1100);
+        // The visitor's own inbound signal — pulses from wherever they are,
+        // once the live-weather geolookup resolves their coarse location.
+        setInterval(() => {
+          if (ATMO.visitor) activePings.push({ lat: ATMO.visitor.lat, lon: ATMO.visitor.lon, r: 2, op: 1, ghost: true });
+        }, 2600);
+      }
 
       const LAT_LINES = [-60, -30, 0, 30, 60];
       const MERIDIANS = [-150, -120, -90, -60, -30, 0, 30, 60, 90, 120, 150, 180];
 
       function renderFrame() {
-        [gGrid, gSweep, gLand, gCoast, gCity, gPing].forEach(g => { while (g.firstChild) g.removeChild(g.firstChild); });
+        [gGrid, gSweep, gLand, gCoast, gCity, gPing, gGhost].forEach(g => { while (g.firstChild) g.removeChild(g.firstChild); });
+        ghostPulse += 0.12;
 
         // 1) graticule — latitude rings + meridians
         for (const lat of LAT_LINES) {
@@ -2411,14 +2692,32 @@ you are now on that list. welcome.`, 'ok');
           }
         }
 
-        // 6) ping rings
+        // 6) ping rings — visitor's own signal renders in V-K crimson
         for (let i = activePings.length - 1; i >= 0; i--) {
           const pg = activePings[i];
           pg.r += 0.9; pg.op -= 0.012;
           if (pg.op <= 0) { activePings.splice(i, 1); continue; }
           const p = project(pg.lat, pg.lon, yaw);
           if (!p.visible) continue;
-          gPing.appendChild(el('circle', { cx: p.x.toFixed(1), cy: p.y.toFixed(1), r: pg.r.toFixed(1), fill: 'none', stroke: 'var(--globe-coast)', 'stroke-width': '1.4', opacity: (pg.op * Math.max(0.2, p.z)).toFixed(2) }));
+          gPing.appendChild(el('circle', { cx: p.x.toFixed(1), cy: p.y.toFixed(1), r: pg.r.toFixed(1), fill: 'none', stroke: pg.ghost ? 'var(--accent-4)' : 'var(--globe-coast)', 'stroke-width': pg.ghost ? '1.8' : '1.4', opacity: (pg.op * Math.max(0.2, p.z)).toFixed(2) }));
+        }
+
+        // 7) visitor ghost marker — a pulsing crosshair over their location
+        const vis = ATMO.visitor;
+        if (vis) {
+          const p = project(vis.lat, vis.lon, yaw);
+          if (p.visible) {
+            const op = 0.45 + Math.max(0, p.z) * 0.5;
+            const pulse = 5 + (Math.sin(ghostPulse) + 1) * 2.2;
+            gGhost.appendChild(el('circle', { cx: p.x.toFixed(1), cy: p.y.toFixed(1), r: pulse.toFixed(1), fill: 'none', stroke: 'var(--accent-4)', 'stroke-width': '1', opacity: (op * 0.5).toFixed(2) }));
+            gGhost.appendChild(el('path', { d: `M ${p.x.toFixed(1)} ${(p.y-7).toFixed(1)} L ${p.x.toFixed(1)} ${(p.y+7).toFixed(1)} M ${(p.x-7).toFixed(1)} ${p.y.toFixed(1)} L ${(p.x+7).toFixed(1)} ${p.y.toFixed(1)}`, stroke: 'var(--accent-4)', 'stroke-width': '0.9', opacity: (op * 0.7).toFixed(2) }));
+            gGhost.appendChild(el('circle', { cx: p.x.toFixed(1), cy: p.y.toFixed(1), r: '2', fill: 'var(--accent-4)', opacity: op.toFixed(2) }));
+            if (p.z > 0.2) {
+              const label = el('text', { x: (p.x + 9).toFixed(1), y: (p.y - 7).toFixed(1), 'font-family': 'JetBrains Mono, monospace', 'font-size': '9', fill: 'var(--accent-4)', 'letter-spacing': '0.12em', opacity: op.toFixed(2) });
+              label.textContent = `INBOUND ▸ ${vis.city || 'SECTOR UNKNOWN'}`;
+              gGhost.appendChild(label);
+            }
+          }
         }
       }
 
@@ -3305,6 +3604,9 @@ you are now on that list. welcome.`, 'ok');
     try {
       const cached = JSON.parse(sessionStorage.getItem('nx-wx') || 'null');
       if (cached && Date.now() - cached.at < 30 * 60 * 1000) {
+        if (isFinite(cached.lat) && isFinite(cached.lon)) {
+          ATMO.visitor = { lat: cached.lat, lon: cached.lon, city: cached.city };
+        }
         apply(cached.wet, cached.snow, cached.city);
         return;
       }
@@ -3318,17 +3620,19 @@ you are now on that list. welcome.`, 'ok');
           : HOME;
       })
       .catch(() => HOME)
-      .then(loc =>
-        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat.toFixed(4)}&longitude=${loc.lon.toFixed(4)}&current=precipitation,weather_code`)
+      .then(loc => {
+        // Drop the visitor's own coarse location onto the uplink globe.
+        ATMO.visitor = { lat: loc.lat, lon: loc.lon, city: loc.city };
+        return fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat.toFixed(4)}&longitude=${loc.lon.toFixed(4)}&current=precipitation,weather_code`)
           .then(r => r.json())
           .then(j => {
             const cur = j && j.current ? j.current : {};
             const wet = WET_CODES.has(cur.weather_code) || (cur.precipitation || 0) > 0;
             const snow = SNOW_CODES.has(cur.weather_code);
-            try { sessionStorage.setItem('nx-wx', JSON.stringify({ at: Date.now(), wet, snow, city: loc.city })); } catch(e) {}
+            try { sessionStorage.setItem('nx-wx', JSON.stringify({ at: Date.now(), wet, snow, city: loc.city, lat: loc.lat, lon: loc.lon })); } catch(e) {}
             apply(wet, snow, loc.city);
-          })
-      )
+          });
+      })
       .catch(() => {}); // offline / blocked: the sky stays as the theme left it
   })();
 
