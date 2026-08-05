@@ -2260,8 +2260,8 @@ you are now on that list. welcome.`, 'ok');
           home: 'index.html', index: 'index.html',
           background: 'background.html', builds: 'builds.html',
           notes: 'blog.html', blog: 'blog.html', 'field-notes': 'blog.html',
-          uses: 'uses.html', loadout: 'uses.html',
-          uplink: 'uplink.html', console: 'uplink.html',
+          uses: 'archive.html#loadout', loadout: 'archive.html#loadout',
+          uplink: 'archive.html#uplink', console: 'archive.html#uplink',
           archive: 'archive.html'
         };
         const dest = map[(args[0] || '').toLowerCase()];

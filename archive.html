@@ -71,8 +71,6 @@
     <li><a href="background.html">Background</a></li>
     <li><a href="builds.html">Builds</a></li>
     <li><a href="blog.html">Field Notes</a></li>
-    <li><a href="uses.html">Uses</a></li>
-    <li><a href="uplink.html">Uplink</a></li>
     <li><a href="archive.html" class="active">Archive</a></li>
   </ul>
   <div class="nav-right">
@@ -100,8 +98,6 @@
     <li><a href="background.html">Background</a></li>
     <li><a href="builds.html">Builds</a></li>
     <li><a href="blog.html">Field Notes</a></li>
-    <li><a href="uses.html">Uses</a></li>
-    <li><a href="uplink.html">Uplink</a></li>
     <li><a href="archive.html" class="active">Archive</a></li>
   </ul>
   <div class="nav-drawer-toggles">
@@ -124,7 +120,7 @@
     <div class="page-intro-tag">RESTRICTED ▸ WALLACE CORP REGISTRY ▸ TIER-9</div>
     <h1 class="page-intro-title">the <em>archive</em></h1>
     <p class="page-intro-sub">
-      Off-the-record. Lore, fragments, half-thoughts, and the parts of the file that don't belong on a resume. Continue at your own discretion — there is no point pretending otherwise.
+      Off-the-record. Lore, fragments, half-thoughts, and the parts of the file that don't belong on a resume — plus a live shell, the operator's workstation in 3D, and an operations console that is mostly for the lights. Continue at your own discretion — there is no point pretending otherwise.
     </p>
   </section>
 
@@ -256,21 +252,167 @@
       </div>
 
     </div>
+  </section>
 
-    <div class="lore reveal" style="margin-top: 30px;">
+  <!-- OPERATOR LOADOUT (folded in from the former Uses page) -->
+  <section id="loadout">
+    <header class="section-header">
+      <div class="section-num"><strong>ε</strong> /// SCHEMATIC</div>
+      <h2 class="section-title">operator loadout</h2>
+      <div class="section-subtitle">// live webgl model — drag to orbit · scroll to zoom · hover to inspect</div>
+    </header>
+
+    <!-- PC SCHEMATIC -->
+    <div class="pc-schematic" id="pc-schematic">
+
+      <div class="pc-schematic-header">
+        <div class="pc-schematic-id">
+          <span class="key">UNIT</span> <span class="val">NX-RIG-01</span>
+          <span class="key">CLASS</span> <span class="val">DESKTOP / TOWER</span>
+          <span class="key">STATUS</span> <span class="val ok">ACTIVE</span>
+        </div>
+      </div>
+
+      <div class="pc-schematic-stage">
+        <canvas id="pc-canvas"></canvas>
+        <div class="pc-readout"></div>
+        <div class="pc-controls">
+          <button class="pc-ctl" id="pc-ctl-spin" type="button">Spin</button>
+          <button class="pc-ctl" id="pc-ctl-wire" type="button">Wire</button>
+          <button class="pc-ctl" id="pc-ctl-reset" type="button">Reset</button>
+        </div>
+        <div class="pc-loading">
+          <div>INITIALIZING MODEL</div>
+          <div class="pc-loading-bar"></div>
+        </div>
+      </div>
+
+      <div class="pc-schematic-footer">
+        <div class="pc-spec">
+          <div class="pc-spec-key">OS</div>
+          <div class="pc-spec-val">Linux Mint</div>
+        </div>
+        <div class="pc-spec">
+          <div class="pc-spec-key">GPU</div>
+          <div class="pc-spec-val">RTX 4070 Super</div>
+        </div>
+        <div class="pc-spec">
+          <div class="pc-spec-key">RAM</div>
+          <div class="pc-spec-val">32 GB DDR5</div>
+        </div>
+        <div class="pc-spec">
+          <div class="pc-spec-key">STORAGE</div>
+          <div class="pc-spec-val">1 TB SSD</div>
+        </div>
+        <div class="pc-spec">
+          <div class="pc-spec-key">DISPLAY</div>
+          <div class="pc-spec-val">Dell 27" 4K</div>
+        </div>
+        <div class="pc-spec">
+          <div class="pc-spec-key">COOLING</div>
+          <div class="pc-spec-val">AIO Liquid</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- OPERATIONS UPLINK (folded in from the former Uplink page) -->
+  <section id="uplink">
+    <header class="section-header">
+      <div class="section-num"><strong>ζ</strong> /// CONSOLE</div>
+      <h2 class="section-title">operations uplink</h2>
+      <div class="section-subtitle">// telemetry, spectrum, radar — synthetic except the defense grid</div>
+    </header>
+
+    <div class="uplink-shell" id="uplink-shell">
+
+      <!-- World map: full row -->
+      <div class="uplink-card full">
+        <div class="uplink-card-tag">
+          <span>▸ GLOBAL UPLINK SPHERE</span>
+          <span class="live">LIVE</span>
+        </div>
+        <div class="uplink-map">
+          <svg id="uplink-map-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+      </div>
+
+      <!-- Big counter -->
+      <div class="uplink-card">
+        <div class="uplink-card-tag">
+          <span>▸ SESSION DURATION</span>
+          <span class="live">RUNNING</span>
+        </div>
+        <div class="uplink-stat">
+          <div class="uplink-stat-value" id="uplink-stat-value">00:00:00</div>
+          <div class="uplink-stat-unit">since handshake</div>
+        </div>
+      </div>
+
+      <!-- Spectrum analyzer -->
+      <div class="uplink-card">
+        <div class="uplink-card-tag">
+          <span>▸ SPECTRUM // 2.4 GHZ</span>
+          <span class="live">SAMPLING</span>
+        </div>
+        <div class="uplink-spectrum" id="uplink-spectrum"></div>
+      </div>
+
+      <!-- Telemetry feed -->
+      <div class="uplink-card">
+        <div class="uplink-card-tag">
+          <span>▸ TELEMETRY // SYSLOG</span>
+          <span class="live">STREAMING</span>
+        </div>
+        <div class="uplink-feed" id="uplink-feed"></div>
+      </div>
+
+      <!-- Radar -->
+      <div class="uplink-card">
+        <div class="uplink-card-tag">
+          <span>▸ PROXIMITY SCAN</span>
+          <span class="live">SWEEPING</span>
+        </div>
+        <div class="uplink-radar" id="uplink-radar"></div>
+      </div>
+
+      <!-- Defense grid: full row — REAL data -->
+      <div class="uplink-card full">
+        <div class="uplink-card-tag">
+          <span>▸ DEFENSE GRID // RESPONSE HEADERS</span>
+          <span class="live">VERIFIED</span>
+        </div>
+        <div class="uplink-defense" id="uplink-defense">
+          <div class="defense-note">interrogating own edge…</div>
+        </div>
+      </div>
+
+      <!-- Ping log: full row -->
+      <div class="uplink-card full">
+        <div class="uplink-card-tag">
+          <span>▸ ICMP PING LOG // ALL EDGES</span>
+          <span class="live">POLLING</span>
+        </div>
+        <div class="uplink-pinglog" id="uplink-pinglog"></div>
+      </div>
+
+    </div>
+
+    <div class="lore reveal" style="margin-top: 70px;">
       <div class="lore-tag">▣ END OF ARCHIVE FEED ▣</div>
       <p class="lore-text">
-        "The Blade Runner aesthetic is the wrapping paper. What's inside is just a student trying to leave the network better than he found it. The memory above is real. The order in which you put it back together is your own."
+        "The Blade Runner aesthetic is the wrapping paper. What's inside is just a student trying to leave the network better than he found it. The console above is one wall of lights — reassuring, mostly accurate, never required to do the job. The memory is real. The order you put it back together in is your own."
       </p>
       <span class="lore-cite">— OPERATOR LOG / NX-1324 / FINAL</span>
     </div>
   </section>
 
   <footer class="contact" id="contact">
-    <div class="contact-tag">▣ END OF ACCESS ▣</div>
-    <h2 class="contact-title">return to <em>surface.</em></h2>
+    <div class="contact-tag">▣ ESTABLISH UPLINK ▣</div>
+    <h2 class="contact-title">open a <em>channel</em></h2>
     <p class="contact-sub">
-      The archive closes on its own. If you want to make contact directly, the channels below are still live.
+      Reach out for collaboration, work, internship leads, or to compare notes on whatever obscure infrastructure topic is currently keeping you up at night. Both inboxes are monitored.
     </p>
     <div class="contact-links">
       <a href="https://github.com/notChewy1324" target="_blank" rel="noopener" class="contact-link">
@@ -306,6 +448,8 @@
   </div>
 </div>
 
+<!-- Three.js r128 — self-hosted (no third-party CDN; see _headers CSP) — powers the loadout schematic -->
+<script src="js/three.min.js"></script>
 <!--  WILL UPDATE THIS LATER: CLOUDFLARE WEB ANALYTICS (privacy-friendly, no cookies) WILL UPDATE THIS LATER
      To activate: Cloudflare dashboard > Analytics & Logs > Web Analytics >
      add camgarrison.com, copy the token, paste it below, and uncomment.

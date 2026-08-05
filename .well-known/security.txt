@@ -16,5 +16,5 @@ Policy: https://camgarrison.com/archive.html
 
 # Scope: camgarrison.com is a static site (Cloudflare Pages).
 # No server-side code, no database, no user accounts, no PII.
-# The telemetry on /uplink.html is synthetic. The terminal is
+# The telemetry on /archive.html is synthetic. The terminal is
 # read-only. The replicants are hypothetical.

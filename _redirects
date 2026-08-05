@@ -1,0 +1,6 @@
+# Uses and Uplink were folded into the Archive page as sections.
+# Keep the old URLs alive so shared links and search results still land.
+/uses.html    /archive.html#loadout  301
+/uses         /archive.html#loadout  301
+/uplink.html  /archive.html#uplink   301
+/uplink       /archive.html#uplink   301
