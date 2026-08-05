@@ -449,32 +449,38 @@ window.PROJECTS = [
     id: 'BUILD-002',
     date: 'PRODUCT',
     title: 'netsweep',
-    tags: ['iOS', 'SWIFT', 'NETWORKING', 'MULTI-PLATFORM'],
+    tags: ['iOS / iPADOS', 'SWIFT', 'TLS / PKI', 'MONITORING'],
     color: 'ice',
     live: true,
     domain: 'netsweepapp.com',
-    stack: ['Swift', 'SwiftUI', 'Network.framework', 'visionOS', 'Cloudflare'],
-    excerpt: 'A native network-scanning app for iPhone, iPad, Mac, and Vision Pro — consumer-simple on the surface, real network tooling underneath. Shipped with a three-page marketing site.',
+    stack: ['Swift', 'SwiftUI', 'SwiftData', 'Network.framework', 'App Intents'],
+    excerpt: 'A personal watchtower for the websites you depend on. Pin a site and NetSweep re-checks its TLS, DNS, headers, and certificate transparency in the background, then tells you only what changed. No accounts, no servers, nothing leaves the device.',
     body: `
-      <p><strong>NetSweep</strong> is a native Apple-platform network scanner: point it at your network and it surfaces what is actually on it. The design brief I gave myself was pure experience design — hide the complexity, surface the wonder. A scan should feel like magic; the packet-level reality should stay backstage.</p>
+      <p><strong>NetSweep</strong> is a personal watchtower for the websites you depend on. You pin the hosts that matter — your bank, your employer, your own domains — and it inspects them on a schedule, surfacing the quiet changes that precede an outage or a compromise: a certificate about to expire, DNS repointed overnight, a security header that silently disappeared.</p>
 
       <div class="build-facts">
-        <div class="build-fact"><span class="k">Platforms</span><span class="v">iphone · ipad · mac · vision pro</span></div>
-        <div class="build-fact"><span class="k">Language</span><span class="v">swift</span></div>
-        <div class="build-fact"><span class="k">Site</span><span class="v">three pages</span></div>
-        <div class="build-fact"><span class="k">Deploy</span><span class="v">cloudflare pages</span></div>
+        <div class="build-fact"><span class="k">Platform</span><span class="v">iphone · ipad · ios 18+</span></div>
+        <div class="build-fact"><span class="k">Signals</span><span class="v">eight per host</span></div>
+        <div class="build-fact"><span class="k">Price</span><span class="v">free · no iap</span></div>
+        <div class="build-fact"><span class="k">Backend</span><span class="v">none — on device</span></div>
       </div>
 
-      <h3>the app</h3>
-      <p>A single codebase targeting iPhone, iPad, Mac, and Vision Pro — host discovery and network inspection presented through a clean, calm interface. The hard part of consumer software is never the feature list; it is making something technically dense feel obvious. That is the same instinct that makes a queue feel short or a ride feel safe.</p>
+      <h3>what it checks</h3>
+      <p>Eight inspection signals run against every pinned host: the <strong>TLS handshake</strong> (protocol version, certificate chain, expiry countdown), <strong>OCSP revocation</strong> against the issuing authority, <strong>DNS A/AAAA records</strong> to catch silent repointing, <strong>HTTP to HTTPS redirect</strong> enforcement, a scored <strong>security header</strong> audit across HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy and Permissions-Policy, <strong>HSTS preload eligibility</strong>, <strong>certificate transparency</strong> via public CT logs, and <strong>CVE matching</strong> against NIST's NVD by apex domain.</p>
 
-      <h3>the launch surface</h3>
-      <p>NetSweep ships with a three-page marketing site (netsweepapp.com) deployed on Cloudflare Pages — a small, deliberate front door designed to make a technical tool feel approachable to a non-technical visitor.</p>
+      <h3>the loop</h3>
+      <p>Pin, re-check, alert. A background refresh task wakes roughly every twelve hours and re-runs the probes; SwiftData holds the previous result so the app can diff them and show only the delta. Local notifications fire at thirty, fourteen, seven, and one day before a certificate expires. The "What's New" panel is the whole product philosophy in one screen: a monitoring tool that stays silent is doing its job, and the moment it speaks it should be worth reading.</p>
 
-      <blockquote>"More human than human" is a specification. So is "more obvious than obvious."</blockquote>
+      <h3>the privacy position</h3>
+      <p>No accounts, no servers, no analytics, no ads. The watchlist and every inspection result live in SwiftData on the device and nowhere else. NetSweep never requests Local Network permission — it does not scan your LAN. The outbound traffic is the same set of requests a browser would make to the hosts you pinned, plus three optional public lookups. That constraint was the design, not a compromise: a security tool that needs an account is asking you to trust it with the thing it claims to protect.</p>
+
+      <h3>the engineering</h3>
+      <p>Concurrent probes run through async/await and a TaskGroup capped at four in flight, so a large watchlist stays responsive without hammering anyone's edge. SecTrust backs the OCSP verification, NWConnection handles the HTTP probing, and App Intents expose it to Siri. The spatial map — pinned sites orbiting a center, color-coded by health — is a custom SwiftUI canvas with UIKit gestures layered underneath. Dynamic Type and Reduce Motion are honored throughout.</p>
+
+      <blockquote>A monitoring tool that stays quiet is working. The discipline is deciding what deserves to break the silence.</blockquote>
 
       <div class="build-stack">
-        <span>Swift</span><span>SwiftUI</span><span>Network Framework</span><span>visionOS</span><span>Cloudflare Pages</span>
+        <span>Swift</span><span>SwiftUI</span><span>SwiftData</span><span>Network.framework</span><span>SecTrust</span><span>App Intents</span><span>BackgroundTasks</span>
       </div>
 
       <div class="build-links">
