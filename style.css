@@ -1050,6 +1050,60 @@ section { padding: 90px 0; position: relative; }
 }
 
 /* ----------------------------------------------------------
+   SKILL MATRIX — grouped technical inventory (background page).
+   Chips reuse .timeline-tags / .timeline-tag so the vocabulary
+   stays identical to the per-role tags above them.
+   ---------------------------------------------------------- */
+
+.skill-matrix { display: grid; gap: 18px; }
+
+.skill-group {
+  border: 1px solid var(--rule);
+  background: var(--bg-card);
+  padding: 26px 28px;
+  position: relative;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.skill-group::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: linear-gradient(to bottom, var(--accent), var(--accent-2));
+}
+
+.skill-group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.skill-group-name {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+
+.skill-group-src {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+@media (max-width: 700px) {
+  .skill-group { padding: 22px 20px; }
+}
+
+/* ----------------------------------------------------------
    EDU
    ---------------------------------------------------------- */
 
