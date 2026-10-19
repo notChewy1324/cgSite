@@ -379,65 +379,67 @@ window.PROJECTS = [
     color: '',
     live: true,
     domain: 'bearcastmedia.com',
-    stack: ['Vanilla JS', 'Sanity CMS', 'Cloudflare', 'Radio.co', 'CSP / XSS'],
+    stack: ['Vanilla JS', 'Sanity CMS', 'Cloudflare Pages', 'Web Audio', 'Strict CSP'],
     metrics: [
       { v: '9', k: 'pages' },
       { v: 'F&rarr;A', k: 'security' },
-      { v: '68pp', k: 'white paper' },
-      { v: '34', k: 'findings' }
+      { v: '5', k: 'edge functions' },
+      { v: '161pp', k: 'documentation' }
     ],
-    excerpt: "Built from scratch: the full public platform for UC's student media organization. Nine interconnected pages, a live radio stream, a headless CMS, and a security posture I took from an F to an A — documented in a 68-page white paper.",
+    excerpt: "Built from scratch: the full public platform for UC's student media organization. Nine hand-authored pages, a custom radio player with real-audio visualizers, a headless CMS, five edge functions, and a security posture I took from an F to an A — documented across 161 pages of white papers, diagrams, and an editor handbook.",
     body: `
-      <p><strong>bearcastmedia.com</strong> is the public face of the University of Cincinnati's student media organization, and I built it from an empty folder as Web Director. It is the closest thing I have to a real "show": a live broadcast product where the technology has to disappear and the experience has to feel effortless.</p>
+      <p><strong>bearcastmedia.com</strong> is the public face of the University of Cincinnati's student media organization — on the air since 2001, five departments, celebrating its 25th year in 2026 — and I rebuilt it from an inherited WordPress template as Web Director. It is the closest thing I have to a real "show": a live broadcast product where the technology has to disappear and the experience has to feel effortless.</p>
 
       <div class="build-facts">
-        <div class="build-fact"><span class="k">Pages</span><span class="v">nine, interlinked</span></div>
-        <div class="build-fact"><span class="k">CMS</span><span class="v">sanity (headless)</span></div>
+        <div class="build-fact"><span class="k">Pages</span><span class="v">nine, no framework</span></div>
+        <div class="build-fact"><span class="k">Edge</span><span class="v">5 functions + d1</span></div>
         <div class="build-fact"><span class="k">Security Grade</span><span class="v">f &rarr; a</span></div>
-        <div class="build-fact"><span class="k">White Paper</span><span class="v">68 pages</span></div>
+        <div class="build-fact"><span class="k">Hosting</span><span class="v">$0 / month</span></div>
       </div>
 
       <h3>the build</h3>
-      <p>A nine-page static site — journalism, music, sports, BTV, schedule, and more — wired to a <strong>Sanity headless CMS</strong> so the student staff can publish without touching code. Live radio is handled through a Radio.co integration with now-playing polling and Media Session API support, so the stream behaves like a native app on a phone's lock screen. Deployed on Cloudflare Pages.</p>
-      <p>The front-end work was relentlessly detail-driven: theme-aware CSS, mobile filter patterns, Safari-specific cursor fixes, image-pipeline bugs across every content type, and a fuzzy 404 that suggests the page you probably meant using Levenshtein distance. The kind of polish nobody notices — which is the point.</p>
+      <p>Nine static pages — Radio, Sports, BTV, Journalism, Music, schedule, team, and more — in plain HTML, CSS, and JavaScript, served from Cloudflare's edge and wired to a custom-modeled <strong>Sanity Studio</strong> so rotating student editors can publish without touching code or triggering a rebuild. The content layer is the durable asset; the front end is deliberately disposable. When the old WordPress archive came over, I ran reviewed, reversible migrations that gave 183 reviews real artists and albums and moved 176 pieces to the content type they actually are.</p>
+      <p>A thin layer of <strong>Pages Functions</strong> handles only what a static site can't: song requests and interest-form applications delivered to Slack, a live listener count backed by Cloudflare D1, automatic BTV listings straight from YouTube, real link previews for shared stories, and a generated sitemap. Everything else stays pure CDN. A <code>build.sh</code> step splits per-page bundles with esbuild, stamps asset versions, and a service worker keeps visited pages readable offline.</p>
+
+      <h3>the radio</h3>
+      <p>The Radio.co widget is gone. The player is the site's own <code>&lt;audio&gt;</code> element with a Web Audio tap on the real stream — live waveform, 4096-point FFT spectrum, and a VU meter — plus Media Session lock-screen controls, auto-reconnect with back-off, DJ-set detection, and a live "listening now" count. <strong>Your Bearcast</strong> adds personal recaps, streaks, listener tiers, badges, and a year-end Wrapped, all computed and stored only in the listener's browser. No accounts, nothing sent to a server.</p>
+      <p>Around it: archive-wide search with typo tolerance and server-side full-text ranking behind a &#8984;K command palette, an article reader that can read stories aloud through the Web Speech API, and self-hosted fonts so the site makes zero third-party font requests.</p>
 
       <h3>the security pass</h3>
-      <p>I ran a full audit across the front-end, the Sanity schemas, and the Studio config: <strong>34 findings across three phases</strong>. I patched XSS sink patterns behind a central sanitization module, shipped Content-Security-Policy headers on all nine pages, hardened the schemas, and enforced a strict no-write-token policy for any client-side code. Security-header grade went from <strong>F to A</strong>.</p>
+      <p>The inherited site scored an <strong>F</strong> — every major security header missing. The rebuild shipped at an <strong>A</strong>, and the October 2026 re-audit went further: <strong>zero inline handlers</strong>, only two inline scripts left and both pinned by SHA-256 in a strict Content-Security-Policy, a central escaping and sanitization layer at every output sink, and schema-level validation on every field. Every high and medium finding from the original audit is closed. The new server endpoints sit behind origin checks, honeypots, size caps, per-IP throttling, and Slack mrkdwn escaping.</p>
+      <p>It's verified, not asserted: <strong>22/22</strong> endpoint-abuse tests and <strong>30/30</strong> browser XSS/CSP tests pass against the live source, and seven CI checks — including a CSP regression gate — run on every pull request, alongside a weekly health check of the live site, a weekly Sanity backup, and Dependabot.</p>
 
       <blockquote>A broadcast platform is a trust object. People assume it is safe because it looks calm. My job was to make that assumption true.</blockquote>
 
       <h3>the documentation</h3>
-      <p>An undocumented system is just a rumor. The Bearcast rebuild ships with three documents: a cyber white paper covering the full security audit, a technical white paper on the architecture and build decisions, and a system-architecture diagram. Read any of them inline, or pull the PDF.</p>
+      <p>An undocumented system is just a rumor. The v2.0 Bearcast library is four documents, all rewritten from the October 2026 source with real code quoted by file and line: a 77-page technical white paper, a 44-page cybersecurity white paper, a 10-page system-architecture diagram set, and a 30-page editor handbook so the next staff can run the site without me. Read any of them inline, or pull the PDF.</p>
 
       <!-- ============================================================
-           BEARCAST DOCUMENT LIBRARY
-           Commit these three PDFs to the repo (PDFs are fine in GitHub and
-           are served as static files by Cloudflare Pages). Create a /docs
-           folder next to index.html and save them as:
-               docs/bearcast-cyber-whitepaper.pdf
-               docs/bearcast-technical-whitepaper.pdf
-               docs/bearcast-architecture-diagram.pdf
-           To use different names, just edit the data-doc paths + the src below.
+           BEARCAST DOCUMENT LIBRARY (v2.0)
+           PDFs live in /docs next to index.html and are served as static
+           files by Cloudflare Pages. To swap a document, edit the data-doc
+           paths below plus the initial src / href values.
            ============================================================ -->
       <div class="build-doc" data-doc-viewer>
         <div class="build-doc-tabs">
-          <button type="button" class="build-doc-tab active" data-doc="docs/bearcast-cyber-whitepaper.pdf" data-meta="PDF · SECURITY AUDIT">Cyber White Paper</button>
-          <button type="button" class="build-doc-tab" data-doc="docs/bearcast-technical-whitepaper.pdf" data-meta="PDF · ARCHITECTURE & BUILD">Technical White Paper</button>
-          <button type="button" class="build-doc-tab" data-doc="docs/bearcast-architecture-diagram.pdf" data-meta="PDF · SYSTEM DIAGRAM">Architecture Diagram</button>
+          <button type="button" class="build-doc-tab active" data-doc="docs/BearcastMedia-Technical-WhitePaper-v2.0.pdf" data-meta="PDF · 77 PP · ARCHITECTURE & BUILD">Technical White Paper</button>
+          <button type="button" class="build-doc-tab" data-doc="docs/BearcastMedia-Cybersecurity-WhitePaper-v2.0.pdf" data-meta="PDF · 44 PP · SECURITY AUDIT">Cybersecurity White Paper</button>
+          <button type="button" class="build-doc-tab" data-doc="docs/BearcastMedia-Architecture-Diagram-v2.0.pdf" data-meta="PDF · 10 PP · SYSTEM DIAGRAM">Architecture Diagram</button>
+          <button type="button" class="build-doc-tab" data-doc="docs/BearcastMedia-Editor-Handbook-v2.0.pdf" data-meta="PDF · 30 PP · EDITOR HANDBOOK">Editor Handbook</button>
         </div>
         <div class="build-doc-bar">
-          <span class="build-doc-name">▤ <span data-doc-name>bearcast-cyber-whitepaper.pdf</span></span>
-          <span class="build-doc-meta" data-doc-meta>PDF · SECURITY AUDIT</span>
+          <span class="build-doc-name">▤ <span data-doc-name>BearcastMedia-Technical-WhitePaper-v2.0.pdf</span></span>
+          <span class="build-doc-meta" data-doc-meta>PDF · 77 PP · ARCHITECTURE & BUILD</span>
         </div>
-        <iframe class="build-doc-frame" data-doc-frame src="docs/bearcast-cyber-whitepaper.pdf" title="Bearcast documentation" loading="lazy"></iframe>
+        <iframe class="build-doc-frame" data-doc-frame src="docs/BearcastMedia-Technical-WhitePaper-v2.0.pdf" title="Bearcast documentation" loading="lazy"></iframe>
         <div class="build-doc-actions">
-          <a data-doc-open href="docs/bearcast-cyber-whitepaper.pdf" target="_blank" rel="noopener">▸ Open Full Screen</a>
-          <a data-doc-download href="docs/bearcast-cyber-whitepaper.pdf" download class="ice">▸ Download PDF</a>
+          <a data-doc-open href="docs/BearcastMedia-Technical-WhitePaper-v2.0.pdf" target="_blank" rel="noopener">▸ Open Full Screen</a>
+          <a data-doc-download href="docs/BearcastMedia-Technical-WhitePaper-v2.0.pdf" download class="ice">▸ Download PDF</a>
         </div>
       </div>
 
       <div class="build-stack">
-        <span>HTML / CSS / JS</span><span>Sanity CMS</span><span>Cloudflare Pages</span><span>Radio.co</span><span>CSP / XSS Defense</span><span>Media Session API</span>
+        <span>HTML / CSS / JS</span><span>Sanity CMS</span><span>Cloudflare Pages</span><span>Pages Functions</span><span>Cloudflare D1</span><span>Radio.co</span><span>Web Audio API</span><span>Media Session API</span><span>Strict CSP</span><span>GitHub Actions</span>
       </div>
 
       <div class="build-links">
