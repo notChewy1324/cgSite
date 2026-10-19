@@ -159,7 +159,7 @@ archive.html     🗂️  Off-record — terminal, recon suite, V-K, memory puzz
 
 > Real, deployed work — not mockups. Each is a live system I designed and built end to end.
 
-- 📻 **Bearcast Media** · [`bearcastmedia.com`](https://bearcastmedia.com) — the full public platform for UC's student media organization: nine hand-authored pages, a custom radio player with real-audio visualizers, a headless **Sanity** CMS, five Cloudflare Pages Functions, and a security posture I took from an **F to an A**. The dossier ships an embedded v2.0 **document library**: a technical white paper, a cybersecurity white paper, a system-architecture diagram, and an editor handbook.
+- 📻 **Bearcast Media** · [`bearcastmedia.com`](https://bearcastmedia.com) — the full public platform for UC's student media organization: nine hand-authored pages, a custom radio player with real-audio visualizers, a headless **Sanity** CMS, five Cloudflare Pages Functions, and a security posture I took from an **F to an A**. The dossier ships an embedded v2.0 **document library**: a technical white paper, a cybersecurity white paper, and a system-architecture diagram.
 - 🔭 **NetSweep** · [`netsweepapp.com`](https://netsweepapp.com) — a free, on-device iOS network-security scanner with a spatial "observatory" canvas UI. Built in **SwiftUI**, fully on-device, no data leaves the phone.
 - 🌐 **This Archive** · [`camgarrison.com`](https://camgarrison.com) — the experience you're reading the source of. The most over-engineered resume I'll ever write, and the proof-of-craft for everything above.
 
@@ -279,7 +279,7 @@ cgSite/
 │   └── three.min.js        # 🧊 vendored Three.js r128 (no CDN)
 ├── fonts/                  # 🔤 self-hosted variable woff2 (no Google Fonts at runtime)
 ├── wrangler.jsonc          # ☁️ Cloudflare Pages config
-├── docs/                   # 📜 embedded PDFs (white papers, diagram, handbook)
+├── docs/                   # 📜 embedded PDFs (white papers, diagram)
 └── imgs/                   # 🖼️ favicons, touch icons, og-card social image
 ```
 
@@ -289,7 +289,7 @@ cgSite/
 > 📜 **Build documents:** the Bearcast dossier embeds PDFs from a `docs/` folder next to
 > `index.html` (committed to the repo; Cloudflare Pages serves them as static files).
 > Expected files: `docs/BearcastMedia-Technical-WhitePaper-v2.0.pdf`, `docs/BearcastMedia-Cybersecurity-WhitePaper-v2.0.pdf`,
-> `docs/BearcastMedia-Architecture-Diagram-v2.0.pdf`, `docs/BearcastMedia-Editor-Handbook-v2.0.pdf`. Keep each under ~25 MB (Cloudflare Pages per-file limit).
+> and `docs/BearcastMedia-Architecture-Diagram-v2.0.pdf`. Keep each under ~25 MB (Cloudflare Pages per-file limit).
 
 ---
 

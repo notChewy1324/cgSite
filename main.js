@@ -384,9 +384,9 @@ window.PROJECTS = [
       { v: '9', k: 'pages' },
       { v: 'F&rarr;A', k: 'security' },
       { v: '5', k: 'edge functions' },
-      { v: '161pp', k: 'documentation' }
+      { v: '131pp', k: 'documentation' }
     ],
-    excerpt: "Built from scratch: the full public platform for UC's student media organization. Nine hand-authored pages, a custom radio player with real-audio visualizers, a headless CMS, five edge functions, and a security posture I took from an F to an A — documented across 161 pages of white papers, diagrams, and an editor handbook.",
+    excerpt: "Built from scratch: the full public platform for UC's student media organization. Nine hand-authored pages, a custom radio player with real-audio visualizers, a headless CMS, five edge functions, and a security posture I took from an F to an A — documented across 131 pages of white papers and diagrams.",
     body: `
       <p><strong>bearcastmedia.com</strong> is the public face of the University of Cincinnati's student media organization — on the air since 2001, five departments, celebrating its 25th year in 2026 — and I rebuilt it from an inherited WordPress template as Web Director. It is the closest thing I have to a real "show": a live broadcast product where the technology has to disappear and the experience has to feel effortless.</p>
 
@@ -412,7 +412,7 @@ window.PROJECTS = [
       <blockquote>A broadcast platform is a trust object. People assume it is safe because it looks calm. My job was to make that assumption true.</blockquote>
 
       <h3>the documentation</h3>
-      <p>An undocumented system is just a rumor. The v2.0 Bearcast library is four documents, all rewritten from the October 2026 source with real code quoted by file and line: a 77-page technical white paper, a 44-page cybersecurity white paper, a 10-page system-architecture diagram set, and a 30-page editor handbook so the next staff can run the site without me. Read any of them inline, or pull the PDF.</p>
+      <p>An undocumented system is just a rumor. The v2.0 Bearcast library is three documents, all rewritten from the October 2026 source with real code quoted by file and line: a 77-page technical white paper, a 44-page cybersecurity white paper, and a 10-page system-architecture diagram set. Read any of them inline, or pull the PDF.</p>
 
       <!-- ============================================================
            BEARCAST DOCUMENT LIBRARY (v2.0)
@@ -425,7 +425,6 @@ window.PROJECTS = [
           <button type="button" class="build-doc-tab active" data-doc="docs/BearcastMedia-Technical-WhitePaper-v2.0.pdf" data-meta="PDF · 77 PP · ARCHITECTURE & BUILD">Technical White Paper</button>
           <button type="button" class="build-doc-tab" data-doc="docs/BearcastMedia-Cybersecurity-WhitePaper-v2.0.pdf" data-meta="PDF · 44 PP · SECURITY AUDIT">Cybersecurity White Paper</button>
           <button type="button" class="build-doc-tab" data-doc="docs/BearcastMedia-Architecture-Diagram-v2.0.pdf" data-meta="PDF · 10 PP · SYSTEM DIAGRAM">Architecture Diagram</button>
-          <button type="button" class="build-doc-tab" data-doc="docs/BearcastMedia-Editor-Handbook-v2.0.pdf" data-meta="PDF · 30 PP · EDITOR HANDBOOK">Editor Handbook</button>
         </div>
         <div class="build-doc-bar">
           <span class="build-doc-name">▤ <span data-doc-name>BearcastMedia-Technical-WhitePaper-v2.0.pdf</span></span>
