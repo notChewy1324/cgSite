@@ -438,7 +438,7 @@
 
 </main>
 
-<div class="modal" id="modal" role="dialog" aria-modal="true">
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal-panel">
     <button class="modal-close" id="modal-close" aria-label="Close">×</button>
     <div class="modal-meta" id="modal-meta"></div>
@@ -449,13 +449,13 @@
 </div>
 
 <!-- Three.js r128 — self-hosted (no third-party CDN; see _headers CSP) — powers the loadout schematic -->
-<script src="js/three.min.js"></script>
+<script defer src="js/three.min.js"></script>
 <!--  WILL UPDATE THIS LATER: CLOUDFLARE WEB ANALYTICS (privacy-friendly, no cookies) WILL UPDATE THIS LATER
      To activate: Cloudflare dashboard > Analytics & Logs > Web Analytics >
      add camgarrison.com, copy the token, paste it below, and uncomment.
      The CSP in _headers already allows the beacon + its endpoint.
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "PASTE-TOKEN-HERE"}'></script>
 -->
-<script src="main.js"></script>
+<script defer src="main.js"></script>
 </body>
 </html>

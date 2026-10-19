@@ -343,6 +343,8 @@ img, svg { display: block; max-width: 100%; }
   z-index: 1;
   animation: drift 30s ease-in-out infinite alternate;
   filter: blur(50px);
+  /* Own compositor layer: the blur rasterizes once instead of on every drift/parallax frame */
+  will-change: transform;
   transition: opacity 0.6s ease;
 }
 

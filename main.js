@@ -530,6 +530,18 @@ window.PROJECTS = [
 
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Tracks whether an element is on screen so animation loops can skip
+  // their work while scrolled away (the rAF keeps ticking, but cheaply).
+  function visibilityGate(el) {
+    const gate = { on: true };
+    if (el && 'IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => {
+        gate.on = entries[entries.length - 1].isIntersecting;
+      }).observe(el);
+    }
+    return gate;
+  }
+
   /* -------- CRT POWER-CYCLE BURST ---------
      An analog-monitor roll + flash. Fired on theme switches and when
      replicant mode toggles. Pure overlay; removed once it finishes. */
@@ -889,7 +901,15 @@ window.PROJECTS = [
       });
     }
 
+    let trailClear = true;
     function tick() {
+      // Nothing moving and nothing left to fade: skip the full-screen clear.
+      if (!cursorActive && !particles.length) {
+        if (!trailClear) { ctx.clearRect(0, 0, W, H); trailClear = true; }
+        requestAnimationFrame(tick);
+        return;
+      }
+      trailClear = false;
       lx += (mx - lx) * 0.85;
       ly += (my - ly) * 0.85;
       arrow.style.transform = `translate(${lx - 3}px, ${ly - 3}px)`;
@@ -987,7 +1007,8 @@ window.PROJECTS = [
         dctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
         dctx.fill();
       }
-      requestAnimationFrame(dustTick);
+      // Reduced motion: one static frame of dust, no drift.
+      if (!prefersReducedMotion) requestAnimationFrame(dustTick);
     }
     dustTick();
   }
@@ -1020,7 +1041,9 @@ window.PROJECTS = [
     baselineWave.appendChild(path);
 
     let t = 0;
+    const waveGate = visibilityGate(baselineWave);
     function drawWave() {
+      if (!waveGate.on) { requestAnimationFrame(drawWave); return; }
       t += 0.04;
       let d = `M 0 ${h / 2}`;
       for (let x = 0; x <= w; x += 2) {
@@ -1033,7 +1056,7 @@ window.PROJECTS = [
         d += ` L ${x} ${y.toFixed(2)}`;
       }
       path.setAttribute('d', d);
-      requestAnimationFrame(drawWave);
+      if (!prefersReducedMotion) requestAnimationFrame(drawWave);
     }
     drawWave();
 
@@ -1042,7 +1065,8 @@ window.PROJECTS = [
       const left = baselineLabel.querySelector('.bl-left');
       const right = baselineLabel.querySelector('.bl-right');
       setInterval(() => {
-        if (left)  left.textContent  = `BASELINE ${(89 + Math.random() * 4).toFixed(2)}`;
+        // Replicant mode pins the left label to "BASELINE LOST" — don't overwrite it.
+        if (left && !NX.replicant) left.textContent = `BASELINE ${(89 + Math.random() * 4).toFixed(2)}`;
         if (right) right.textContent = `IRIS ${(0.34 + Math.random() * 0.06).toFixed(3)} mm`;
       }, 700);
     }
@@ -2140,8 +2164,6 @@ you are now on that list. welcome.`, 'ok');
           writeRaw(`${esc(p.padEnd(10))}<span class="${cls}">${esc(s.padEnd(10))}</span><span class="dim">${esc(svc)}</span>`);
         }, 160);
       },
-      scan(args) { commands.nmap(args); },
-
       traceroute(args) {
         const host = (args[0] || 'wallace.corp').slice(0, 48);
         write(`traceroute to ${host}, 8 hops max, 56 byte packets`);
@@ -2197,7 +2219,10 @@ you are now on that list. welcome.`, 'ok');
             writeBlank();
             WANT.forEach(h => {
               let v = res.headers.get(h);
-              if (v) {
+              if (v && h === 'strict-transport-security' && /max-age=0(?!\d)/i.test(v)) {
+                writeRaw(`<span class="err">[DISABLED]</span> <span class="hl">${esc(h)}</span>`);
+                writeRaw(`           <span class="dim">${esc(v)}</span>`);
+              } else if (v) {
                 if (v.length > 72) v = v.slice(0, 69) + '...';
                 writeRaw(`<span class="ok">[SHIELDED]</span> <span class="hl">${esc(h)}</span>`);
                 writeRaw(`           <span class="dim">${esc(v)}</span>`);
@@ -2404,6 +2429,7 @@ you are now on that list. welcome.`, 'ok');
       alpha: 0.18 + Math.random() * 0.28
     }));
 
+    let rainClear = true;
     function rainTick() {
       const theme = document.documentElement.getAttribute('data-theme');
       const replicant = document.documentElement.getAttribute('data-replicant') === 'on';
@@ -2412,10 +2438,12 @@ you are now on that list. welcome.`, 'ok');
       // where it falls red ("blood rain").
       const isRain = theme === 'rain' || ATMO.rainLive || replicant;
       if (!isRain) {
-        rctx.clearRect(0, 0, RW, RH);
+        // Clear once when the rain stops, then idle.
+        if (!rainClear) { rctx.clearRect(0, 0, RW, RH); rainClear = true; }
         requestAnimationFrame(rainTick);
         return;
       }
+      rainClear = false;
       // Fade the previous frame with destination-out so the motion trail
       // works on any theme without tinting the page (the old dark fillRect
       // only looked right against the near-black rain theme background).
@@ -2732,9 +2760,11 @@ you are now on that list. welcome.`, 'ok');
         renderFrame();
       } else {
         let last = 0;
+        // Each frame rebuilds ~1k SVG nodes — only do it while the globe is on screen.
+        const globeGate = visibilityGate(mapSvg);
         function loop(ts) {
           requestAnimationFrame(loop);
-          if (ts - last < 33) return;
+          if (!globeGate.on || ts - last < 33) return;
           last = ts;
           yaw += 0.006;
           sweepLon += 2.2; if (sweepLon > 180) sweepLon -= 360;
@@ -2817,7 +2847,9 @@ you are now on that list. welcome.`, 'ok');
         bars.push({ el: b, h: 0.1, target: 0.1, phase: Math.random() * Math.PI * 2 });
       }
       let t = 0;
+      const spectrumGate = visibilityGate(spectrum);
       function tick() {
+        if (!spectrumGate.on) { requestAnimationFrame(tick); return; }
         t += 0.045;
         bars.forEach((bar, i) => {
           const wave = Math.sin(t + bar.phase + i * 0.18) * 0.3 + 0.5;
@@ -2889,7 +2921,9 @@ you are now on that list. welcome.`, 'ok');
       radar.appendChild(sv);
 
       let angle = 0;
+      const radarGate = visibilityGate(radar);
       function sweep() {
+        if (!radarGate.on) { requestAnimationFrame(sweep); return; }
         angle = (angle + 1.4) % 360;
         const a1 = (angle - 30) * Math.PI / 180;
         const a2 = angle * Math.PI / 180;
@@ -2904,6 +2938,7 @@ you are now on that list. welcome.`, 'ok');
 
       // Random blip dots
       function blip() {
+        if (!radarGate.on) return;
         const r = 30 + Math.random() * 60;
         const a = Math.random() * Math.PI * 2;
         const dot = document.createElementNS(ns, 'circle');
@@ -3307,11 +3342,15 @@ you are now on that list. welcome.`, 'ok');
       clearHighlight(); setReadout(null); clearSpecActive();
     }
     function onMove(e) {
+      // This also listens on window (so drags can leave the canvas). Only
+      // treat the pointer as hovering the model when it is actually over the
+      // canvas — otherwise hovering a spec card got cleared on the next frame.
+      pointerInside = e.target === pcCanvas;
+      if (!pointerInside && !dragging) return;
       const rect = pcCanvas.getBoundingClientRect();
       const p = e.touches ? e.touches[0] : e;
       pointer.x = ((p.clientX - rect.left) / rect.width) * 2 - 1;
       pointer.y = -((p.clientY - rect.top) / rect.height) * 2 + 1;
-      pointerInside = true;
       if (!dragging) return;
       idle = 0;
       const dx = p.clientX - lastX, dy = p.clientY - lastY;
@@ -3405,15 +3444,19 @@ you are now on that list. welcome.`, 'ok');
 
     // --- render loop ---
     let started = false;
+    const camGoal = new THREE.Vector3();
+    const pcGate = visibilityGate(stage || pcCanvas);
     function frame() {
       requestAnimationFrame(frame);
+      // Skip WebGL work while the schematic is scrolled off screen (first frame always renders).
+      if (started && !pcGate.on) return;
       idle++;
       if (autoSpin && !dragging && idle > 90) view.yaw += 0.0022;
       // ease camera onto the orbit position
       const cx = target.x + Math.sin(view.yaw) * Math.cos(view.pitch) * view.dist;
       const cy = target.y + Math.sin(view.pitch) * view.dist;
       const cz = target.z + Math.cos(view.yaw) * Math.cos(view.pitch) * view.dist;
-      camera.position.lerp(new THREE.Vector3(cx, cy, cz), 0.12);
+      camera.position.lerp(camGoal.set(cx, cy, cz), 0.12);
       camera.lookAt(target);
       // gentle LED pulse
       const t = performance.now() * 0.003;
@@ -3806,11 +3849,13 @@ you are now on that list. welcome.`, 'ok');
         let shielded = 0;
         WANT.forEach(([h, short]) => {
           const v = res.headers.get(h);
+          // HSTS with max-age=0 is present but switched off — not a shield.
+          const up = !!v && !(h === 'strict-transport-security' && /max-age=0(?!\d)/i.test(v));
           const row = document.createElement('div');
-          row.className = `defense-row ${v ? 'ok' : 'bad'}`;
+          row.className = `defense-row ${up ? 'ok' : 'bad'}`;
           const state = document.createElement('span');
           state.className = 'defense-state';
-          state.textContent = v ? 'SHIELDED' : 'EXPOSED';
+          state.textContent = up ? 'SHIELDED' : (v ? 'DISABLED' : 'EXPOSED');
           const key = document.createElement('span');
           key.className = 'defense-key';
           key.textContent = short;
@@ -3819,7 +3864,7 @@ you are now on that list. welcome.`, 'ok');
           val.textContent = v ? (v.length > 96 ? v.slice(0, 93) + '...' : v) : 'header not present on this origin';
           row.append(state, key, val);
           defenseEl.appendChild(row);
-          if (v) shielded++;
+          if (up) shielded++;
         });
         const note = document.createElement('div');
         note.className = 'defense-note';

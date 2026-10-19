@@ -1,0 +1,7 @@
+# Repo files that should never be served as public assets
+README.md
+wrangler.jsonc
+.gitignore
+.DS_Store
+.wrangler
+node_modules
