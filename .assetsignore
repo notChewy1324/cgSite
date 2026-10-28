@@ -2,6 +2,12 @@
 README.md
 wrangler.jsonc
 .gitignore
+.git
+.github
+.vscode
+.idea
 .DS_Store
 .wrangler
+.dev.vars*
+.env*
 node_modules

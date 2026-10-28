@@ -47,8 +47,8 @@ the edge, live, and renders the result.
 🔒 No frameworks. No build step. No trackers. No third-party JavaScript — not even a CDN —
 and the fonts are self-hosted too. Hand-built vanilla `HTML / CSS / JS`, served static on
 Cloudflare Pages behind a locked-down header policy. The only external calls the CSP permits
-are the two APIs that power the live-weather atmosphere (and an optional, currently disabled
-Cloudflare Web Analytics beacon).
+are the two APIs that power the live-weather atmosphere. (The Cloudflare Web Analytics beacon
+is commented out, and the CSP does not allow it until it is switched on.)
 
 ---
 
@@ -193,7 +193,7 @@ Somewhere above the terminal, a ten-key sequence from an older archive also stil
 
 - 🧱 **Markup / style** — semantic HTML5, hand-authored CSS (custom properties, `color-mix`, grid, layered canvas effects)
 - ⚡ **Behavior** — vanilla ES6+, zero dependencies, one `main.js`
-- 🧊 **3D** — [Three.js](https://threejs.org/) r128, **vendored** at `js/three.min.js` (only loaded on `uses.html`); custom orbit/zoom, no OrbitControls, no CDN
+- 🧊 **3D** — [Three.js](https://threejs.org/) r128, **vendored** at `js/three.min.js`, lazy-loaded on `archive.html` only when the loadout schematic nears the viewport; custom orbit/zoom, no OrbitControls, no CDN
 - 🔤 **Type** — Major Mono Display *(display)*, JetBrains Mono *(mono)*, Syne *(sans)* — **self-hosted** variable `woff2` in `/fonts`, preloaded, no Google Fonts at runtime
 - 🔊 **Sound** — procedural Web Audio (noise-synth rain, wind, hum, UI ticks); no audio files, context created only after opt-in
 - ⛈️ **Weather** — `ipwho.is` (IP → city, no prompt) + `open-meteo.com` (conditions), cached 30 min, drives the rain canvas

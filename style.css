@@ -851,7 +851,7 @@ section { padding: 90px 0; position: relative; }
 }
 
 .id-card::before {
-  content: 'CLASSIFIED // KIPPLE-ARCHIVE 2049';
+  content: 'CLASSIFIED // KIPPLE ARCHIVE 2049';
   position: absolute;
   top: 10px; right: 14px;
   font-size: 8px;
@@ -3407,7 +3407,7 @@ body.drawer-open { overflow: hidden; }
 .pc-schematic-stage.grabbing { cursor: grabbing; }
 
 .pc-schematic-stage::before {
-  content: '◉ LIVE MODEL // NX-RIG-01 — DRAG TO ORBIT';
+  content: '◉ LIVE MODEL // NX-RIG-01 // DRAG TO ORBIT';
   position: absolute;
   top: 14px; left: 18px;
   font-size: 9px;

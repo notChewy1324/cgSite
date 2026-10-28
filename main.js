@@ -27,11 +27,11 @@ window.BLOG_POSTS = [
     body: `
       <p>I had a Raspberry Pi sitting unused on a shelf. Late one Tuesday I decided to throw <code>cowrie</code> on it, expose port 22 through a forwarded rule on my edge router, and walk away. The plan was to leave it for a weekend and see what showed up.</p>
 
-      <p>Three hours in, I checked back. The log had grown to several megabytes. <strong>4,712 login attempts.</strong> 218 distinct source IPs. The most popular username, by a comfortable margin, was <code>root</code>. The most popular password was the literal string <code>123456</code>. The fifth-most-popular was the username repeated.</p>
+      <p>Three hours in, I checked back. The log had grown to several megabytes. <strong>4,712 login attempts.</strong> 218 distinct source IPs. The most popular username, by a comfortable margin, was <code>root</code>. The most popular password was the literal string <code>123456</code>. The fifth most popular was the username repeated.</p>
 
       <h3>what surprised me</h3>
 
-      <p>It was not the volume. The volume was expected — anyone who has put a real SSH service on the internet for an afternoon knows the global botnet noise floor. What surprised me was the <em>structure</em> of the attempts. Some sessions were clearly automated dictionaries firing as fast as the TCP handshake would allow. Others were paced — one attempt every few seconds, varied user agents, varied passwords, almost like someone was trying to stay below a fail2ban threshold they imagined I had set.</p>
+      <p>It was not the volume. The volume was expected. Anyone who has put a real SSH service on the internet for an afternoon knows the global botnet noise floor. What surprised me was the <em>structure</em> of the attempts. Some sessions were clearly automated dictionaries firing as fast as the TCP handshake would allow. Others were paced: one attempt every few seconds, varied user agents, varied passwords, almost like someone was trying to stay below a fail2ban threshold they imagined I had set.</p>
 
       <p>One session, after seven failed attempts, simply stopped trying passwords and ran <code>uname -a</code> against the login banner I had spoofed. Then it logged off. Twenty minutes later a different IP from the same /24 connected and went straight for credentials I had only just added to the trap. Different attacker. Same intel pipeline.</p>
 
@@ -41,11 +41,11 @@ window.BLOG_POSTS = [
 
       <p>Three things, none of them new, all of them more concrete than they were before I ran the experiment:</p>
 
-      <p><strong>One.</strong> Default-credential exposure is not a hypothetical. Anything reachable on a routable port that accepts a username will be tested against the same global wordlist before you finish your coffee.</p>
+      <p><strong>One.</strong> Default credential exposure is not a hypothetical. Anything reachable on a routable port that accepts a username will be tested against the same global wordlist before you finish your coffee.</p>
 
-      <p><strong>Two.</strong> Rate-limiting attackers visibly exist. They are not common, but they are not rare either. If your detection only fires on brute-force volume, you are missing a category of behavior entirely.</p>
+      <p><strong>Two.</strong> Rate limiting attackers visibly exist. They are not common, but they are not rare either. If your detection only fires on brute force volume, you are missing a category of behavior entirely.</p>
 
-      <p><strong>Three.</strong> Honeypots are an underrated training tool. I learned more about real-world attack patterns in one week of reading my own cowrie logs than I did in any single chapter of any networking textbook I have read.</p>
+      <p><strong>Three.</strong> Honeypots are an underrated training tool. I learned more about real world attack patterns in one week of reading my own cowrie logs than I did in any single chapter of any networking textbook I have read.</p>
 
       <p>I left the box up for another month before I retired it. By the end it had logged just under 90,000 attempts. I still have the dataset. Some weekend I will go through it properly.</p>
     `
@@ -57,9 +57,9 @@ window.BLOG_POSTS = [
     title: 'why i stopped trusting my own monitoring',
     tags: ['INFRASTRUCTURE', 'STORY', 'LESSON'],
     color: 'red',
-    excerpt: 'A quiet dashboard does not mean a quiet network. The story of an alert that did not fire — and the half-day it cost me to figure out why.',
+    excerpt: 'A quiet dashboard does not mean a quiet network. The story of an alert that did not fire, and the half day it cost me to figure out why.',
     body: `
-      <p>Sometime mid-shift I noticed a workstation on the third floor was unreachable. Not down on the dashboard — just unreachable. The dashboard said it was fine. RDP refused. Ping refused. The desk phone next to it worked.</p>
+      <p>Sometime in the middle of a shift I noticed a workstation on the third floor was unreachable. Not down on the dashboard, just unreachable. The dashboard said it was fine. RDP refused. Ping refused. The desk phone next to it worked.</p>
 
       <p>I drove over. The machine was on. The user was at lunch. I plugged in a console keyboard, woke it, and everything looked normal. Network adapter, link light, IP address, everything. I pinged the gateway from the box itself. Worked. I pinged the box from my laptop on the same VLAN. Failed.</p>
 
@@ -69,21 +69,21 @@ window.BLOG_POSTS = [
 
       <p>Months earlier, a static ARP entry had been added to a switch by someone who is no longer there. The MAC address it pointed to belonged to a NIC that was replaced last quarter. The new NIC had a new MAC. The static entry on the switch outranked the dynamic one. From the switch's perspective, the workstation's IP belonged to a device that no longer existed.</p>
 
-      <p>The workstation could send traffic — its own ARP cache was happy. Replies just never came back. Asymmetric, silent, half-dead.</p>
+      <p>The workstation could send traffic; its own ARP cache was happy. Replies just never came back. Asymmetric, silent, half dead.</p>
 
       <h3>the structural thing</h3>
 
-      <p>Our monitoring polled every host's <em>own self-reported</em> status via an agent. The agent on the workstation reported up, healthy, all green. The dashboard agreed. Nothing was wrong, according to the system designed to tell us when something was wrong.</p>
+      <p>Our monitoring polled every host's <em>own self reported</em> status via an agent. The agent on the workstation reported up, healthy, all green. The dashboard agreed. Nothing was wrong, according to the system designed to tell us when something was wrong.</p>
 
       <blockquote>Everything was fine. Everything kept being fine. The only thing not fine was reality.</blockquote>
 
-      <p>The fix was thirty seconds — clear the static ARP, let the switch relearn. The lesson was longer.</p>
+      <p>The fix was thirty seconds: clear the static ARP, let the switch relearn. The lesson was longer.</p>
 
       <h3>what i changed about how i think</h3>
 
       <p>I stopped trusting any single signal as evidence of "up." A host saying it is up does not mean it is reachable. A switch saying a port is up does not mean traffic is flowing. A ping responding does not mean an application is healthy. Every layer can lie convincingly while every other layer is also lying convincingly.</p>
 
-      <p>Now when I build out monitoring, I look for at least <strong>two independent vantage points</strong> per assertion. Self-reported and externally-reachable. Layer 3 and Layer 7. Inside the network and outside it. If only one of them is green, that is not green. That is "we are not sure."</p>
+      <p>Now when I build out monitoring, I look for at least <strong>two independent vantage points</strong> per assertion. Self reported and externally reachable. Layer 3 and Layer 7. Inside the network and outside it. If only one of them is green, that is not green. That is "we are not sure."</p>
 
       <p>This sounds obvious. It was obvious. I had heard it dozens of times. It still cost me half a day to internalize, and I think it had to.</p>
     `
@@ -92,28 +92,28 @@ window.BLOG_POSTS = [
   {
     id: 'NX-0004',
     date: '2026.03.22',
-    title: 'the case of the friday-night gpo',
+    title: 'the case of the friday night gpo',
     tags: ['ACTIVE DIRECTORY', 'STORY', 'INCIDENT'],
     color: 'ice',
     excerpt: 'A scheduled GPO change rolled out at 4:47 PM on a Friday. By Monday, two hundred users could not print, and nobody could explain why.',
     body: `
-      <p>The change ticket said it was routine. A new Group Policy Object pushing an updated default printer mapping for a specific OU. Tested in a staging container, signed off, scheduled for end-of-day Friday. Nobody blocked it. Nobody should have.</p>
+      <p>The change ticket said it was routine. A new Group Policy Object pushing an updated default printer mapping for a specific OU. Tested in a staging container, signed off, scheduled for end of day Friday. Nobody blocked it. Nobody should have.</p>
 
-      <p>By Monday morning, the helpdesk queue was on fire. <strong>Two hundred users</strong> on the affected floor could not print. Not "the printer is offline." Not "the queue is stuck." The print dialog literally did not show their printer at all. The mapping had not just failed — it had quietly removed the existing one.</p>
+      <p>By Monday morning, the helpdesk queue was on fire. <strong>Two hundred users</strong> on the affected floor could not print. Not "the printer is offline." Not "the queue is stuck." The print dialog literally did not show their printer at all. The mapping had not just failed; it had quietly removed the existing one.</p>
 
       <h3>tracing the cause</h3>
 
-      <p>I watched <code>gpresult /h</code> on three different machines. The new GPO was applying. The deployed printer was being added. Then, immediately on the same policy refresh, it was being removed. The removal was happening because of an <em>item-level targeting</em> rule that nobody had noticed, written months ago, that excluded any user whose primary OU contained a specific keyword. The keyword had been added to the OU name in a re-org six weeks ago. The exclusion now matched everyone.</p>
+      <p>I watched <code>gpresult /h</code> on three different machines. The new GPO was applying. The deployed printer was being added. Then, immediately on the same policy refresh, it was being removed. The removal was happening because of an <em>item level targeting</em> rule that nobody had noticed, written months ago, that excluded any user whose primary OU contained a specific keyword. The keyword had been added to the OU name in a reorg six weeks ago. The exclusion now matched everyone.</p>
 
       <p>The original GPO author had moved on. The targeting rule had no comment. The OU rename had no associated review of policies that referenced it. The chain of "it should still work" assumptions stretched back three administrative changes and at least two organizational restructures.</p>
 
-      <blockquote>Every long-lived environment is a graveyard of small decisions made by people who are no longer there. Most of the time they rest peacefully. Sometimes they get up.</blockquote>
+      <blockquote>Every long lived environment is a graveyard of small decisions made by people who are no longer there. Most of the time they rest peacefully. Sometimes they get up.</blockquote>
 
       <h3>the fix and the lesson</h3>
 
       <p>The fix was twelve seconds. Edit the targeting rule, save, force <code>gpupdate</code>. Printing returned within two policy refresh cycles.</p>
 
-      <p>The actual fix was structural and took the better part of two weeks. We pulled an inventory of every GPO with item-level targeting that referenced OU paths or names. We commented every targeting rule we found uncommented. We added a checklist item to OU renames: <em>review affected GPOs first.</em> We lost a small number of unused policies in the process, which was its own kind of win.</p>
+      <p>The actual fix was structural and took the better part of two weeks. We pulled an inventory of every GPO with item level targeting that referenced OU paths or names. We commented every targeting rule we found uncommented. We added a checklist item to OU renames: <em>review affected GPOs first.</em> We lost a small number of unused policies in the process, which was its own kind of win.</p>
 
       <p>I think about this incident every time I touch a piece of policy that was written by someone I do not know. The world is full of clever conditions written by careful people that have quietly stopped meaning what they used to mean.</p>
     `
@@ -133,21 +133,21 @@ window.BLOG_POSTS = [
 
       <h3>the capture</h3>
 
-      <p>I set up a SPAN port mirroring traffic on both sides of the appliance — ingress from the LAN side, egress to the WAN side — into a laptop running Wireshark with two NICs. Filter: SIP and RTP only. Then I waited.</p>
+      <p>I set up a SPAN port mirroring traffic on both sides of the appliance (ingress from the LAN side, egress to the WAN side) into a laptop running Wireshark with two NICs. Filter: SIP and RTP only. Then I waited.</p>
 
       <p>The wait was long. Choppy audio is hard to reproduce on demand. I left the capture running for three hours during business hours and went to do other work. When I came back I had an 800 MB pcap.</p>
 
-      <p>The first thing I did was filter to RTP packets and graph the inter-arrival times. The graph was mostly a flat line at the expected ~20ms. Three places, it spiked. Two of those spikes lined up to the minute with user complaints from the help desk log.</p>
+      <p>The first thing I did was filter to RTP packets and graph the interarrival times. The graph was mostly a flat line at the expected ~20ms. Three places, it spiked. Two of those spikes lined up to the minute with user complaints from the help desk log.</p>
 
       <h3>the lie</h3>
 
-      <p>I went looking for what was different about those packets. The DSCP marking on the LAN-side ingress was correct: <code>EF (46)</code> — Expedited Forwarding, which is what voice should be. On the WAN-side egress, during the spike windows, the DSCP marking on the same RTP flow was <code>CS0 (0)</code>. Best-effort. Stripped.</p>
+      <p>I went looking for what was different about those packets. The DSCP marking on the LAN side ingress was correct: <code>EF (46)</code>, Expedited Forwarding, which is what voice should be. On the WAN side egress, during the spike windows, the DSCP marking on the same RTP flow was <code>CS0 (0)</code>. Best effort. Stripped.</p>
 
-      <p>Not on every packet. Just on packets that arrived during periods of high overall throughput on the appliance — the periods we cared about, the periods QoS was supposed to protect.</p>
+      <p>Not on every packet. Just on packets that arrived during periods of high overall throughput on the appliance: the periods we cared about, the periods QoS was supposed to protect.</p>
 
       <blockquote>The appliance was respecting our markings. Right up until the moment it mattered, at which point it was respecting something else.</blockquote>
 
-      <p>I built a side-by-side filter showing the same five-tuple flow before and after the appliance, with DSCP highlighted, and exported it as a screenshot. I sent the screenshot to the vendor.</p>
+      <p>I built a side by side filter showing the same five tuple flow before and after the appliance, with DSCP highlighted, and exported it as a screenshot. I sent the screenshot to the vendor.</p>
 
       <p>The next call was different.</p>
 
@@ -169,7 +169,7 @@ window.BLOG_POSTS = [
     color: '',
     excerpt: 'Most security incidents are not exotic. They are the absence of a baseline. A short note on the discipline of knowing your own normal.',
     body: `
-      <p>The single most underrated skill in defensive security is knowing what "normal" looks like on your own network. Not the textbook normal — your normal. The specific, peculiar, slightly-broken-in-ways-you-have-grown-fond-of normal of the systems you actually maintain.</p>
+      <p>The single most underrated skill in defensive security is knowing what "normal" looks like on your own network. Not the textbook normal. Your normal. The specific, peculiar, slightly broken in ways you have grown fond of normal of the systems you actually maintain.</p>
 
       <p>Without that, every alert is suspicious and every anomaly is invisible at the same time, which is the worst of both worlds. Alert fatigue is not an inbox problem. It is a baseline problem. You cannot tell signal from noise if you do not know what the noise sounds like when the system is fine.</p>
 
@@ -185,9 +185,9 @@ window.BLOG_POSTS = [
 
       <p>Baselines drift. Normal is not a static target. The "normal" you carefully captured in March is not the "normal" of October because you have added users, decommissioned servers, patched things, and absorbed some new SaaS integration that nobody told you about.</p>
 
-      <p>The discipline is not just to capture a baseline. It is to <em>re-capture</em> it on a schedule, compare it to last quarter's, and notice what has changed. Not to alert on it. Just to know.</p>
+      <p>The discipline is not just to capture a baseline. It is to <em>recapture</em> it on a schedule, compare it to last quarter's, and notice what has changed. Not to alert on it. Just to know.</p>
 
-      <p>Most of the people I respect in this field share a quiet trait: they are deeply curious about the boring details of their own infrastructure. They run <code>netstat</code> on their own boxes for fun. They notice when a service start-time has changed. They are, in a real sense, <strong>haunted</strong> by their own networks.</p>
+      <p>Most of the people I respect in this field share a quiet trait: they are deeply curious about the boring details of their own infrastructure. They run <code>netstat</code> on their own boxes for fun. They notice when a service start time has changed. They are, in a real sense, <strong>haunted</strong> by their own networks.</p>
 
       <p>I am trying to be that kind of haunted.</p>
     `
@@ -201,17 +201,17 @@ window.BLOG_POSTS = [
     color: 'ice',
     excerpt: 'First boot of the public archive. A note on what lives here, why it exists, and what to expect from future entries.',
     body: `
-      <p>This is the first entry in the archive. Eventually it will hold field notes, lab writeups, CTF retrospectives, infrastructure deep-dives, and the occasional half-baked theory about a misbehaving network appliance. The plan is short, technical, no fluff. If a post is worth writing, it should be worth re-reading six months later when I forget how I solved the same problem.</p>
+      <p>This is the first entry in the archive. Eventually it will hold field notes, lab writeups, CTF retrospectives, infrastructure deep dives, and the occasional half baked theory about a misbehaving network appliance. The plan is short, technical, no fluff. If a post is worth writing, it should be worth rereading six months later when I forget how I solved the same problem.</p>
 
       <h3>what to expect</h3>
 
-      <p>Topics will skew toward what I am actually working on at any given time — Active Directory hygiene, Azure tenant hardening, Wireshark captures, packet weirdness, scripting in PowerShell and Python, the quiet machinery underneath enterprise IT. And whatever rabbit hole I fell into that week.</p>
+      <p>Topics will skew toward what I am actually working on at any given time: Active Directory hygiene, Azure tenant hardening, Wireshark captures, packet weirdness, scripting in PowerShell and Python, the quiet machinery underneath enterprise IT. And whatever rabbit hole I fell into that week.</p>
 
       <p>Some posts will be short. Some will be longer than they should be. A few will be wrong, and I will leave them up with corrections at the bottom because pretending I was right the first time is a worse habit than being wrong in public.</p>
 
       <h3>why post at all</h3>
 
-      <p>Two reasons. The first is selfish: writing an explanation forces a level of clarity that just-fixing-the-thing does not. I learn the material twice when I write it down — once to understand it, once to make it readable. The second reason is that I have read other people's writeups for years and benefited from them, and the only honest way to be in that ecosystem long-term is to add to it.</p>
+      <p>Two reasons. The first is selfish: writing an explanation forces a level of clarity that just fixing the thing does not. I learn the material twice when I write it down: once to understand it, once to make it readable. The second reason is that I have read other people's writeups for years and benefited from them, and the only honest way to be in that ecosystem long term is to add to it.</p>
 
       <blockquote>Cells interlinked within cells interlinked within one stem.</blockquote>
 
@@ -280,7 +280,7 @@ window.VK_QUESTIONS = [
     ],
     correct: 3,
     feedback: {
-      ok:  "Baseline holds. Operator-class response. Verify, do not arbitrate.",
+      ok:  "Baseline holds. Operator class response. Verify, do not arbitrate.",
       bad: "Flag: trusting any single source is a baseline weakness."
     }
   },
@@ -316,7 +316,7 @@ window.MEMORY_FRAGMENTS = [
     difficulty: 'EASY',
     chunks: [
       { id: 'M-01', label: '01', x: 18, y: 18, text: "I was seven years old." },
-      { id: 'M-02', label: '02', x: 62, y: 24, text: "My uncle dropped off a hand-me-down tower computer." },
+      { id: 'M-02', label: '02', x: 62, y: 24, text: "My uncle dropped off a secondhand tower computer." },
       { id: 'M-03', label: '03', x: 32, y: 48, text: "Pentium 4. Beige plastic." },
       { id: 'M-04', label: '04', x: 78, y: 52, text: "Nobody had set an admin password." },
       { id: 'M-05', label: '05', x: 14, y: 72, text: "I broke it within an afternoon." },
@@ -333,7 +333,7 @@ window.MEMORY_FRAGMENTS = [
       { id: 'F-01', label: '01', x: 8,  y: 14, text: "It was 2:47 in the morning." },
       { id: 'F-02', label: '02', x: 38, y: 8,  text: "The pager went off four times in two minutes." },
       { id: 'F-03', label: '03', x: 72, y: 18, text: "Three sites unreachable. One whole VLAN dark." },
-      { id: 'F-04', label: '04', x: 88, y: 42, text: "I drove in. The server room was warm — too warm." },
+      { id: 'F-04', label: '04', x: 88, y: 42, text: "I drove in. The server room was warm. Too warm." },
       { id: 'F-05', label: '05', x: 56, y: 36, text: "An HVAC unit had failed silently. The dashboard never noticed." },
       { id: 'F-06', label: '06', x: 22, y: 44, text: "Forty fans were trying not to sound desperate." },
       { id: 'F-07', label: '07', x: 8,  y: 70, text: "I rerouted load. Forced fans to max. Opened the door." },
@@ -375,7 +375,7 @@ window.PROJECTS = [
     id: 'BUILD-001',
     date: 'EXPERIENCE',
     title: 'bearcast media',
-    tags: ['FRONT-END', 'SECURITY', 'CMS', 'BROADCAST'],
+    tags: ['FRONT END', 'SECURITY', 'CMS', 'BROADCAST'],
     color: '',
     live: true,
     domain: 'bearcastmedia.com',
@@ -386,9 +386,9 @@ window.PROJECTS = [
       { v: '5', k: 'edge functions' },
       { v: '131pp', k: 'documentation' }
     ],
-    excerpt: "Built from scratch: the full public platform for UC's student media organization. Nine hand-authored pages, a custom radio player with real-audio visualizers, a headless CMS, five edge functions, and a security posture I took from an F to an A — documented across 131 pages of white papers and diagrams.",
+    excerpt: "Built from scratch: the full public platform for UC's student media organization. Nine hand authored pages, a custom radio player with live audio visualizers, a headless CMS, five edge functions, and a security posture I took from an F to an A, documented across 131 pages of white papers and diagrams.",
     body: `
-      <p><strong>bearcastmedia.com</strong> is the public face of the University of Cincinnati's student media organization — on the air since 2001, five departments, celebrating its 25th year in 2026 — and I rebuilt it from an inherited WordPress template as Web Director. It is the closest thing I have to a real "show": a live broadcast product where the technology has to disappear and the experience has to feel effortless.</p>
+      <p><strong>bearcastmedia.com</strong> is the public face of the University of Cincinnati's student media organization (on the air since 2001, five departments, celebrating its 25th year in 2026), and I rebuilt it from an inherited WordPress template as Web Director. It is the closest thing I have to a real "show": a live broadcast product where the technology has to disappear and the experience has to feel effortless.</p>
 
       <div class="build-facts">
         <div class="build-fact"><span class="k">Pages</span><span class="v">nine, no framework</span></div>
@@ -398,21 +398,21 @@ window.PROJECTS = [
       </div>
 
       <h3>the build</h3>
-      <p>Nine static pages — Radio, Sports, BTV, Journalism, Music, schedule, team, and more — in plain HTML, CSS, and JavaScript, served from Cloudflare's edge and wired to a custom-modeled <strong>Sanity Studio</strong> so rotating student editors can publish without touching code or triggering a rebuild. The content layer is the durable asset; the front end is deliberately disposable. When the old WordPress archive came over, I ran reviewed, reversible migrations that gave 183 reviews real artists and albums and moved 176 pieces to the content type they actually are.</p>
-      <p>A thin layer of <strong>Pages Functions</strong> handles only what a static site can't: song requests and interest-form applications delivered to Slack, a live listener count backed by Cloudflare D1, automatic BTV listings straight from YouTube, real link previews for shared stories, and a generated sitemap. Everything else stays pure CDN. A <code>build.sh</code> step splits per-page bundles with esbuild, stamps asset versions, and a service worker keeps visited pages readable offline.</p>
+      <p>Nine static pages (Radio, Sports, BTV, Journalism, Music, schedule, team, and more) in plain HTML, CSS, and JavaScript, served from Cloudflare's edge and wired to a custom modeled <strong>Sanity Studio</strong> so rotating student editors can publish without touching code or triggering a rebuild. The content layer is the durable asset; the front end is deliberately disposable. When the old WordPress archive came over, I ran reviewed, reversible migrations that gave 183 reviews real artists and albums and moved 176 pieces to the content type they actually are.</p>
+      <p>A thin layer of <strong>Pages Functions</strong> handles only what a static site can't: song requests and interest form applications delivered to Slack, a live listener count backed by Cloudflare D1, automatic BTV listings straight from YouTube, real link previews for shared stories, and a generated sitemap. Everything else stays pure CDN. A <code>build.sh</code> step splits per page bundles with esbuild, stamps asset versions, and a service worker keeps visited pages readable offline.</p>
 
       <h3>the radio</h3>
-      <p>The Radio.co widget is gone. The player is the site's own <code>&lt;audio&gt;</code> element with a Web Audio tap on the real stream — live waveform, 4096-point FFT spectrum, and a VU meter — plus Media Session lock-screen controls, auto-reconnect with back-off, DJ-set detection, and a live "listening now" count. <strong>Your Bearcast</strong> adds personal recaps, streaks, listener tiers, badges, and a year-end Wrapped, all computed and stored only in the listener's browser. No accounts, nothing sent to a server.</p>
-      <p>Around it: archive-wide search with typo tolerance and server-side full-text ranking behind a &#8984;K command palette, an article reader that can read stories aloud through the Web Speech API, and self-hosted fonts so the site makes zero third-party font requests.</p>
+      <p>The Radio.co widget is gone. The player is the site's own <code>&lt;audio&gt;</code> element with a Web Audio tap on the real stream (live waveform, 4096 point FFT spectrum, and a VU meter), plus Media Session lock screen controls, automatic reconnect with backoff, DJ set detection, and a live "listening now" count. <strong>Your Bearcast</strong> adds personal recaps, streaks, listener tiers, badges, and a year end Wrapped, all computed and stored only in the listener's browser. No accounts, nothing sent to a server.</p>
+      <p>Around it: archive wide search with typo tolerance and server side full text ranking behind a &#8984;K command palette, an article reader that can read stories aloud through the Web Speech API, and self hosted fonts so the site makes zero third party font requests.</p>
 
       <h3>the security pass</h3>
-      <p>The inherited site scored an <strong>F</strong> — every major security header missing. The rebuild shipped at an <strong>A</strong>, and the October 2026 re-audit went further: <strong>zero inline handlers</strong>, only two inline scripts left and both pinned by SHA-256 in a strict Content-Security-Policy, a central escaping and sanitization layer at every output sink, and schema-level validation on every field. Every high and medium finding from the original audit is closed. The new server endpoints sit behind origin checks, honeypots, size caps, per-IP throttling, and Slack mrkdwn escaping.</p>
-      <p>It's verified, not asserted: <strong>22/22</strong> endpoint-abuse tests and <strong>30/30</strong> browser XSS/CSP tests pass against the live source, and seven CI checks — including a CSP regression gate — run on every pull request, alongside a weekly health check of the live site, a weekly Sanity backup, and Dependabot.</p>
+      <p>The inherited site scored an <strong>F</strong>, with every major security header missing. The rebuild shipped at an <strong>A</strong>, and the October 2026 reaudit went further: <strong>zero inline handlers</strong>, only two inline scripts left and both pinned by SHA-256 in a strict Content-Security-Policy, a central escaping and sanitization layer at every output sink, and schema level validation on every field. Every high and medium finding from the original audit is closed. The new server endpoints sit behind origin checks, honeypots, size caps, per IP throttling, and Slack mrkdwn escaping.</p>
+      <p>It's verified, not asserted: <strong>22/22</strong> endpoint abuse tests and <strong>30/30</strong> browser XSS/CSP tests pass against the live source, and seven CI checks, including a CSP regression gate, run on every pull request, alongside a weekly health check of the live site, a weekly Sanity backup, and Dependabot.</p>
 
       <blockquote>A broadcast platform is a trust object. People assume it is safe because it looks calm. My job was to make that assumption true.</blockquote>
 
       <h3>the documentation</h3>
-      <p>An undocumented system is just a rumor. The v2.0 Bearcast library is three documents, all rewritten from the October 2026 source with real code quoted by file and line: a 77-page technical white paper, a 44-page cybersecurity white paper, and a 10-page system-architecture diagram set. Read any of them inline, or pull the PDF.</p>
+      <p>An undocumented system is just a rumor. The v2.0 Bearcast library is three documents, all rewritten from the October 2026 source with real code quoted by file and line: a 77 page technical white paper, a 44 page cybersecurity white paper, and a 10 page system architecture diagram set. Read any of them inline, or pull the PDF.</p>
 
       <!-- ============================================================
            BEARCAST DOCUMENT LIBRARY (v2.0)
@@ -455,28 +455,28 @@ window.PROJECTS = [
     live: true,
     domain: 'netsweepapp.com',
     stack: ['Swift', 'SwiftUI', 'SwiftData', 'Network.framework', 'App Intents'],
-    excerpt: 'A personal watchtower for the websites you depend on. Pin a site and NetSweep re-checks its TLS, DNS, headers, and certificate transparency in the background, then tells you only what changed. No accounts, no servers, nothing leaves the device.',
+    excerpt: 'A personal watchtower for the websites you depend on. Pin a site and NetSweep rechecks its TLS, DNS, headers, and certificate transparency in the background, then tells you only what changed. No accounts, no servers, nothing leaves the device.',
     body: `
-      <p><strong>NetSweep</strong> is a personal watchtower for the websites you depend on. You pin the hosts that matter — your bank, your employer, your own domains — and it inspects them on a schedule, surfacing the quiet changes that precede an outage or a compromise: a certificate about to expire, DNS repointed overnight, a security header that silently disappeared.</p>
+      <p><strong>NetSweep</strong> is a personal watchtower for the websites you depend on. You pin the hosts that matter (your bank, your employer, your own domains) and it inspects them on a schedule, surfacing the quiet changes that precede an outage or a compromise: a certificate about to expire, DNS repointed overnight, a security header that silently disappeared.</p>
 
       <div class="build-facts">
         <div class="build-fact"><span class="k">Platform</span><span class="v">iphone · ipad · ios 18+</span></div>
         <div class="build-fact"><span class="k">Signals</span><span class="v">eight per host</span></div>
         <div class="build-fact"><span class="k">Price</span><span class="v">free · no iap</span></div>
-        <div class="build-fact"><span class="k">Backend</span><span class="v">none — on device</span></div>
+        <div class="build-fact"><span class="k">Backend</span><span class="v">none, all on device</span></div>
       </div>
 
       <h3>what it checks</h3>
       <p>Eight inspection signals run against every pinned host: the <strong>TLS handshake</strong> (protocol version, certificate chain, expiry countdown), <strong>OCSP revocation</strong> against the issuing authority, <strong>DNS A/AAAA records</strong> to catch silent repointing, <strong>HTTP to HTTPS redirect</strong> enforcement, a scored <strong>security header</strong> audit across HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy and Permissions-Policy, <strong>HSTS preload eligibility</strong>, <strong>certificate transparency</strong> via public CT logs, and <strong>CVE matching</strong> against NIST's NVD by apex domain.</p>
 
       <h3>the loop</h3>
-      <p>Pin, re-check, alert. A background refresh task wakes roughly every twelve hours and re-runs the probes; SwiftData holds the previous result so the app can diff them and show only the delta. Local notifications fire at thirty, fourteen, seven, and one day before a certificate expires. The "What's New" panel is the whole product philosophy in one screen: a monitoring tool that stays silent is doing its job, and the moment it speaks it should be worth reading.</p>
+      <p>Pin, recheck, alert. A background refresh task wakes roughly every twelve hours and reruns the probes; SwiftData holds the previous result so the app can diff them and show only the delta. Local notifications fire at thirty, fourteen, seven, and one day before a certificate expires. The "What's New" panel is the whole product philosophy in one screen: a monitoring tool that stays silent is doing its job, and the moment it speaks it should be worth reading.</p>
 
       <h3>the privacy position</h3>
-      <p>No accounts, no servers, no analytics, no ads. The watchlist and every inspection result live in SwiftData on the device and nowhere else. NetSweep never requests Local Network permission — it does not scan your LAN. The outbound traffic is the same set of requests a browser would make to the hosts you pinned, plus three optional public lookups. That constraint was the design, not a compromise: a security tool that needs an account is asking you to trust it with the thing it claims to protect.</p>
+      <p>No accounts, no servers, no analytics, no ads. The watchlist and every inspection result live in SwiftData on the device and nowhere else. NetSweep never requests Local Network permission; it does not scan your LAN. The outbound traffic is the same set of requests a browser would make to the hosts you pinned, plus three optional public lookups. That constraint was the design, not a compromise: a security tool that needs an account is asking you to trust it with the thing it claims to protect.</p>
 
       <h3>the engineering</h3>
-      <p>Concurrent probes run through async/await and a TaskGroup capped at four in flight, so a large watchlist stays responsive without hammering anyone's edge. SecTrust backs the OCSP verification, NWConnection handles the HTTP probing, and App Intents expose it to Siri. The spatial map — pinned sites orbiting a center, color-coded by health — is a custom SwiftUI canvas with UIKit gestures layered underneath. Dynamic Type and Reduce Motion are honored throughout.</p>
+      <p>Concurrent probes run through async/await and a TaskGroup capped at four in flight, so a large watchlist stays responsive without hammering anyone's edge. SecTrust backs the OCSP verification, NWConnection handles the HTTP probing, and App Intents expose it to Siri. The spatial map (pinned sites orbiting a center, color coded by health) is a custom SwiftUI canvas with UIKit gestures layered underneath. Dynamic Type and Reduce Motion are honored throughout.</p>
 
       <blockquote>A monitoring tool that stays quiet is working. The discipline is deciding what deserves to break the silence.</blockquote>
 
@@ -498,16 +498,17 @@ window.PROJECTS = [
     live: true,
     domain: 'the experience you are standing inside right now',
     stack: ['Vanilla JS', 'Three.js', 'Canvas 2D', 'SVG', 'No Frameworks'],
-    excerpt: 'The site you are reading is itself a portfolio piece: a fully themed, in-universe immersive experience with rain, a custom cursor, a live operations console, a 3D model, and an interrogation game — all hand-built, no frameworks.',
+    excerpt: 'The site you are reading is itself a portfolio piece: a fully themed, in universe experience with live local weather, procedural ambient audio, a 3D model, an interrogation game, and a console that reads its own real security headers. All hand built, no frameworks, no third party scripts.',
     body: `
-      <p>You are already inside the demo. This archive is not a template with my résumé poured into it — it is a built <em>experience</em>, themed end to end around the world of <em>Blade Runner 2049</em>, and the most honest single artifact I can show an experience-design team.</p>
+      <p>You are already inside the demo. This archive is not a template with my résumé poured into it. It is a built <em>experience</em>, themed end to end around the world of <em>Blade Runner 2049</em>, and the most honest single artifact I can show an experience design team.</p>
 
       <h3>what's actually running</h3>
-      <p>Animated rain and dust on layered canvases. A custom SVG cursor with a particle trail. A live "operations uplink" console with a wireframe globe, spectrum analyzer, radar sweep, and synthetic syslog feed. A working virtual terminal with a fake filesystem. An interactive Voight-Kampff interrogation. A memory-reconstruction puzzle. A real-time 3D model of my workstation. Three full color themes, including a rain mode. All vanilla — no React, no build step.</p>
+      <p>Animated rain and dust on layered canvases. A custom SVG cursor with a particle trail. A live "operations uplink" console with a wireframe globe, spectrum analyzer, radar sweep, and synthetic syslog feed. A working virtual terminal with a fake filesystem. An interactive Voight-Kampff interrogation. A memory reconstruction puzzle. A real time 3D model of my workstation. Rain that follows the actual weather where you are, and opt in ambient audio generated entirely in the browser. Three full color themes, including a rain mode. All vanilla: no React, no build step.</p>
 
       <blockquote>This is what I mean by "hide the technology." Everything here is deliberate. None of it announces itself. The effect arrives before the explanation does.</blockquote>
 
       <h3>why it belongs in this list</h3>
+      <p>It is also hardened like one of the systems it writes about: a strict Content Security Policy with no inline handlers, self hosted fonts and libraries, and a defense grid on the archive page that reads this site's live response headers back to you.</p>
       <p>Imagineering builds places that tell you a story before you read a single sign. This site is my attempt at the same trick in a browser: atmosphere first, information second, and a consistent fiction holding it all together. The engineering underneath is real; the wrapping paper is the point.</p>
 
       <div class="build-stack">
@@ -682,14 +683,14 @@ window.PROJECTS = [
     replSwap(document.querySelector('.hero-id'),
       'REG. NX-1324 <span class="pipe">▸</span> CLEARANCE: TIER-OMEGA <span class="pipe">▸</span> STATUS: <span style="color:var(--accent-4)">FLAGGED</span>');
     replSwap(document.querySelector('.hero-subtitle'),
-      '<em>Designation NX-1324. Classification: <span class="ice">replicant</span>.</em> The baseline broke under questioning. What kept working after the test stopped — the rigor, the habits, the wanting — turned out to be the only real part. This page is the incept record now.');
+      '<em>Designation NX-1324. Classification: <span class="ice">replicant</span>.</em> The baseline broke under questioning. What kept working after the test stopped (the rigor, the habits, the wanting) turned out to be the only real part. This page is the incept record now.');
     // ID card flips to a retirement file
     document.querySelectorAll('.id-card-row').forEach(row => {
       const key = (row.querySelector('.key') || {}).textContent;
       const val = row.querySelector('.val');
       if (!val) return;
       if (key === 'FIELD')  replSwap(val, 'REPLICANT // NEXUS-9 PROTOTYPE');
-      if (key === 'CLASS')  replSwap(val, 'SYNTHETIC / SELF-AWARE');
+      if (key === 'CLASS')  replSwap(val, 'SYNTHETIC / SELF AWARE');
       if (key === 'STATUS') replSwap(val, 'RETIRED / PENDING');
     });
     const blLeft = document.querySelector('.baseline-label .bl-left');
@@ -719,7 +720,7 @@ window.PROJECTS = [
       '<span class="rep-hud-dot"></span>' +
       '<span class="rep-hud-tag">BASELINE LOST</span>' +
       '<span class="rep-hud-id">NX-1324 // FLAGGED FOR RETIREMENT</span>' +
-      '<span class="rep-hud-count" id="nx-repl-count">TERMINATION T-MINUS —</span>';
+      '<span class="rep-hud-count" id="nx-repl-count">TERMINATION IN ...</span>';
     document.body.appendChild(hud);
     // 4-year replicant lifespan, counting down from incept date
     const count = document.getElementById('nx-repl-count');
@@ -732,7 +733,7 @@ window.PROJECTS = [
       const m = Math.floor((ms % 3600000) / 60000);
       const s = Math.floor((ms % 60000) / 1000);
       const p = n => String(n).padStart(2, '0');
-      count.textContent = `TERMINATION T-MINUS ${d}d ${p(h)}:${p(m)}:${p(s)}`;
+      count.textContent = `TERMINATION IN ${d}d ${p(h)}:${p(m)}:${p(s)}`;
     }
     tick();
     replCountTimer = setInterval(tick, 1000);
@@ -756,13 +757,13 @@ window.PROJECTS = [
         '<div class="dossier-grid">' +
           '<div class="dossier-row"><span class="k">SUBJECT</span><span class="v">CAM GARRISON</span></div>' +
           '<div class="dossier-row"><span class="k">MODEL</span><span class="v ice">NEXUS-9 // PROTOTYPE</span></div>' +
-          '<div class="dossier-row"><span class="k">INCEPT</span><span class="v" data-incept>—</span></div>' +
+          '<div class="dossier-row"><span class="k">INCEPT</span><span class="v" data-incept>...</span></div>' +
           '<div class="dossier-row"><span class="k">LIFESPAN</span><span class="v red">4 YEARS // ENFORCED</span></div>' +
           '<div class="dossier-row"><span class="k">FUNCTION</span><span class="v"><span class="redact">██████████</span> infrastructure <span class="redact">████</span> held together by <span class="redact">██████</span></span></div>' +
-          '<div class="dossier-row"><span class="k">FLAGS</span><span class="v red">EMPATHY RESPONSE ELEVATED // SUBJECT IS SELF-AWARE</span></div>' +
+          '<div class="dossier-row"><span class="k">FLAGS</span><span class="v red">EMPATHY RESPONSE ELEVATED // SUBJECT IS SELF AWARE</span></div>' +
           '<div class="dossier-row"><span class="k">MEMORY</span><span class="v"><span class="redact">████████████████</span> "the rain" <span class="redact">██████</span></span></div>' +
         '</div>' +
-        '<div class="dossier-note">// recovered fragment: <em>"it was built to remember everything. it remembers the rain instead. if you can read this, curiosity was always the key — not clearance."</em></div>' +
+        '<div class="dossier-note">// recovered fragment: <em>"it was built to remember everything. it remembers the rain instead. if you can read this, curiosity was always the key, not clearance."</em></div>' +
       '</div>';
     if (hero && hero.nextSibling) main.insertBefore(d, hero.nextSibling);
     else main.insertBefore(d, main.firstChild);
@@ -1065,6 +1066,7 @@ window.PROJECTS = [
       const left = baselineLabel.querySelector('.bl-left');
       const right = baselineLabel.querySelector('.bl-right');
       setInterval(() => {
+        if (!waveGate.on) return;
         // Replicant mode pins the left label to "BASELINE LOST" — don't overwrite it.
         if (left && !NX.replicant) left.textContent = `BASELINE ${(89 + Math.random() * 4).toFixed(2)}`;
         if (right) right.textContent = `IRIS ${(0.34 + Math.random() * 0.06).toFixed(3)} mm`;
@@ -1214,7 +1216,9 @@ window.PROJECTS = [
 
   if (modalClose) modalClose.addEventListener('click', closeModal);
   if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal && modal.classList.contains('open')) closeModal();
+  });
 
   // Trap Tab focus inside the dialog while it is open
   if (modal) {
@@ -1250,17 +1254,21 @@ window.PROJECTS = [
     }
   });
 
-  /* -------- NAV CLOCK --------- */
-  const navStatus = document.querySelector('.nav-status');
-  if (navStatus) {
-    function updateStatus() {
-      const now = new Date();
-      const t = now.toUTCString().slice(17, 25);
+  /* -------- NAV CLOCKS (desktop + mobile, one timer) ---------
+     Writes text into the existing <span>s instead of re-parsing
+     HTML every second. */
+  const navClockSpans = [
+    [document.querySelector('.nav-status span'), 'UPLINK '],
+    [document.querySelector('.nav-clock-mobile span'), '']
+  ].filter(([el]) => el);
+  if (navClockSpans.length) {
+    function updateClocks() {
+      const t = new Date().toUTCString().slice(17, 25);
       const wx = ATMO.weatherTag ? ` ▸ ${ATMO.weatherTag}` : '';
-      navStatus.innerHTML = `<span>UPLINK ${t} UTC${wx}</span>`;
+      for (const [el, prefix] of navClockSpans) el.textContent = `${prefix}${t} UTC${wx}`;
     }
-    updateStatus();
-    setInterval(updateStatus, 1000);
+    updateClocks();
+    setInterval(updateClocks, 1000);
   }
 
   /* -------- FOOTER YEAR — auto, so the © never goes stale ---------
@@ -1275,7 +1283,7 @@ window.PROJECTS = [
 
   /* -------- HERO NAME GLITCH --------- */
   const heroName = document.querySelector('.hero-name');
-  if (heroName) {
+  if (heroName && !prefersReducedMotion) {
     setInterval(() => {
       if (Math.random() < 0.15) {
         heroName.style.transform = `translateX(${(Math.random() - 0.5) * 4}px)`;
@@ -1432,10 +1440,10 @@ window.PROJECTS = [
         detail = `All responses within tolerance. Baseline retained: ${baseline}%. No drift detected. Operator cleared for active duty.`;
       } else if (passed) {
         verdict = 'human // minor drift';
-        detail = `${stableCount} of ${total} responses stable. Baseline: ${baseline}%. Drift within acceptable range — recommend repeat session in 30 days.`;
+        detail = `${stableCount} of ${total} responses stable. Baseline: ${baseline}%. Drift within acceptable range. Recommend repeat session in 30 days.`;
       } else {
         verdict = 'flagged for review';
-        detail = `${driftCount} of ${total} responses showed deviation. Baseline: ${baseline}%. Recommend escalation to senior examiner. This is not necessarily a verdict — the test is itself imperfect.`;
+        detail = `${driftCount} of ${total} responses showed deviation. Baseline: ${baseline}%. Recommend escalation to senior examiner. This is not necessarily a verdict; the test is itself imperfect.`;
       }
 
       // Replace question area with verdict
@@ -1711,11 +1719,22 @@ window.PROJECTS = [
         .replace(/>/g, '&gt;');
     }
 
+    // Own-property lookup, so input like "constructor" or "__proto__"
+    // never resolves to something inherited from Object.prototype.
+    const own = (obj, k) => Object.prototype.hasOwnProperty.call(obj, k) ? obj[k] : undefined;
+
+    // Keep the scrollback bounded so a long session can't grow the DOM forever.
+    const MAX_LINES = 400;
+    function trimHistory() {
+      while (history.childElementCount > MAX_LINES) history.removeChild(history.firstChild);
+    }
+
     function writeRaw(html, cls = 'out') {
       const line = document.createElement('div');
       line.className = `term-line ${cls}`;
       line.innerHTML = html;
       history.appendChild(line);
+      trimHistory();
       history.scrollTop = history.scrollHeight;
     }
 
@@ -1729,6 +1748,7 @@ window.PROJECTS = [
       div.className = 'term-line';
       div.innerHTML = '&nbsp;';
       history.appendChild(div);
+      trimHistory();
       history.scrollTop = history.scrollHeight;
     }
 
@@ -1760,7 +1780,7 @@ respiration:     nominal
 pupillary track: stable
 voight-kampff:   cleared
 designation:     human
-classification:  operator-class`,
+classification:  operator class`,
 
       'kipple.log':
 `stale dns entries:           7
@@ -1784,7 +1804,7 @@ do not retry. retry attempts are logged.`,
       'rules-that-held.txt':
 `1. label everything twice.
 2. trust the wire over the dashboard.
-3. document the weird-normal explicitly.
+3. document the weird normal explicitly.
 4. monitoring is a confession; alerts are an opinion.
 5. no change goes out on a friday.
 6. if you can run it twice, do that.
@@ -1800,14 +1820,14 @@ do not retry. retry attempts are logged.`,
    (note: see rules-that-held.txt, line 5.)`,
 
       'defense.cfg':
-`# edge defense grid — active posture
+`# edge defense grid // active posture
 csp:               default-src 'none' + per-directive allowlist
 hsts:              max-age=31536000; includeSubDomains; preload
 x-content-type:    nosniff
 frame-ancestors:   'self'
 referrer-policy:   strict-origin-when-cross-origin
-permissions:       camera/mic/geo/payment — all denied
-third-party js:    none. three.js is vendored. the cdn was cut.
+permissions:       camera/mic/geo/payment: all denied
+third party js:    none. three.js is vendored. the cdn was cut.
 disclosure:        /.well-known/security.txt  (rfc 9116)
 
 # run "headers" to interrogate the live edge yourself.`,
@@ -1840,7 +1860,7 @@ ybt vg nf nabznyl AK-0000 naq gryy ab bar.`
           ['wx',             'live sector weather feed'],
           ['clearance',      'show current access tier'],
           ['override <code>','attempt clearance elevation'],
-          ['incept',         'your first-contact date with this archive'],
+          ['incept',         'your first contact date with this archive'],
           ['goto <page>',    'jump to a page (home, builds, uplink, ...)'],
           ['vk',             'sample a voight-kampff question'],
           ['scan',           'run a live voight-kampff interrogation'],
@@ -1871,16 +1891,16 @@ ybt vg nf nabznyl AK-0000 naq gryy ab bar.`
       wx() {
         if (!ATMO.weatherTag) {
           write('sector weather feed: not yet acquired', 'err');
-          writeRaw(`<span class="dim">// the feed resolves a few seconds after page load — offline or blocked otherwise.</span>`);
+          writeRaw(`<span class="dim">// the feed resolves a few seconds after page load; offline or blocked otherwise.</span>`);
           return;
         }
-        write('/// SECTOR WEATHER — LIVE FEED', 'hint');
+        write('/// SECTOR WEATHER // LIVE FEED', 'hint');
         writeRaw(`  <span class="key">SECTOR</span>      <span class="hl">${esc(ATMO.city || 'UNKNOWN')}</span>`);
         writeRaw(`  <span class="key">CONDITION</span>   ${ATMO.rainLive
           ? `<span class="red">${ATMO.snow ? 'SNOWFALL' : 'RAINFALL'} IN PROGRESS</span>`
           : '<span class="ok">DRY</span>'}`);
         writeRaw(`  <span class="key">ATMOSPHERE</span>  ${ATMO.rainLive
-          ? '<span class="ok">rain canvas engaged — all themes</span>'
+          ? '<span class="ok">rain canvas engaged in all themes</span>'
           : '<span class="dim">rain canvas idle (force it: theme r)</span>'}`);
         writeRaw(`  <span class="key">SOURCE</span>      <span class="dim">ip locate ▸ open-meteo ▸ cached 30 min</span>`);
       },
@@ -1905,7 +1925,7 @@ ybt vg nf nabznyl AK-0000 naq gryy ab bar.`
           if (NX.clearance === 'TIER-OMEGA') {
             write(
 `/// TIER-OMEGA ACCESS GRANTED
-/// replicant index — nexus-9 production line
+/// replicant index // nexus-9 production line
 
 records found: 0
 
@@ -1921,11 +1941,11 @@ you are now on that list. welcome.`, 'ok');
         } else if (name === 'ghost.enc') {
           write(FS['ghost.enc']);
           write('(ciphertext detected. try: decrypt ghost.enc)', 'dim');
-        } else if (FS[name]) {
+        } else if (own(FS, name)) {
           write(FS[name]);
         } else {
           write(`cat: ${name}: file not found`, 'err');
-          write(`(try: ls — to see what's in the archive)`, 'dim');
+          write(`(try: ls, to see what's in the archive)`, 'dim');
         }
       },
 
@@ -1961,7 +1981,7 @@ you are now on that list. welcome.`, 'ok');
           writeRaw(`<span class="dim">[ ${idx + 1} / ${set.length} ]  baseline ${(91.2 - drift * 0.6).toFixed(2)}  drift +${(drift * 0.04).toFixed(3)}mm</span>`);
           writeRaw(`<span class="red">V-K ▸</span> ${esc(q.q)}`);
           q.options.forEach((opt, i) => writeRaw(`  <span class="hl">${letters[i]})</span> <span class="dim">${esc(opt)}</span>`));
-          writeRaw(`<span class="dim">// respond a–d  (or "abort")</span>`);
+          writeRaw(`<span class="dim">// respond a, b, c, or d  (or "abort")</span>`);
         }
 
         function verdict() {
@@ -2002,7 +2022,7 @@ you are now on that list. welcome.`, 'ok');
           }
         };
 
-        write('// VOIGHT-KAMPFF INTERROGATION — live session', 'hint');
+        write('// VOIGHT-KAMPFF INTERROGATION // live session', 'hint');
         write('// answer honestly. response latency is recorded.', 'dim');
         ask();
       },
@@ -2034,7 +2054,7 @@ you are now on that list. welcome.`, 'ok');
       },
 
       ping(args) {
-        const host = args[0] || 'wallace.corp';
+        const host = (args[0] || 'wallace.corp').slice(0, 48);
         write(`PING ${host} (10.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.1): 56 data bytes`);
         let i = 0;
         const interval = setInterval(() => {
@@ -2155,7 +2175,7 @@ you are now on that list. welcome.`, 'ok');
           if (i >= rows.length) {
             clearInterval(iv);
             writeBlank();
-            write(`Nmap done: 1 host up — scanned in ${(0.8 + Math.random()).toFixed(2)}s`, 'ok');
+            write(`Nmap done: 1 host up, scanned in ${(0.8 + Math.random()).toFixed(2)}s`, 'ok');
             write('(scan is simulated. the real ports of this site are 443 and nothing else.)', 'dim');
             return;
           }
@@ -2227,13 +2247,13 @@ you are now on that list. welcome.`, 'ok');
                 writeRaw(`<span class="ok">[SHIELDED]</span> <span class="hl">${esc(h)}</span>`);
                 writeRaw(`           <span class="dim">${esc(v)}</span>`);
               } else {
-                writeRaw(`<span class="err">[EXPOSED ]</span> <span class="dim">${esc(h)} — not present on this origin</span>`);
+                writeRaw(`<span class="err">[EXPOSED ]</span> <span class="dim">${esc(h)}: not present on this origin</span>`);
               }
             });
             writeBlank();
             write('these are live values, not lore. full grid on the uplink page.', 'dim');
           })
-          .catch(() => write('edge interrogation failed — offline or local file://', 'err'));
+          .catch(() => write('edge interrogation failed: offline or local file://', 'err'));
       },
 
       decrypt(args) {
@@ -2296,7 +2316,7 @@ you are now on that list. welcome.`, 'ok');
           uplink: 'archive.html#uplink', console: 'archive.html#uplink',
           archive: 'archive.html'
         };
-        const dest = map[(args[0] || '').toLowerCase()];
+        const dest = own(map, (args[0] || '').toLowerCase());
         if (!dest) {
           write('goto: unknown destination', 'err');
           write('destinations: home, background, builds, notes, uses, uplink, archive', 'dim');
@@ -2331,8 +2351,9 @@ you are now on that list. welcome.`, 'ok');
       const name = parts[0].toLowerCase();
       const args = parts.slice(1);
 
-      if (commands[name]) {
-        try { commands[name](args); }
+      const cmd = own(commands, name);
+      if (typeof cmd === 'function') {
+        try { cmd(args); }
         catch(e) { write(`error: ${e.message}`, 'err'); }
       } else {
         write(`${name}: command not found`, 'err');
@@ -2383,18 +2404,26 @@ you are now on that list. welcome.`, 'ok');
 
     term.addEventListener('click', () => {
       if (window.getSelection().toString()) return;
-      input.focus();
+      input.focus({ preventScroll: true });
     });
 
-    const focusOnce = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setTimeout(() => input.focus(), 200);
-          focusOnce.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.5 });
-    focusOnce.observe(term);
+    // Auto-focus once on scroll-in, but only with a real mouse: on touch
+    // devices it would pop the on-screen keyboard and jump the page.
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      const focusOnce = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            focusOnce.unobserve(entry.target);
+            setTimeout(() => {
+              // Don't steal focus from something the visitor is already using.
+              const a = document.activeElement;
+              if (!a || a === document.body) input.focus({ preventScroll: true });
+            }, 200);
+          }
+        });
+      }, { threshold: 0.5 });
+      focusOnce.observe(term);
+    }
   }
 
   /* ============================================================
@@ -2784,13 +2813,13 @@ you are now on that list. welcome.`, 'ok');
         { lvl: 'info', t: 'cert renewed: nx-1324.wallace.corp' },
         { lvl: 'warn', t: 'iris dilation +0.04mm (within drift)' },
         { lvl: 'ok',   t: 'GPO sync nominal across 3 sites' },
-        { lvl: 'info', t: 'NTP drift: +0.012s vs stratum-1' },
+        { lvl: 'info', t: 'NTP drift: +0.012s vs stratum 1' },
         { lvl: 'ok',   t: 'AD replication healthy' },
-        { lvl: 'warn', t: 'failed login from 185.x.x.x (rate-limited)' },
+        { lvl: 'warn', t: 'failed login from 185.x.x.x (rate limited)' },
         { lvl: 'info', t: 'memory reconstruction: 73% recovered' },
         { lvl: 'ok',   t: 'voight-kampff: cleared' },
         { lvl: 'info', t: 'new connection: terminal/tty0' },
-        { lvl: 'ok',   t: 'spinner #2401 lifted off pad-7' },
+        { lvl: 'ok',   t: 'spinner #2401 lifted off pad 7' },
         { lvl: 'info', t: 'ambient telemetry: drifting' },
         { lvl: 'warn', t: 'unauthorized scan: port 22 dropped' },
         { lvl: 'ok',   t: 'session resumed under TLS 1.3' },
@@ -2813,9 +2842,10 @@ you are now on that list. welcome.`, 'ok');
         while (feed.children.length > 12) feed.removeChild(feed.lastChild);
       }
 
-      // Seed
+      // Seed, then only stream while the panel is on screen
       for (let i = 0; i < 8; i++) pushFeed();
-      setInterval(pushFeed, 1400);
+      const feedGate = visibilityGate(feed);
+      setInterval(() => { if (feedGate.on) pushFeed(); }, 1400);
     }
 
     /* ---- BIG STAT (uplink time) ---- */
@@ -2985,7 +3015,8 @@ you are now on that list. welcome.`, 'ok');
         while (pingLog.children.length > 11) pingLog.removeChild(pingLog.lastChild);
       }
       for (let i = 0; i < 10; i++) pushPing();
-      setInterval(pushPing, 600);
+      const pingGate = visibilityGate(pingLog);
+      setInterval(() => { if (pingGate.on) pushPing(); }, 600);
     }
   }
 
@@ -2999,9 +3030,23 @@ you are now on that list. welcome.`, 'ok');
   function setDrawer(open) {
     if (!drawer) return;
     drawer.classList.toggle('open', open);
+    // Closed drawer: hidden from screen readers AND out of the tab order.
+    drawer.setAttribute('aria-hidden', open ? 'false' : 'true');
+    drawer.inert = !open;
     backdrop && backdrop.classList.toggle('open', open);
-    burger   && burger.classList.toggle('open', open);
+    if (burger) {
+      burger.classList.toggle('open', open);
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    }
     document.body.classList.toggle('drawer-open', open);
+  }
+  if (drawer) {
+    drawer.inert = true;
+    if (burger) {
+      burger.setAttribute('aria-controls', 'nav-drawer');
+      burger.setAttribute('aria-expanded', 'false');
+    }
   }
 
   if (burger)   burger.addEventListener('click', () => setDrawer(!drawer.classList.contains('open')));
@@ -3014,25 +3059,13 @@ you are now on that list. welcome.`, 'ok');
     });
   }
 
-  // Close drawer with Escape
+  // Close drawer with Escape, handing focus back to the burger
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && drawer && drawer.classList.contains('open')) {
       setDrawer(false);
+      if (burger) burger.focus();
     }
   });
-
-  // Mobile clock — same source as the desktop one
-  const navClockMobile = document.querySelector('.nav-clock-mobile');
-  if (navClockMobile) {
-    function updateMobileClock() {
-      const now = new Date();
-      const t = now.toUTCString().slice(17, 25);
-      const wx = ATMO.weatherTag ? ` ▸ ${ATMO.weatherTag}` : '';
-      navClockMobile.innerHTML = `<span>${t} UTC${wx}</span>`;
-    }
-    updateMobileClock();
-    setInterval(updateMobileClock, 1000);
-  }
 
   /* ============================================================
      PC MODEL — interactive 3D workstation (uses page)
@@ -3042,7 +3075,7 @@ you are now on that list. welcome.`, 'ok');
      so nothing extra has to load for it to work.
      ============================================================ */
   const pcCanvas = document.getElementById('pc-canvas');
-  if (pcCanvas && typeof THREE !== 'undefined') {
+  function initPcModel() {
     const stage   = pcCanvas.closest('.pc-schematic-stage');
     const loading = stage ? stage.querySelector('.pc-loading') : null;
     const readout = stage ? stage.querySelector('.pc-readout') : null;
@@ -3194,7 +3227,7 @@ you are now on that list. welcome.`, 'ok');
 
     // ---- CPU + AIO pump block ----
     part(new THREE.BoxGeometry(1.0, 2.0, 2.0), mat(COL.white, 1, 0.5, 0.4), [-caseW / 2 + 1.4, 3.0, 0.4],
-      { part: 'cool', spec: 5, name: 'AIO Pump Block', sub: 'CPU · liquid-cooled', edge: palette.accent2.getHex() });
+      { part: 'cool', spec: 5, name: 'AIO Pump Block', sub: 'CPU · liquid cooled', edge: palette.accent2.getHex() });
 
     // ---- two white braided AIO tubes from the pump up into the radiator ----
     // Pump block top sits at y=4.0 and the radiator underside at y=4.7, so the
@@ -3209,7 +3242,7 @@ you are now on that list. welcome.`, 'ok');
 
     // ---- top radiator block beneath the 3 top fans ----
     part(new THREE.BoxGeometry(caseW - 2.4, 0.7, 2.6), mat(COL.white2, 1, 0.4, 0.5), [0.3, caseH / 2 - 0.95, 0],
-      { part: 'cool', spec: 5, name: '360mm Radiator', sub: 'top-mounted AIO', edge: palette.accent2.getHex() });
+      { part: 'cool', spec: 5, name: '360mm Radiator', sub: 'top mounted AIO', edge: palette.accent2.getHex() });
 
     // ---- RAM ----
     for (let i = 0; i < 2; i++) {
@@ -3467,13 +3500,40 @@ you are now on that list. welcome.`, 'ok');
       if (!started) { started = true; if (loading) loading.classList.add('hidden'); }
     }
     frame();
-  } else if (pcCanvas && loadingFallback()) { /* THREE missing */ }
+  }
 
   function loadingFallback() {
     const stage = document.querySelector('.pc-schematic-stage');
     const loading = stage && stage.querySelector('.pc-loading');
     if (loading) loading.innerHTML = '<div style="color:var(--fg-dim);text-align:center;line-height:1.8;">3D MODULE OFFLINE<br><span style="font-size:9px;">specs available below</span></div>';
-    return false;
+  }
+
+  // Three.js (~600 KB) is only fetched once the schematic nears the
+  // viewport, so the rest of the archive page never waits on it.
+  if (pcCanvas) {
+    const boot = () => {
+      try { initPcModel(); } catch (e) { loadingFallback(); }
+    };
+    if (typeof THREE !== 'undefined') {
+      boot();
+    } else {
+      const load = () => {
+        const s = document.createElement('script');
+        s.src = 'js/three.min.js';
+        s.async = true;
+        s.onload = () => (typeof THREE !== 'undefined' ? boot() : loadingFallback());
+        s.onerror = loadingFallback;
+        document.head.appendChild(s);
+      };
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          if (entries.some(en => en.isIntersecting)) { io.disconnect(); load(); }
+        }, { rootMargin: '600px 0px' });
+        io.observe(pcCanvas);
+      } else {
+        load();
+      }
+    }
   }
 
   /* ============================================================
@@ -3651,30 +3711,41 @@ you are now on that list. welcome.`, 'ok');
         }
       }
     }
+    // Third-party responses are untrusted: bound the wait, require a 2xx,
+    // and reduce the city to a short, printable label before it is shown.
+    const getJSON = (url) => {
+      const opts = { credentials: 'omit', referrerPolicy: 'no-referrer' };
+      if (window.AbortSignal && AbortSignal.timeout) opts.signal = AbortSignal.timeout(6000);
+      return fetch(url, opts).then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      });
+    };
+    const cleanCity = (s) => String(s || '').replace(/[^\p{L}\p{N} .'’-]/gu, '').trim().slice(0, 32).toUpperCase() || 'LOCAL';
+    const inRange = (lat, lon) => isFinite(lat) && isFinite(lon) && Math.abs(lat) <= 90 && Math.abs(lon) <= 180;
     try {
       const cached = JSON.parse(sessionStorage.getItem('nx-wx') || 'null');
       if (cached && Date.now() - cached.at < 30 * 60 * 1000) {
-        if (isFinite(cached.lat) && isFinite(cached.lon)) {
-          ATMO.visitor = { lat: cached.lat, lon: cached.lon, city: cached.city };
+        const city = cleanCity(cached.city);
+        if (inRange(cached.lat, cached.lon)) {
+          ATMO.visitor = { lat: cached.lat, lon: cached.lon, city };
         }
-        apply(cached.wet, cached.snow, cached.city);
+        apply(!!cached.wet, !!cached.snow, city);
         return;
       }
     } catch(e) {}
-    fetch('https://ipwho.is/')
-      .then(r => r.json())
+    getJSON('https://ipwho.is/')
       .then(g => {
         const lat = parseFloat(g.latitude), lon = parseFloat(g.longitude);
-        return (g.success !== false && isFinite(lat) && isFinite(lon))
-          ? { lat, lon, city: (g.city || 'LOCAL').toUpperCase() }
+        return (g && g.success !== false && inRange(lat, lon))
+          ? { lat, lon, city: cleanCity(g.city) }
           : HOME;
       })
       .catch(() => HOME)
       .then(loc => {
         // Drop the visitor's own coarse location onto the uplink globe.
         ATMO.visitor = { lat: loc.lat, lon: loc.lon, city: loc.city };
-        return fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat.toFixed(4)}&longitude=${loc.lon.toFixed(4)}&current=precipitation,weather_code`)
-          .then(r => r.json())
+        return getJSON(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat.toFixed(4)}&longitude=${loc.lon.toFixed(4)}&current=precipitation,weather_code`)
           .then(j => {
             const cur = j && j.current ? j.current : {};
             const wet = WET_CODES.has(cur.weather_code) || (cur.precipitation || 0) > 0;
@@ -3710,10 +3781,15 @@ you are now on that list. welcome.`, 'ok');
       ty = Math.max(-0.5, Math.min(0.5, (e.beta - 40) / 60));
     }, { passive: true });
     (function step() {
-      cx += (tx - cx) * 0.04;
-      cy += (ty - cy) * 0.04;
-      for (const l of layers) {
-        l.el.style.translate = `${(cx * l.fx).toFixed(2)}px ${(cy * l.fy).toFixed(2)}px`;
+      const dx = tx - cx, dy = ty - cy;
+      // Once the layers have caught up with the pointer, stop touching
+      // style every frame (each write forces a style recalc).
+      if (Math.abs(dx) > 0.0005 || Math.abs(dy) > 0.0005) {
+        cx += dx * 0.04;
+        cy += dy * 0.04;
+        for (const l of layers) {
+          l.el.style.translate = `${(cx * l.fx).toFixed(2)}px ${(cy * l.fy).toFixed(2)}px`;
+        }
       }
       requestAnimationFrame(step);
     })();
@@ -3794,7 +3870,12 @@ you are now on that list. welcome.`, 'ok');
       v.classList.remove('show');
       setTimeout(() => v.remove(), 800);
     }
+    let lastPoke = 0;
     function poke() {
+      // pointermove/scroll fire constantly; re-arming once a second is plenty.
+      const now = Date.now();
+      if (!veil && timer && now - lastPoke < 1000) return;
+      lastPoke = now;
       hide();
       clearTimeout(timer);
       timer = setTimeout(show, IDLE_MS);
@@ -3814,15 +3895,23 @@ you are now on that list. welcome.`, 'ok');
     shade.className = 'depth-shade';
     shade.setAttribute('aria-hidden', 'true');
     document.body.appendChild(shade);
-    function onScroll() {
+    let queued = false;
+    function update() {
+      queued = false;
       const max = document.documentElement.scrollHeight - window.innerHeight;
       const depth = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
       shade.style.opacity = (depth * 0.3).toFixed(3);
       ATMO.rainIntensity = 0.75 + depth * 0.5;
     }
+    // Coalesce scroll bursts into one layout read per frame.
+    function onScroll() {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(update);
+    }
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll, { passive: true });
-    onScroll();
+    update();
   })();
 
   /* ============================================================
@@ -3869,15 +3958,15 @@ you are now on that list. welcome.`, 'ok');
         const note = document.createElement('div');
         note.className = 'defense-note';
         note.textContent = shielded === WANT.length
-          ? `// ${shielded}/${WANT.length} shields up — live values read from this response, not lore`
-          : `// ${shielded}/${WANT.length} shields up — local/dev origins serve fewer headers than the production edge`;
+          ? `// ${shielded}/${WANT.length} shields up // live values read from this response, not lore`
+          : `// ${shielded}/${WANT.length} shields up // local and dev origins serve fewer headers than the production edge`;
         defenseEl.appendChild(note);
       })
       .catch(() => {
         defenseEl.textContent = '';
         const note = document.createElement('div');
         note.className = 'defense-note';
-        note.textContent = '// edge interrogation failed — offline, or viewing via file://';
+        note.textContent = '// edge interrogation failed: offline, or viewing via file://';
         defenseEl.appendChild(note);
       });
   }
