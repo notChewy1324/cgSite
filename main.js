@@ -69,7 +69,7 @@ window.BLOG_POSTS = [
 
       <p>Months earlier, a static ARP entry had been added to a switch by someone who is no longer there. The MAC address it pointed to belonged to a NIC that was replaced last quarter. The new NIC had a new MAC. The static entry on the switch outranked the dynamic one. From the switch's perspective, the workstation's IP belonged to a device that no longer existed.</p>
 
-      <p>The workstation could send traffic; its own ARP cache was happy. Replies just never came back. Asymmetric, silent, half dead.</p>
+      <p>The workstation could send traffic, and its own ARP cache was happy. Replies just never came back. Asymmetric, silent, half dead.</p>
 
       <h3>the structural thing</h3>
 
@@ -99,7 +99,7 @@ window.BLOG_POSTS = [
     body: `
       <p>The change ticket said it was routine. A new Group Policy Object pushing an updated default printer mapping for a specific OU. Tested in a staging container, signed off, scheduled for end of day Friday. Nobody blocked it. Nobody should have.</p>
 
-      <p>By Monday morning, the helpdesk queue was on fire. <strong>Two hundred users</strong> on the affected floor could not print. Not "the printer is offline." Not "the queue is stuck." The print dialog literally did not show their printer at all. The mapping had not just failed; it had quietly removed the existing one.</p>
+      <p>By Monday morning, the helpdesk queue was on fire. <strong>Two hundred users</strong> on the affected floor could not print. Not "the printer is offline." Not "the queue is stuck." The print dialog literally did not show their printer at all. The mapping had not just failed. It had quietly removed the existing one.</p>
 
       <h3>tracing the cause</h3>
 
@@ -398,7 +398,7 @@ window.PROJECTS = [
       </div>
 
       <h3>the build</h3>
-      <p>Nine static pages (Radio, Sports, BTV, Journalism, Music, schedule, team, and more) in plain HTML, CSS, and JavaScript, served from Cloudflare's edge and wired to a custom modeled <strong>Sanity Studio</strong> so rotating student editors can publish without touching code or triggering a rebuild. The content layer is the durable asset; the front end is deliberately disposable. When the old WordPress archive came over, I ran reviewed, reversible migrations that gave 183 reviews real artists and albums and moved 176 pieces to the content type they actually are.</p>
+      <p>Nine static pages (Radio, Sports, BTV, Journalism, Music, schedule, team, and more) in plain HTML, CSS, and JavaScript, served from Cloudflare's edge and wired to a custom modeled <strong>Sanity Studio</strong> so rotating student editors can publish without touching code or triggering a rebuild. The content layer is the durable asset. The front end is deliberately disposable. When the old WordPress archive came over, I ran reviewed, reversible migrations that gave 183 reviews real artists and albums and moved 176 pieces to the content type they actually are.</p>
       <p>A thin layer of <strong>Pages Functions</strong> handles only what a static site can't: song requests and interest form applications delivered to Slack, a live listener count backed by Cloudflare D1, automatic BTV listings straight from YouTube, real link previews for shared stories, and a generated sitemap. Everything else stays pure CDN. A <code>build.sh</code> step splits per page bundles with esbuild, stamps asset versions, and a service worker keeps visited pages readable offline.</p>
 
       <h3>the radio</h3>
@@ -470,10 +470,10 @@ window.PROJECTS = [
       <p>Eight inspection signals run against every pinned host: the <strong>TLS handshake</strong> (protocol version, certificate chain, expiry countdown), <strong>OCSP revocation</strong> against the issuing authority, <strong>DNS A/AAAA records</strong> to catch silent repointing, <strong>HTTP to HTTPS redirect</strong> enforcement, a scored <strong>security header</strong> audit across HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy and Permissions-Policy, <strong>HSTS preload eligibility</strong>, <strong>certificate transparency</strong> via public CT logs, and <strong>CVE matching</strong> against NIST's NVD by apex domain.</p>
 
       <h3>the loop</h3>
-      <p>Pin, recheck, alert. A background refresh task wakes roughly every twelve hours and reruns the probes; SwiftData holds the previous result so the app can diff them and show only the delta. Local notifications fire at thirty, fourteen, seven, and one day before a certificate expires. The "What's New" panel is the whole product philosophy in one screen: a monitoring tool that stays silent is doing its job, and the moment it speaks it should be worth reading.</p>
+      <p>Pin, recheck, alert. A background refresh task wakes roughly every twelve hours and reruns the probes, and SwiftData holds the previous result so the app can diff them and show only the delta. Local notifications fire at thirty, fourteen, seven, and one day before a certificate expires. The "What's New" panel is the whole product philosophy in one screen: a monitoring tool that stays silent is doing its job, and the moment it speaks it should be worth reading.</p>
 
       <h3>the privacy position</h3>
-      <p>No accounts, no servers, no analytics, no ads. The watchlist and every inspection result live in SwiftData on the device and nowhere else. NetSweep never requests Local Network permission; it does not scan your LAN. The outbound traffic is the same set of requests a browser would make to the hosts you pinned, plus three optional public lookups. That constraint was the design, not a compromise: a security tool that needs an account is asking you to trust it with the thing it claims to protect.</p>
+      <p>No accounts, no servers, no analytics, no ads. The watchlist and every inspection result live in SwiftData on the device and nowhere else. NetSweep never requests Local Network permission. It does not scan your LAN. The outbound traffic is the same set of requests a browser would make to the hosts you pinned, plus three optional public lookups. That constraint was the design, not a compromise: a security tool that needs an account is asking you to trust it with the thing it claims to protect.</p>
 
       <h3>the engineering</h3>
       <p>Concurrent probes run through async/await and a TaskGroup capped at four in flight, so a large watchlist stays responsive without hammering anyone's edge. SecTrust backs the OCSP verification, NWConnection handles the HTTP probing, and App Intents expose it to Siri. The spatial map (pinned sites orbiting a center, color coded by health) is a custom SwiftUI canvas with UIKit gestures layered underneath. Dynamic Type and Reduce Motion are honored throughout.</p>
@@ -509,7 +509,7 @@ window.PROJECTS = [
 
       <h3>why it belongs in this list</h3>
       <p>It is also hardened like one of the systems it writes about: a strict Content Security Policy with no inline handlers, self hosted fonts and libraries, and a defense grid on the archive page that reads this site's live response headers back to you.</p>
-      <p>Imagineering builds places that tell you a story before you read a single sign. This site is my attempt at the same trick in a browser: atmosphere first, information second, and a consistent fiction holding it all together. The engineering underneath is real; the wrapping paper is the point.</p>
+      <p>Imagineering builds places that tell you a story before you read a single sign. This site is my attempt at the same trick in a browser: atmosphere first, information second, and a consistent fiction holding it all together. The engineering underneath is real. The wrapping paper is the point.</p>
 
       <div class="build-stack">
         <span>Vanilla JS</span><span>Canvas 2D</span><span>WebGL / Three.js</span><span>SVG</span><span>CSS Theming</span><span>Cloudflare Pages</span><span>No Frameworks</span>
@@ -1443,7 +1443,7 @@ window.PROJECTS = [
         detail = `${stableCount} of ${total} responses stable. Baseline: ${baseline}%. Drift within acceptable range. Recommend repeat session in 30 days.`;
       } else {
         verdict = 'flagged for review';
-        detail = `${driftCount} of ${total} responses showed deviation. Baseline: ${baseline}%. Recommend escalation to senior examiner. This is not necessarily a verdict; the test is itself imperfect.`;
+        detail = `${driftCount} of ${total} responses showed deviation. Baseline: ${baseline}%. Recommend escalation to senior examiner. This is not necessarily a verdict. The test is itself imperfect.`;
       }
 
       // Replace question area with verdict
@@ -1805,7 +1805,7 @@ do not retry. retry attempts are logged.`,
 `1. label everything twice.
 2. trust the wire over the dashboard.
 3. document the weird normal explicitly.
-4. monitoring is a confession; alerts are an opinion.
+4. monitoring is a confession. alerts are an opinion.
 5. no change goes out on a friday.
 6. if you can run it twice, do that.
 7. future you is a stranger. write for them.
@@ -1891,7 +1891,7 @@ ybt vg nf nabznyl AK-0000 naq gryy ab bar.`
       wx() {
         if (!ATMO.weatherTag) {
           write('sector weather feed: not yet acquired', 'err');
-          writeRaw(`<span class="dim">// the feed resolves a few seconds after page load; offline or blocked otherwise.</span>`);
+          writeRaw(`<span class="dim">// the feed resolves a few seconds after page load. offline or blocked otherwise.</span>`);
           return;
         }
         write('/// SECTOR WEATHER // LIVE FEED', 'hint');
@@ -2134,7 +2134,7 @@ you are now on that list. welcome.`, 'ok');
           'cells. interlinked. within cells. interlinked.',
           'the dull stuff is what holds when the exciting stuff fails.',
           'every system is held together by tape, documentation, and somebody\'s heroic 2014 PowerShell script.',
-          'monitoring is a confession; alerts are an opinion.',
+          'monitoring is a confession. alerts are an opinion.',
           'the truth lives on the wire.',
           'baseline drifts. so does memory.',
           'you can label something twice. you cannot label it enough.',
@@ -3512,7 +3512,7 @@ you are now on that list. welcome.`, 'ok');
   // viewport, so the rest of the archive page never waits on it.
   if (pcCanvas) {
     const boot = () => {
-      try { initPcModel(); } catch (e) { loadingFallback(); }
+      try { initPcModel(); } catch (e) { console.error('[pc-model] init failed:', e); loadingFallback(); }
     };
     if (typeof THREE !== 'undefined') {
       boot();
@@ -3521,8 +3521,11 @@ you are now on that list. welcome.`, 'ok');
         const s = document.createElement('script');
         s.src = 'js/three.min.js';
         s.async = true;
-        s.onload = () => (typeof THREE !== 'undefined' ? boot() : loadingFallback());
-        s.onerror = loadingFallback;
+        s.onload = () => {
+          if (typeof THREE !== 'undefined') boot();
+          else { console.error('[pc-model] three.min.js loaded but THREE is undefined'); loadingFallback(); }
+        };
+        s.onerror = () => { console.error('[pc-model] failed to load', s.src); loadingFallback(); };
         document.head.appendChild(s);
       };
       if ('IntersectionObserver' in window) {
