@@ -144,7 +144,7 @@ flowchart TD
 
 ```text
 index.html       🪪  Personnel file — hero, identity, recent deployments
-background.html  🎓  Full academic + internship record
+background.html  🎓  Full academic + internship record, skills inventory
 builds.html      🛠️  Flagship builds — Bearcast Media, NetSweep, this archive
 blog.html        📝  Field Notes — technical writeups & lab stories
 uses.html        🖥️  Loadout — interactive 3D workstation model (self-hosted Three.js)
@@ -152,16 +152,6 @@ uplink.html      🛰️  Operations console — synthetic telemetry + one very 
 archive.html     🗂️  Off-record — terminal, recon suite, V-K, memory puzzle
 404.html         💀  "Memory not found" — glitched fallback
 ```
-
----
-
-## 🪪 FLAGSHIP BUILDS
-
-> Real, deployed work — not mockups. Each is a live system I designed and built end to end.
-
-- 📻 **Bearcast Media** · [`bearcastmedia.com`](https://bearcastmedia.com) — the full public platform for UC's student media organization: nine hand-authored pages, a custom radio player with real-audio visualizers, a headless **Sanity** CMS, five Cloudflare Pages Functions, and a security posture I took from an **F to an A**. The dossier ships an embedded v2.0 **document library**: a technical white paper, a cybersecurity white paper, and a system-architecture diagram.
-- 🔭 **NetSweep** · [`netsweepapp.com`](https://netsweepapp.com) — a free, on-device iOS network-security scanner with a spatial "observatory" canvas UI. Built in **SwiftUI**, fully on-device, no data leaves the phone.
-- 🌐 **This Archive** · [`camgarrison.com`](https://camgarrison.com) — the experience you're reading the source of. The most over-engineered resume I'll ever write, and the proof-of-craft for everything above.
 
 ---
 

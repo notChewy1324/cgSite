@@ -1159,6 +1159,9 @@ section { padding: 90px 0; position: relative; }
   text-transform: uppercase;
 }
 
+.edu-meta + .edu-meta { margin-top: 6px; }
+.edu-meta .sep { color: var(--rule); margin: 0 6px; }
+
 .edu-status {
   font-family: var(--font-mono);
   font-size: 10px;
