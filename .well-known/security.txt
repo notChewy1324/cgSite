@@ -12,7 +12,6 @@ Contact: https://github.com/notChewy1324
 Expires: 2027-06-09T00:00:00.000Z
 Preferred-Languages: en
 Canonical: https://camgarrison.com/.well-known/security.txt
-Policy: https://camgarrison.com/archive.html
 
 # Scope: camgarrison.com is a static site (Cloudflare Pages).
 # No server-side code, no database, no user accounts, no PII.

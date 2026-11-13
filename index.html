@@ -6,6 +6,7 @@
 <title>Personnel Archive // NX-1324</title>
 <meta name="description" content="Cam Garrison is a Cybersecurity and Network Systems Administration student at the University of Cincinnati and a systems engineer intern at Medpace. Portfolio, shipped builds, field notes, and an interactive archive.">
 <link rel="canonical" href="https://camgarrison.com/">
+<link rel="alternate" type="application/rss+xml" title="Field Notes // NX-1324" href="/feed.xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Personnel Archive // NX-1324">
 <meta property="og:title" content="Personnel Archive // NX-1324">
@@ -27,15 +28,16 @@
 <link rel="preload" href="fonts/jetbrains-mono-300-800-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/major-mono-display-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/syne-400-800-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=20261113b">
 <script>
   (function(){
+    var d = document.documentElement, t = 'dark';
     try {
-      var t = localStorage.getItem('nx-theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', t);
-    } catch(e) {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
+      var s = localStorage.getItem('nx-theme');
+      if (s === 'light' || s === 'rain') t = s;
+    } catch(e) {}
+    d.setAttribute('data-theme', t);
+    d.className = 'js';
   })();
 </script>
 <!-- Structured data for search engines. Not executable, so it lives
@@ -71,16 +73,16 @@
 <a class="skip-link" href="#main">SKIP TO CONTENT ▸</a>
 
 <!-- Atmospheric layers -->
-<div class="haze-layer"></div>
-<canvas id="dust-canvas"></canvas>
-<canvas id="rain-canvas"></canvas>
-<div class="scanlines"></div>
-<div class="grain"></div>
-<div class="vignette"></div>
+<div class="haze-layer" aria-hidden="true"></div>
+<canvas id="dust-canvas" aria-hidden="true"></canvas>
+<canvas id="rain-canvas" aria-hidden="true"></canvas>
+<div class="scanlines" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
 
 <!-- Custom cursor -->
-<canvas id="cursor-trail-canvas"></canvas>
-<div id="cursor-arrow">
+<canvas id="cursor-trail-canvas" aria-hidden="true"></canvas>
+<div id="cursor-arrow" aria-hidden="true">
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="cur-grad" x1="0" y1="0" x2="1" y2="1">
@@ -96,7 +98,7 @@
 
 <!-- Navigation -->
 <nav class="nav">
-  <a href="index.html" class="nav-logo">CG // NX-1324</a>
+  <a href="./" class="nav-logo">CG // NX-1324</a>
   <ul class="nav-links">
     <li><a href="background.html">Background</a></li>
     <li><a href="builds.html">Builds</a></li>
@@ -124,7 +126,7 @@
 <aside class="nav-drawer" id="nav-drawer" aria-hidden="true">
   <div class="nav-drawer-tag">▣ NAVIGATION CHANNEL ▣</div>
   <ul>
-    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="./" class="active">Home</a></li>
     <li><a href="background.html">Background</a></li>
     <li><a href="builds.html">Builds</a></li>
     <li><a href="blog.html">Field Notes</a></li>
@@ -325,6 +327,44 @@
     </div>
   </section>
 
+  <!-- FLAGSHIP WORK PREVIEW (cards rendered by JS from window.PROJECTS) -->
+  <section id="shipped">
+    <header class="section-header">
+      <div class="section-num"><strong>03</strong> /// SHIPPED</div>
+      <h2 class="section-title">flagship builds</h2>
+      <div class="section-subtitle">// live systems. each card opens the full dossier</div>
+    </header>
+
+    <div class="blog-grid" id="home-builds">
+      <noscript>
+        <p class="noscript-note">The build previews are rendered with JavaScript. The full list lives on the <a href="builds.html">Builds</a> page.</p>
+      </noscript>
+    </div>
+
+    <p class="home-more">
+      <a href="builds.html" class="contact-link" style="font-size:11px; padding:14px 24px;">▸ All Builds</a>
+    </p>
+  </section>
+
+  <!-- LATEST FIELD NOTES (cards rendered by JS from window.BLOG_POSTS) -->
+  <section id="latest">
+    <header class="section-header">
+      <div class="section-num"><strong>04</strong> /// SIGNAL</div>
+      <h2 class="section-title">latest transmissions</h2>
+      <div class="section-subtitle">// the three newest field notes</div>
+    </header>
+
+    <div class="blog-grid" id="home-notes">
+      <noscript>
+        <p class="noscript-note">The newest notes are rendered with JavaScript. The full feed lives on the <a href="blog.html">Field Notes</a> page.</p>
+      </noscript>
+    </div>
+
+    <p class="home-more">
+      <a href="blog.html" class="contact-link ice" style="font-size:11px; padding:14px 24px;">▸ All Field Notes</a>
+    </p>
+  </section>
+
   <!-- CONTACT -->
   <footer class="contact" id="contact">
     <div class="contact-tag">▣ ESTABLISH UPLINK ▣</div>
@@ -377,6 +417,6 @@
      https://cloudflareinsights.com to connect-src in _headers.
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "PASTE-TOKEN-HERE"}'></script>
 -->
-<script defer src="main.js"></script>
+<script defer src="main.js?v=20261113b"></script>
 </body>
 </html>

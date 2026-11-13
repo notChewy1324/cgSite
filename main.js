@@ -1,7 +1,7 @@
 /* ============================================================
    WALLACE CORP — INTERACTION LAYER
    Single-file JS. Contains:
-     - BLOG_POSTS data
+     - Field Notes loader (posts live in /posts as Markdown)
      - VK_QUESTIONS data (multiple-choice version)
      - MEMORY_FRAGMENTS data (memory reconstruction game)
      - Theme toggle, cursor, dust, scroll reveal
@@ -12,213 +12,18 @@
    ============================================================ */
 
 /* ============================================================
-   1. BLOG POSTS — edit / append here.
-   color: '' | 'teal' | 'ice' | 'red'
+   1. FIELD NOTES (the blog)
+   Posts are NOT stored here. Each one is a Markdown file in
+   /posts with a small front matter header, and posts/index.json
+   lists the published ones. The site fetches that index for the
+   cards and loads a post's Markdown only when it is opened.
+
+   To publish:  node tools/blog.mjs new "title"   (scaffold)
+                write the post, remove "draft: true"
+                node tools/blog.mjs               (rebuild index + RSS)
    ============================================================ */
 
-window.BLOG_POSTS = [
-  {
-    id: 'NX-0006',
-    date: '2026.04.28',
-    title: 'the honeypot that called home',
-    tags: ['LAB', 'BLUE TEAM', 'STORY'],
-    color: '',
-    excerpt: 'I stood up an SSH honeypot in the corner of my lab network expecting nothing. Three hours later it had logged 4,712 login attempts from 218 IPs.',
-    body: `
-      <p>I had a Raspberry Pi sitting unused on a shelf. Late one Tuesday I decided to throw <code>cowrie</code> on it, expose port 22 through a forwarded rule on my edge router, and walk away. The plan was to leave it for a weekend and see what showed up.</p>
-
-      <p>Three hours in, I checked back. The log had grown to several megabytes. <strong>4,712 login attempts.</strong> 218 distinct source IPs. The most popular username, by a comfortable margin, was <code>root</code>. The most popular password was the literal string <code>123456</code>. The fifth most popular was the username repeated.</p>
-
-      <h3>what surprised me</h3>
-
-      <p>It was not the volume. The volume was expected. Anyone who has put a real SSH service on the internet for an afternoon knows the global botnet noise floor. What surprised me was the <em>structure</em> of the attempts. Some sessions were clearly automated dictionaries firing as fast as the TCP handshake would allow. Others were paced: one attempt every few seconds, varied user agents, varied passwords, almost like someone was trying to stay below a fail2ban threshold they imagined I had set.</p>
-
-      <p>One session, after seven failed attempts, simply stopped trying passwords and ran <code>uname -a</code> against the login banner I had spoofed. Then it logged off. Twenty minutes later a different IP from the same /24 connected and went straight for credentials I had only just added to the trap. Different attacker. Same intel pipeline.</p>
-
-      <blockquote>The internet is not a quiet place pretending to be loud. It is a loud place pretending to be quiet.</blockquote>
-
-      <h3>what i actually learned</h3>
-
-      <p>Three things, none of them new, all of them more concrete than they were before I ran the experiment:</p>
-
-      <p><strong>One.</strong> Default credential exposure is not a hypothetical. Anything reachable on a routable port that accepts a username will be tested against the same global wordlist before you finish your coffee.</p>
-
-      <p><strong>Two.</strong> Rate limiting attackers visibly exist. They are not common, but they are not rare either. If your detection only fires on brute force volume, you are missing a category of behavior entirely.</p>
-
-      <p><strong>Three.</strong> Honeypots are an underrated training tool. I learned more about real world attack patterns in one week of reading my own cowrie logs than I did in any single chapter of any networking textbook I have read.</p>
-
-      <p>I left the box up for another month before I retired it. By the end it had logged just under 90,000 attempts. I still have the dataset. Some weekend I will go through it properly.</p>
-    `
-  },
-
-  {
-    id: 'NX-0005',
-    date: '2026.04.11',
-    title: 'why i stopped trusting my own monitoring',
-    tags: ['INFRASTRUCTURE', 'STORY', 'LESSON'],
-    color: 'red',
-    excerpt: 'A quiet dashboard does not mean a quiet network. The story of an alert that did not fire, and the half day it cost me to figure out why.',
-    body: `
-      <p>Sometime in the middle of a shift I noticed a workstation on the third floor was unreachable. Not down on the dashboard, just unreachable. The dashboard said it was fine. RDP refused. Ping refused. The desk phone next to it worked.</p>
-
-      <p>I drove over. The machine was on. The user was at lunch. I plugged in a console keyboard, woke it, and everything looked normal. Network adapter, link light, IP address, everything. I pinged the gateway from the box itself. Worked. I pinged the box from my laptop on the same VLAN. Failed.</p>
-
-      <p>It took me <strong>about four hours</strong> to track this down. The cause turned out to be embarrassingly small and structurally important.</p>
-
-      <h3>the small thing</h3>
-
-      <p>Months earlier, a static ARP entry had been added to a switch by someone who is no longer there. The MAC address it pointed to belonged to a NIC that was replaced last quarter. The new NIC had a new MAC. The static entry on the switch outranked the dynamic one. From the switch's perspective, the workstation's IP belonged to a device that no longer existed.</p>
-
-      <p>The workstation could send traffic, and its own ARP cache was happy. Replies just never came back. Asymmetric, silent, half dead.</p>
-
-      <h3>the structural thing</h3>
-
-      <p>Our monitoring polled every host's <em>own self reported</em> status via an agent. The agent on the workstation reported up, healthy, all green. The dashboard agreed. Nothing was wrong, according to the system designed to tell us when something was wrong.</p>
-
-      <blockquote>Everything was fine. Everything kept being fine. The only thing not fine was reality.</blockquote>
-
-      <p>The fix was thirty seconds: clear the static ARP, let the switch relearn. The lesson was longer.</p>
-
-      <h3>what i changed about how i think</h3>
-
-      <p>I stopped trusting any single signal as evidence of "up." A host saying it is up does not mean it is reachable. A switch saying a port is up does not mean traffic is flowing. A ping responding does not mean an application is healthy. Every layer can lie convincingly while every other layer is also lying convincingly.</p>
-
-      <p>Now when I build out monitoring, I look for at least <strong>two independent vantage points</strong> per assertion. Self reported and externally reachable. Layer 3 and Layer 7. Inside the network and outside it. If only one of them is green, that is not green. That is "we are not sure."</p>
-
-      <p>This sounds obvious. It was obvious. I had heard it dozens of times. It still cost me half a day to internalize, and I think it had to.</p>
-    `
-  },
-
-  {
-    id: 'NX-0004',
-    date: '2026.03.22',
-    title: 'the case of the friday night gpo',
-    tags: ['ACTIVE DIRECTORY', 'STORY', 'INCIDENT'],
-    color: 'ice',
-    excerpt: 'A scheduled GPO change rolled out at 4:47 PM on a Friday. By Monday, two hundred users could not print, and nobody could explain why.',
-    body: `
-      <p>The change ticket said it was routine. A new Group Policy Object pushing an updated default printer mapping for a specific OU. Tested in a staging container, signed off, scheduled for end of day Friday. Nobody blocked it. Nobody should have.</p>
-
-      <p>By Monday morning, the helpdesk queue was on fire. <strong>Two hundred users</strong> on the affected floor could not print. Not "the printer is offline." Not "the queue is stuck." The print dialog literally did not show their printer at all. The mapping had not just failed. It had quietly removed the existing one.</p>
-
-      <h3>tracing the cause</h3>
-
-      <p>I watched <code>gpresult /h</code> on three different machines. The new GPO was applying. The deployed printer was being added. Then, immediately on the same policy refresh, it was being removed. The removal was happening because of an <em>item level targeting</em> rule that nobody had noticed, written months ago, that excluded any user whose primary OU contained a specific keyword. The keyword had been added to the OU name in a reorg six weeks ago. The exclusion now matched everyone.</p>
-
-      <p>The original GPO author had moved on. The targeting rule had no comment. The OU rename had no associated review of policies that referenced it. The chain of "it should still work" assumptions stretched back three administrative changes and at least two organizational restructures.</p>
-
-      <blockquote>Every long lived environment is a graveyard of small decisions made by people who are no longer there. Most of the time they rest peacefully. Sometimes they get up.</blockquote>
-
-      <h3>the fix and the lesson</h3>
-
-      <p>The fix was twelve seconds. Edit the targeting rule, save, force <code>gpupdate</code>. Printing returned within two policy refresh cycles.</p>
-
-      <p>The actual fix was structural and took the better part of two weeks. We pulled an inventory of every GPO with item level targeting that referenced OU paths or names. We commented every targeting rule we found uncommented. We added a checklist item to OU renames: <em>review affected GPOs first.</em> We lost a small number of unused policies in the process, which was its own kind of win.</p>
-
-      <p>I think about this incident every time I touch a piece of policy that was written by someone I do not know. The world is full of clever conditions written by careful people that have quietly stopped meaning what they used to mean.</p>
-    `
-  },
-
-  {
-    id: 'NX-0003',
-    date: '2026.02.09',
-    title: 'a packet capture, a vendor, and a lie',
-    tags: ['NETWORKING', 'WIRESHARK', 'STORY'],
-    color: 'teal',
-    excerpt: 'A vendor swore their appliance was respecting our QoS markings. Three hours of pcap said otherwise.',
-    body: `
-      <p>The complaint was the kind that sounds soft until you live with it: "voice calls are okay most of the time, but every now and then they get choppy for about twenty seconds." The vendor of our edge optimization appliance had been told. The vendor said the appliance was honoring our DSCP markings and that any choppy audio was upstream.</p>
-
-      <p>I did not believe them. I had no specific reason. I just did not believe them.</p>
-
-      <h3>the capture</h3>
-
-      <p>I set up a SPAN port mirroring traffic on both sides of the appliance (ingress from the LAN side, egress to the WAN side) into a laptop running Wireshark with two NICs. Filter: SIP and RTP only. Then I waited.</p>
-
-      <p>The wait was long. Choppy audio is hard to reproduce on demand. I left the capture running for three hours during business hours and went to do other work. When I came back I had an 800 MB pcap.</p>
-
-      <p>The first thing I did was filter to RTP packets and graph the interarrival times. The graph was mostly a flat line at the expected ~20ms. Three places, it spiked. Two of those spikes lined up to the minute with user complaints from the help desk log.</p>
-
-      <h3>the lie</h3>
-
-      <p>I went looking for what was different about those packets. The DSCP marking on the LAN side ingress was correct: <code>EF (46)</code>, Expedited Forwarding, which is what voice should be. On the WAN side egress, during the spike windows, the DSCP marking on the same RTP flow was <code>CS0 (0)</code>. Best effort. Stripped.</p>
-
-      <p>Not on every packet. Just on packets that arrived during periods of high overall throughput on the appliance: the periods we cared about, the periods QoS was supposed to protect.</p>
-
-      <blockquote>The appliance was respecting our markings. Right up until the moment it mattered, at which point it was respecting something else.</blockquote>
-
-      <p>I built a side by side filter showing the same five tuple flow before and after the appliance, with DSCP highlighted, and exported it as a screenshot. I sent the screenshot to the vendor.</p>
-
-      <p>The next call was different.</p>
-
-      <h3>what i took from this</h3>
-
-      <p>Two things. First: vendors are not lying on purpose, usually. They are reporting what their dashboard tells them, and their dashboard reports what their software thinks it is doing, and software has bugs. The truth lives on the wire.</p>
-
-      <p>Second: <strong>learn Wireshark.</strong> Not as a checkbox. Not "I have used Wireshark." Actually learn it. Filters, statistics, IO graphs, expert info. Once you can sit down with a pcap and have an opinion within ten minutes, your relationship with every networking problem changes. You stop arguing about what is happening. You go look.</p>
-
-      <p>The appliance got a firmware update three weeks later. The release notes did not mention QoS. The release notes never mention QoS. But the choppy audio went away.</p>
-    `
-  },
-
-  {
-    id: 'NX-0002',
-    date: '2026.01.18',
-    title: 'on baselines',
-    tags: ['THOUGHTS', 'BLUE TEAM', 'OPSEC'],
-    color: '',
-    excerpt: 'Most security incidents are not exotic. They are the absence of a baseline. A short note on the discipline of knowing your own normal.',
-    body: `
-      <p>The single most underrated skill in defensive security is knowing what "normal" looks like on your own network. Not the textbook normal. Your normal. The specific, peculiar, slightly broken in ways you have grown fond of normal of the systems you actually maintain.</p>
-
-      <p>Without that, every alert is suspicious and every anomaly is invisible at the same time, which is the worst of both worlds. Alert fatigue is not an inbox problem. It is a baseline problem. You cannot tell signal from noise if you do not know what the noise sounds like when the system is fine.</p>
-
-      <h3>practical rules i try to follow</h3>
-
-      <p><strong>Spend the first two weeks on any new system just watching it.</strong> Tail the logs. Sketch a service map. Note which processes spike at 3am because of a scheduled task and which ones spike because something is wrong. Save it somewhere durable. Refer back to it when you forget, which will be soon.</p>
-
-      <p><strong>Document the weird normal explicitly.</strong> "The legacy print server pegs CPU for 90 seconds every hour at :17 because of a vendor service nobody understands. This is fine. Do not page anyone about it." That comment will save someone a panic attack. It might be future you.</p>
-
-      <p><strong>If you are going to alert on something, alert on a deviation from the baseline, not on a static threshold.</strong> Static thresholds are a confession that you have not measured your own environment. They alert on Tuesday afternoons because Tuesday afternoons are busy. A deviation alert fires when something is actually different.</p>
-
-      <h3>the harder version of this</h3>
-
-      <p>Baselines drift. Normal is not a static target. The "normal" you carefully captured in March is not the "normal" of October because you have added users, decommissioned servers, patched things, and absorbed some new SaaS integration that nobody told you about.</p>
-
-      <p>The discipline is not just to capture a baseline. It is to <em>recapture</em> it on a schedule, compare it to last quarter's, and notice what has changed. Not to alert on it. Just to know.</p>
-
-      <p>Most of the people I respect in this field share a quiet trait: they are deeply curious about the boring details of their own infrastructure. They run <code>netstat</code> on their own boxes for fun. They notice when a service start time has changed. They are, in a real sense, <strong>haunted</strong> by their own networks.</p>
-
-      <p>I am trying to be that kind of haunted.</p>
-    `
-  },
-
-  {
-    id: 'NX-0001',
-    date: '2026.01.02',
-    title: 'archive online',
-    tags: ['SYSTEM', 'NOTES'],
-    color: 'ice',
-    excerpt: 'First boot of the public archive. A note on what lives here, why it exists, and what to expect from future entries.',
-    body: `
-      <p>This is the first entry in the archive. Eventually it will hold field notes, lab writeups, CTF retrospectives, infrastructure deep dives, and the occasional half baked theory about a misbehaving network appliance. The plan is short, technical, no fluff. If a post is worth writing, it should be worth rereading six months later when I forget how I solved the same problem.</p>
-
-      <h3>what to expect</h3>
-
-      <p>Topics will skew toward what I am actually working on at any given time: Active Directory hygiene, Azure tenant hardening, Wireshark captures, packet weirdness, scripting in PowerShell and Python, the quiet machinery underneath enterprise IT. And whatever rabbit hole I fell into that week.</p>
-
-      <p>Some posts will be short. Some will be longer than they should be. A few will be wrong, and I will leave them up with corrections at the bottom because pretending I was right the first time is a worse habit than being wrong in public.</p>
-
-      <h3>why post at all</h3>
-
-      <p>Two reasons. The first is selfish: writing an explanation forces a level of clarity that just fixing the thing does not. I learn the material twice when I write it down: once to understand it, once to make it readable. The second reason is that I have read other people's writeups for years and benefited from them, and the only honest way to be in that ecosystem long term is to add to it.</p>
-
-      <blockquote>Cells interlinked within cells interlinked within one stem.</blockquote>
-
-      <p>So this is the stem. More to come.</p>
-    `
-  }
-];
+window.BLOG_POSTS = []; // filled from posts/index.json at runtime
 
 /* ============================================================
    2. VOIGHT-KAMPFF — multiple-choice version
@@ -574,7 +379,15 @@ window.PROJECTS = [
     document.querySelectorAll('.theme-toggle .label').forEach(el => {
       el.textContent = THEME_NEXT_LABEL[theme];
     });
+    syncThemeColor(theme);
     if (prev && prev !== theme) crtBurst();
+  }
+
+  // Keep the browser chrome (mobile address bar) matched to the page background.
+  const THEME_COLOR = { dark: '#050608', light: '#ebeff4', rain: '#03060c' };
+  function syncThemeColor(theme) {
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', THEME_COLOR[theme] || THEME_COLOR.dark);
   }
 
   document.querySelectorAll('.theme-toggle').forEach(toggle => {
@@ -595,8 +408,9 @@ window.PROJECTS = [
   {
     const cur = document.documentElement.getAttribute('data-theme') || 'dark';
     document.querySelectorAll('.theme-toggle .label').forEach(el => {
-      el.textContent = THEME_NEXT_LABEL[cur];
+      el.textContent = THEME_NEXT_LABEL[cur] || THEME_NEXT_LABEL.dark;
     });
+    syncThemeColor(cur);
   }
 
   /* -------- CLEARANCE SYSTEM + TOASTS + INCEPT DATE --------- */
@@ -836,7 +650,7 @@ window.PROJECTS = [
 
     function resizeTrail() {
       W = window.innerWidth; H = window.innerHeight;
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       trailCanvas.width = W * dpr;
       trailCanvas.height = H * dpr;
       trailCanvas.style.width = W + 'px';
@@ -963,7 +777,7 @@ window.PROJECTS = [
 
     function resizeDust() {
       DW = window.innerWidth; DH = window.innerHeight;
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       dustCanvas.width = DW * dpr;
       dustCanvas.height = DH * dpr;
       dustCanvas.style.width = DW + 'px';
@@ -1074,11 +888,54 @@ window.PROJECTS = [
     }
   }
 
+  // Post fields arrive over fetch, so they are escaped before they touch
+  // innerHTML (PROJECTS, by contrast, is trusted markup authored in this file).
+  const escHtml = (v) => String(v == null ? '' : v)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  const dotDate = (d) => String(d || '').replace(/-/g, '.');
+
+  /* -------- FIELD NOTES LOADER ---------
+     One small JSON request, only on pages that show posts (home, the
+     blog, and the archive terminal). window.BLOG_POSTS keeps its identity
+     so everything holding a reference sees the loaded entries. */
+  const needsPosts = !!(document.getElementById('blog-grid') ||
+                        document.getElementById('home-notes') ||
+                        document.getElementById('terminal'));
+  const postsReady = !needsPosts ? Promise.resolve(false) :
+    fetch('posts/index.json', { credentials: 'same-origin' })
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+      .then(list => {
+        if (!Array.isArray(list)) throw new Error('bad index');
+        const ok = list.filter(p => p && typeof p.id === 'string' && /^[A-Za-z0-9][A-Za-z0-9-]*$/.test(p.id) &&
+                                    typeof p.title === 'string' && typeof p.file === 'string' &&
+                                    /^[A-Za-z0-9][A-Za-z0-9._-]*\.md$/.test(p.file))
+          .map(p => ({
+            id: p.id, title: p.title, file: p.file,
+            date: dotDate(p.date),
+            tags: Array.isArray(p.tags) ? p.tags.map(String) : [],
+            color: ['teal', 'ice', 'red'].includes(p.color) ? p.color : '',
+            excerpt: String(p.excerpt || ''),
+            minutes: Math.max(1, parseInt(p.minutes, 10) || 1)
+          }));
+        window.BLOG_POSTS.push(...ok);
+        return true;
+      })
+      .catch(() => false); // offline, or opened from file://
+
   /* -------- BLOG GRID RENDER --------- */
   const blogGrid = document.getElementById('blog-grid');
-  if (blogGrid) {
-    const posts = window.BLOG_POSTS || [];
-    if (posts.length === 0) {
+  if (blogGrid) postsReady.then((loaded) => {
+    const posts = window.BLOG_POSTS;
+    if (!loaded) {
+      blogGrid.innerHTML = `
+        <div class="blog-empty" style="grid-column: 1 / -1;">
+          <div class="blog-empty-icon">◇</div>
+          <div class="blog-empty-text">// CHANNEL UNREACHABLE</div>
+          <div class="blog-empty-sub">The transmission index did not load. Check the connection and reload.</div>
+        </div>
+      `;
+    } else if (posts.length === 0) {
       blogGrid.innerHTML = `
         <div class="blog-empty" style="grid-column: 1 / -1;">
           <div class="blog-empty-icon">◇</div>
@@ -1088,20 +945,109 @@ window.PROJECTS = [
       `;
     } else {
       blogGrid.innerHTML = posts.map((p, i) => `
-        <article class="blog-card reveal ${p.color || ''}" data-post="${i}" data-hover>
+        <article class="blog-card reveal ${p.color || ''}" data-post="${i}" data-tags="${escHtml(p.tags.join('|'))}" data-hover
+                 tabindex="0" role="button" aria-haspopup="dialog" aria-label="Open transmission: ${escHtml(p.title)}">
           <div class="blog-card-id">${p.id}</div>
-          <div class="blog-card-date">▣ ${p.date}</div>
-          <h3 class="blog-card-title">${p.title}</h3>
-          <p class="blog-card-excerpt">${p.excerpt}</p>
+          <div class="blog-card-date">▣ ${escHtml(p.date)}</div>
+          <h3 class="blog-card-title">${escHtml(p.title)}</h3>
+          <div class="blog-card-read">${p.minutes} MIN READ</div>
+          <p class="blog-card-excerpt">${escHtml(p.excerpt)}</p>
           <div class="blog-card-tags">
-            ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+            ${p.tags.map(t => `<span class="tag">${escHtml(t)}</span>`).join('')}
           </div>
           <span class="blog-card-cta">Open Transmission</span>
         </article>
       `).join('');
       document.querySelectorAll('#blog-grid .reveal').forEach((el) => observer.observe(el));
+
+      // Tag filter. Built from the posts themselves, most used tag first.
+      const tagCounts = {};
+      posts.forEach(p => p.tags.forEach(t => { tagCounts[t] = (tagCounts[t] || 0) + 1; }));
+      const tags = Object.keys(tagCounts).sort((a, b) => tagCounts[b] - tagCounts[a] || a.localeCompare(b));
+      if (tags.length > 1) {
+        const bar = document.createElement('div');
+        bar.className = 'note-filters';
+        bar.setAttribute('role', 'group');
+        bar.setAttribute('aria-label', 'Filter transmissions by tag');
+        const label = document.createElement('span');
+        label.className = 'note-filters-label';
+        label.textContent = 'Filter ▸';
+        bar.appendChild(label);
+        const count = document.createElement('span');
+        count.className = 'note-count';
+        count.setAttribute('role', 'status');
+        const cards = Array.from(blogGrid.querySelectorAll('.blog-card'));
+        const buttons = [];
+        function applyFilter(tag) {
+          let shown = 0;
+          cards.forEach(card => {
+            const hit = !tag || card.dataset.tags.split('|').includes(tag);
+            card.hidden = !hit;
+            if (hit) shown++;
+          });
+          buttons.forEach(b => b.setAttribute('aria-pressed', b.dataset.tag === (tag || '') ? 'true' : 'false'));
+          count.textContent = `${shown} of ${cards.length} shown`;
+        }
+        [''].concat(tags).forEach(tag => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'note-filter';
+          b.dataset.tag = tag;
+          b.textContent = tag || 'All';
+          b.addEventListener('click', () => applyFilter(tag));
+          buttons.push(b);
+          bar.appendChild(b);
+        });
+        bar.appendChild(count);
+        blogGrid.parentNode.insertBefore(bar, blogGrid);
+        applyFilter('');
+      }
     }
+    // Arrived on a deep link (blog.html#NX-0006): open it now that the index is in.
+    if (hashId()) routeModal();
+  });
+
+  /* -------- HOME PAGE TEASERS ---------
+     The landing page previews the flagship builds and the newest field
+     notes from the same data arrays, so nothing is written twice. Each
+     card is a plain link that deep links straight into the dossier. */
+  const homeBuilds = document.getElementById('home-builds');
+  if (homeBuilds) {
+    homeBuilds.innerHTML = (window.PROJECTS || []).map(p => `
+      <a class="blog-card reveal ${p.color || ''}" href="builds.html#${p.id}">
+        <div class="blog-card-id">${p.id}</div>
+        <div class="blog-card-kicker">${p.date}${p.live ? ' ▸ LIVE' : ''}</div>
+        <h3 class="blog-card-title">${p.title}</h3>
+        <p class="blog-card-excerpt">${p.excerpt}</p>
+        <div class="blog-card-tags">
+          ${(p.stack || p.tags).map(t => `<span class="tag">${t}</span>`).join('')}
+        </div>
+        <span class="blog-card-cta">Open Dossier</span>
+      </a>
+    `).join('');
+    homeBuilds.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
   }
+  const homeNotes = document.getElementById('home-notes');
+  if (homeNotes) postsReady.then(() => {
+    const latest = window.BLOG_POSTS.slice(0, 3);
+    if (!latest.length) {
+      // Nothing to preview (no posts yet, or the index failed): drop the section.
+      const sec = homeNotes.closest('section');
+      if (sec) sec.hidden = true;
+      return;
+    }
+    homeNotes.innerHTML = latest.map(p => `
+      <a class="blog-card reveal ${p.color}" href="blog.html#${p.id}">
+        <div class="blog-card-id">${p.id}</div>
+        <div class="blog-card-date">▣ ${escHtml(p.date)}</div>
+        <h3 class="blog-card-title">${escHtml(p.title)}</h3>
+        <div class="blog-card-read">${p.minutes} MIN READ</div>
+        <p class="blog-card-excerpt">${escHtml(p.excerpt)}</p>
+        <span class="blog-card-cta">Open Transmission</span>
+      </a>
+    `).join('');
+    homeNotes.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+  });
 
   /* -------- BUILDS EXHIBIT RENDER --------- */
   const buildsGrid = document.getElementById('builds-grid');
@@ -1117,7 +1063,8 @@ window.PROJECTS = [
             <div class="bx-metric"><span class="v">${m.v}</span><span class="k">${m.k}</span></div>`).join('')}</div>`
         : '';
       return `
-      <article class="build-exhibit reveal ${p.color || ''}${isFeature ? ' feature' : ''}" data-build="${i}" data-hover>
+      <article class="build-exhibit reveal ${p.color || ''}${isFeature ? ' feature' : ''}" data-build="${i}" data-hover
+               tabindex="0" role="button" aria-haspopup="dialog" aria-label="Open dossier: ${p.title}">
         <div class="build-exhibit-index">
           <span class="bx-num">${num}</span>
           <span class="bx-rule"></span>
@@ -1152,25 +1099,118 @@ window.PROJECTS = [
   const modalClose = document.getElementById('modal-close');
 
   let modalReturnFocus = null;
+  let modalItem = null;      // entry currently shown
+  let modalPushed = false;   // true when opening it added a history entry
+  const baseTitle = document.title;
 
-  function openModal(post, metaLabel) {
+  // Each page owns one collection. Its entries are addressable by hash
+  // (blog.html#NX-0006, builds.html#BUILD-001) so a single post or dossier
+  // can be linked, shared, bookmarked, and closed with the Back button.
+  const modalSet = blogGrid ? { items: window.BLOG_POSTS || [], label: 'ARCHIVE ENTRY' }
+                 : buildsGrid ? { items: window.PROJECTS || [], label: 'BUILD DOSSIER' }
+                 : null;
+  const modalIndex = (id) => modalSet ? modalSet.items.findIndex(p => p.id.toLowerCase() === String(id).toLowerCase()) : -1;
+  const hashId = () => { try { return decodeURIComponent(window.location.hash.slice(1)); } catch(e) { return ''; } };
+  const cleanUrl = () => window.location.pathname + window.location.search;
+
+  // Footer tools: copy a direct link, step to the neighbouring entry.
+  let toolCopy = null, toolPrev = null, toolNext = null;
+  if (modal && modalBody && modalSet) {
+    const tools = document.createElement('div');
+    tools.className = 'modal-tools';
+    const mk = (text, cls) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'modal-tool' + (cls ? ' ' + cls : '');
+      b.textContent = text;
+      tools.appendChild(b);
+      return b;
+    };
+    toolCopy = mk('▸ Copy Link');
+    toolPrev = mk('◂ Previous', 'ice push');
+    toolNext = mk('Next ▸', 'ice');
+    modalBody.insertAdjacentElement('afterend', tools);
+
+    toolCopy.addEventListener('click', () => {
+      if (!modalItem) return;
+      const url = window.location.origin + cleanUrl() + '#' + modalItem.id;
+      const done = () => NX.toast(`LINK COPIED ▸ ${modalItem.id}`);
+      const fail = () => NX.toast('COPY BLOCKED ▸ USE THE ADDRESS BAR');
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, fail);
+      else fail();
+    });
+    const step = (delta) => {
+      if (!modalItem) return;
+      const next = modalSet.items[modalIndex(modalItem.id) + delta];
+      if (!next) return;
+      // Stepping swaps the current history entry, so Back still closes in one press.
+      try { history.replaceState(history.state, '', '#' + next.id); } catch(e) {}
+      showModal(next, modalSet.label);
+    };
+    toolPrev.addEventListener('click', () => step(-1));
+    toolNext.addEventListener('click', () => step(1));
+  }
+
+  function showModal(post, metaLabel) {
     if (!modal) return;
+    const wasOpen = modal.classList.contains('open');
+    modalItem = post;
     modalTitle.textContent = post.title;
     modalDate.textContent = post.date;
     modalMeta.textContent = `${metaLabel || 'ARCHIVE ENTRY'} ${post.id} // ${post.tags.join(' / ')}`;
-    modalBody.innerHTML = post.body;
+    if (typeof post.body === 'string') modalBody.innerHTML = post.body;
+    else loadPostBody(post);
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
+    document.title = `${post.title} // NX-1324`;
     wireDocViewer(modalBody);
-    // Keyboard a11y: remember where focus came from and move it into the dialog
-    modalReturnFocus = document.activeElement;
-    if (modalClose) modalClose.focus();
+    if (toolPrev) {
+      const i = modalIndex(post.id);
+      toolPrev.hidden = i <= 0;
+      toolNext.hidden = i < 0 || i >= modalSet.items.length - 1;
+    }
+    const panel = modal.querySelector('.modal-panel');
+    if (panel) panel.scrollTop = 0;
+    // Keyboard a11y: the page behind the dialog leaves the tab order, focus
+    // moves in, and we remember where it came from.
+    modalInert(true);
+    if (!wasOpen) {
+      modalReturnFocus = document.activeElement;
+      if (modalClose) modalClose.focus();
+    } else if (modalClose && document.activeElement && document.activeElement.hidden) {
+      // Stepped onto the first / last entry and the button under focus vanished.
+      modalClose.focus();
+    }
   }
 
-  function closeModal() {
-    if (!modal) return;
+  // A field note's body is a Markdown file, fetched the first time it is
+  // opened and rendered by markdown.js (which escapes everything first).
+  const postHtml = new Map();
+  function loadPostBody(post) {
+    const paint = (html) => { if (modalItem === post) modalBody.innerHTML = html; };
+    const note = (text) => { if (modalItem === post) { modalBody.textContent = ''; const p = document.createElement('p'); p.className = 'modal-loading'; p.textContent = text; modalBody.appendChild(p); } };
+    if (postHtml.has(post.id)) { paint(postHtml.get(post.id)); return; }
+    note('// decoding transmission ...');
+    if (!window.NXMarkdown) { note('// decoder offline. reload the page and try again.'); return; }
+    fetch('posts/' + encodeURIComponent(post.file), { credentials: 'same-origin' })
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.text(); })
+      .then(src => {
+        const html = window.NXMarkdown.render(window.NXMarkdown.parse(src).body);
+        postHtml.set(post.id, html);
+        paint(html);
+      })
+      .catch(() => note('// transmission lost. check the connection and try again.'));
+  }
+
+  function hideModal() {
+    if (!modal || !modal.classList.contains('open')) return;
     modal.classList.remove('open');
+    modalItem = null;
+    modalPushed = false;
+    modalBody.textContent = ''; // drops the embedded PDF frame so it stops holding memory
     document.body.style.overflow = '';
+    document.title = baseTitle;
+    modalInert(false);
     if (modalReturnFocus && typeof modalReturnFocus.focus === 'function') {
       modalReturnFocus.focus();
       modalReturnFocus = null;
@@ -1182,6 +1222,45 @@ window.PROJECTS = [
     if (a) a.classList.remove('hidden');
     if (t) t.classList.remove('hidden');
   }
+
+  function modalInert(on) {
+    [document.getElementById('main'), document.querySelector('.nav')].forEach(el => { if (el) el.inert = on; });
+  }
+
+  // Opened by the visitor: record it in history so the URL is shareable.
+  function openModal(post, metaLabel) {
+    if (!modal) return;
+    if (modalIndex(post.id) >= 0 && hashId().toLowerCase() !== post.id.toLowerCase()) {
+      try { history.pushState({ nxModal: true }, '', '#' + post.id); modalPushed = true; } catch(e) {}
+    }
+    showModal(post, metaLabel);
+  }
+
+  // Closed by the visitor: unwind the history entry we added (or just
+  // strip the hash when they arrived on a deep link).
+  function closeModal() {
+    if (!modal) return;
+    const owned = modalItem && hashId().toLowerCase() === modalItem.id.toLowerCase();
+    const pushed = modalPushed;
+    hideModal();
+    if (!owned) return;
+    try {
+      if (pushed) history.back();
+      else history.replaceState(null, '', cleanUrl());
+    } catch(e) {}
+  }
+
+  // Back / Forward / hand edited hash: make the dialog match the URL.
+  function routeModal() {
+    if (!modalSet) return;
+    const i = modalIndex(hashId());
+    if (i >= 0) {
+      if (modalItem !== modalSet.items[i]) showModal(modalSet.items[i], modalSet.label);
+    } else {
+      hideModal();
+    }
+  }
+  window.addEventListener('popstate', routeModal);
 
   // Tabbed PDF document viewer (used in the Bearcast dossier). Swaps one
   // shared <iframe> between documents, keeps Open/Download in sync, and hides
@@ -1224,9 +1303,9 @@ window.PROJECTS = [
   if (modal) {
     modal.addEventListener('keydown', (e) => {
       if (e.key !== 'Tab' || !modal.classList.contains('open')) return;
-      const focusables = modal.querySelectorAll(
+      const focusables = Array.from(modal.querySelectorAll(
         'button, [href], input, select, textarea, iframe, [tabindex]:not([tabindex="-1"])'
-      );
+      )).filter(el => !el.hidden && !el.disabled);
       if (!focusables.length) return;
       const first = focusables[0];
       const last = focusables[focusables.length - 1];
@@ -1240,19 +1319,33 @@ window.PROJECTS = [
     });
   }
 
-  document.addEventListener('click', (e) => {
-    const postCard = e.target.closest('[data-post]');
+  function activateCard(target) {
+    const postCard = target.closest('[data-post]');
     if (postCard) {
       const idx = parseInt(postCard.dataset.post, 10);
       if (window.BLOG_POSTS && window.BLOG_POSTS[idx]) openModal(window.BLOG_POSTS[idx], 'ARCHIVE ENTRY');
-      return;
+      return true;
     }
-    const buildCard = e.target.closest('[data-build]');
+    const buildCard = target.closest('[data-build]');
     if (buildCard) {
       const idx = parseInt(buildCard.dataset.build, 10);
       if (window.PROJECTS && window.PROJECTS[idx]) openModal(window.PROJECTS[idx], 'BUILD DOSSIER');
+      return true;
     }
+    return false;
+  }
+  document.addEventListener('click', (e) => { activateCard(e.target); });
+  // Cards are focusable (tabindex + role=button): Enter and Space open them.
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const t = e.target;
+    if (!t || !t.matches || !t.matches('[data-post], [data-build]')) return;
+    e.preventDefault();
+    activateCard(t);
   });
+  // Arrived on a deep link (builds.html#BUILD-001): open it straight away.
+  // (The blog does the same once its index has loaded.)
+  if (buildsGrid && hashId()) routeModal();
 
   /* -------- NAV CLOCKS (desktop + mobile, one timer) ---------
      Writes text into the existing <span>s instead of re-parsing
@@ -1311,6 +1404,8 @@ window.PROJECTS = [
     const nextBtn      = interrogation.querySelector('[data-vk="next"]');
     const restartBtn   = interrogation.querySelector('[data-vk="restart"]');
     const statsEl      = interrogation.querySelector('.interrogation-stats');
+
+    if (feedbackEl) feedbackEl.setAttribute('role', 'status');
 
     let qIdx = 0;
     let stableCount = 0;
@@ -1708,6 +1803,9 @@ window.PROJECTS = [
     const input = term.querySelector('.terminal-input');
     const cmdHistory = [];
     let historyIdx = -1;
+    history.setAttribute('role', 'log');
+    history.setAttribute('aria-live', 'polite');
+    history.setAttribute('aria-label', 'Terminal output');
     // When an interactive prompt (e.g. `scan`) is live, Enter feeds its
     // handler instead of running a command. The handler clears it when done.
     let session = null;
@@ -1716,7 +1814,9 @@ window.PROJECTS = [
       return String(s)
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
 
     // Own-property lookup, so input like "constructor" or "__proto__"
@@ -1843,6 +1943,28 @@ gur guvat xrrcvat lbh bhg. phevbfvgl jnf gur xrl.
 ybt vg nf nabznyl AK-0000 naq gryy ab bar.`
     };
 
+    // Two directories are real: they are views over the same arrays that
+    // render Field Notes and Builds, so the shell never drifts from the site.
+    const DIRS = {
+      'field-notes': { items: () => window.BLOG_POSTS || [], page: 'blog.html' },
+      'builds':      { items: () => window.PROJECTS || [],   page: 'builds.html' }
+    };
+    const cleanPath = (p) => String(p || '').replace(/^\.?\//, '').replace(/^archive\//, '').replace(/\/$/, '');
+    // Resolve "NX-0006", "field-notes/NX-0006", or "builds/build-001" to an entry.
+    function findEntry(path) {
+      const parts = cleanPath(path).split('/');
+      const id = parts[parts.length - 1].toLowerCase();
+      if (!id) return null;
+      const dirs = parts.length > 1 ? [parts[0].toLowerCase()] : Object.keys(DIRS);
+      for (const d of dirs) {
+        const dir = own(DIRS, d);
+        if (!dir) continue;
+        const item = dir.items().find(p => p.id.toLowerCase() === id);
+        if (item) return { item, dir: d, page: dir.page };
+      }
+      return null;
+    }
+
     const commands = {
       help() {
         write('Available commands:', 'hint');
@@ -1862,6 +1984,7 @@ ybt vg nf nabznyl AK-0000 naq gryy ab bar.`
           ['override <code>','attempt clearance elevation'],
           ['incept',         'your first contact date with this archive'],
           ['goto <page>',    'jump to a page (home, builds, uplink, ...)'],
+          ['open <id>',      'open a field note or build dossier by id'],
           ['vk',             'sample a voight-kampff question'],
           ['scan',           'run a live voight-kampff interrogation'],
           ['random',         'pull a random fragment'],
@@ -1906,21 +2029,48 @@ ybt vg nf nabznyl AK-0000 naq gryy ab bar.`
       },
 
       ls(args) {
-        const path = (args[0] || '/archive').replace(/\/$/, '');
-        if (path === '/' || path === '/archive') {
-          writeRaw(`<span class="hl">fragments/</span>      <span class="hl">voight-kampff/</span>     <span class="hl">field-notes/</span>`);
-          writeRaw(`<span class="hl">incidents/</span>      <span class="hl">rules-i-broke/</span>     <span class="hl">rules-that-held/</span>`);
-          writeRaw(`<span class="dim">profile.txt    motd             baseline.dat</span>`);
-          writeRaw(`<span class="dim">kipple.log     replicants.idx   defense.cfg</span>`);
-          writeRaw(`<span class="dim">ghost.enc</span>`);
-        } else {
-          write(`ls: ${path}: no such directory`, 'err');
+        const path = cleanPath(args[0] || '');
+        if (!path || path === 'archive' || path === '.') {
+          // Everything listed here can actually be opened.
+          writeRaw(Object.keys(DIRS).map(d => `<span class="hl">${esc((d + '/').padEnd(22))}</span>`).join(''));
+          const files = Object.keys(FS);
+          for (let i = 0; i < files.length; i += 3) {
+            writeRaw(`<span class="dim">${esc(files.slice(i, i + 3).map(f => f.padEnd(22)).join(''))}</span>`);
+          }
+          return;
         }
+        const dir = own(DIRS, path.toLowerCase());
+        if (dir) {
+          const items = dir.items();
+          if (!items.length) { write('(empty)', 'dim'); return; }
+          items.forEach(p => writeRaw(`<span class="hl">${esc(p.id.padEnd(12))}</span><span class="dim">${esc(p.title)}</span>`));
+          writeRaw(`<span class="dim">// cat ${esc(path.toLowerCase())}/&lt;id&gt; for a summary. open &lt;id&gt; for the full entry.</span>`);
+          return;
+        }
+        if (own(FS, path)) { write(path); return; }
+        write(`ls: ${path}: no such file or directory`, 'err');
       },
 
       cat(args) {
         if (!args[0]) { write('cat: missing file operand', 'err'); return; }
-        const name = args[0].replace(/^\.?\//, '').replace(/^archive\//, '');
+        const name = cleanPath(args[0]);
+        const entry = findEntry(name);
+        if (entry) {
+          const p = entry.item;
+          writeRaw(`<span class="hl">${esc(p.id)}</span>  <span class="dim">${esc(p.date)}</span>`);
+          writeRaw(`<span class="ok">${esc(p.title)}</span>`);
+          // Build excerpts are trusted HTML with a few entities. Post excerpts are plain text.
+          if (entry.dir === 'builds') {
+            const tmp = document.createElement('div');
+            tmp.innerHTML = p.excerpt;
+            write(tmp.textContent);
+          } else {
+            write(p.excerpt);
+          }
+          writeRaw(`<span class="dim">// open ${esc(p.id)} to read the full entry.</span>`);
+          return;
+        }
+        if (own(DIRS, name.toLowerCase())) { write(`cat: ${name}: is a directory`, 'err'); return; }
         if (name === 'replicants.idx' || name === 'replicants') {
           if (NX.clearance === 'TIER-OMEGA') {
             write(
@@ -2040,7 +2190,7 @@ you are now on that list. welcome.`, 'ok');
       banner() {
         writeRaw(`<span class="hl">┌─────────────────────────────────────────────┐</span>`);
         writeRaw(`<span class="hl">│  WALLACE CORP // NEXUS-9 PERSONNEL REGISTRY  │</span>`);
-        writeRaw(`<span class="hl">│  SESSION 1324-N9 //  CLEARANCE: TIER-9       │</span>`);
+        writeRaw(`<span class="hl">│  SESSION 1324-N9 //  CLEARANCE: ${esc(NX.clearance.padEnd(13))}│</span>`);
         writeRaw(`<span class="hl">└─────────────────────────────────────────────┘</span>`);
         write('uplink stable. type "help" for commands.', 'dim');
       },
@@ -2251,7 +2401,7 @@ you are now on that list. welcome.`, 'ok');
               }
             });
             writeBlank();
-            write('these are live values, not lore. full grid on the uplink page.', 'dim');
+            write('these are live values, not lore. the full grid is in the operations uplink below.', 'dim');
           })
           .catch(() => write('edge interrogation failed: offline or local file://', 'err'));
       },
@@ -2309,17 +2459,22 @@ you are now on that list. welcome.`, 'ok');
 
       goto(args) {
         const map = {
-          home: 'index.html', index: 'index.html',
+          home: './', index: './',
           background: 'background.html', builds: 'builds.html',
           notes: 'blog.html', blog: 'blog.html', 'field-notes': 'blog.html',
           uses: 'archive.html#loadout', loadout: 'archive.html#loadout',
           uplink: 'archive.html#uplink', console: 'archive.html#uplink',
           archive: 'archive.html'
         };
-        const dest = own(map, (args[0] || '').toLowerCase());
+        let dest = own(map, (args[0] || '').toLowerCase());
+        if (!dest) {
+          // An entry id jumps straight into that note or dossier.
+          const entry = findEntry(args[0]);
+          if (entry) dest = `${entry.page}#${entry.item.id}`;
+        }
         if (!dest) {
           write('goto: unknown destination', 'err');
-          write('destinations: home, background, builds, notes, uses, uplink, archive', 'dim');
+          write('destinations: home, background, builds, notes, uses, uplink, archive, or an entry id (try: ls field-notes)', 'dim');
           return;
         }
         write(`rerouting uplink ▸ ${dest}`, 'ok');
@@ -2387,10 +2542,20 @@ you are now on that list. welcome.`, 'ok');
       } else if (e.key === 'Tab') {
         e.preventDefault();
         const cur = input.value;
-        const cmdNames = Object.keys(commands);
-        const matches = cmdNames.filter(n => n.startsWith(cur));
+        const sp = cur.lastIndexOf(' ');
+        let matches, head = '';
+        if (sp < 0) {
+          matches = Object.keys(commands).filter(n => n.startsWith(cur));
+        } else {
+          // Completing an argument: files, directories, and entry ids.
+          head = cur.slice(0, sp + 1);
+          const frag = cur.slice(sp + 1).toLowerCase();
+          const pool = Object.keys(FS).concat(Object.keys(DIRS).map(d => d + '/'));
+          Object.keys(DIRS).forEach(d => DIRS[d].items().forEach(p => pool.push(`${d}/${p.id}`)));
+          matches = pool.filter(n => n.toLowerCase().startsWith(frag));
+        }
         if (matches.length === 1) {
-          input.value = matches[0] + ' ';
+          input.value = head + matches[0] + (matches[0].endsWith('/') ? '' : ' ');
         } else if (matches.length > 1) {
           echoCmd(cur);
           writeRaw(matches.map(m => `<span class="hl">${esc(m)}</span>`).join('  '));
@@ -2438,7 +2603,7 @@ you are now on that list. welcome.`, 'ok');
 
     function resizeRain() {
       RW = window.innerWidth; RH = window.innerHeight;
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       rainCanvas.width = RW * dpr;
       rainCanvas.height = RH * dpr;
       rainCanvas.style.width = RW + 'px';
@@ -2687,6 +2852,7 @@ you are now on that list. welcome.`, 'ok');
       }
 
       let yaw = 0, sweepLon = -180, ghostPulse = 0;
+      const landPool = [];
       const activePings = [];
       function spawnPing() {
         const s = pingSites[Math.floor(Math.random() * pingSites.length)];
@@ -2705,7 +2871,7 @@ you are now on that list. welcome.`, 'ok');
       const MERIDIANS = [-150, -120, -90, -60, -30, 0, 30, 60, 90, 120, 150, 180];
 
       function renderFrame() {
-        [gGrid, gSweep, gLand, gCoast, gCity, gPing, gGhost].forEach(g => { while (g.firstChild) g.removeChild(g.firstChild); });
+        [gGrid, gSweep, gCoast, gCity, gPing, gGhost].forEach(g => { while (g.firstChild) g.removeChild(g.firstChild); });
         ghostPulse += 0.12;
 
         // 1) graticule — latitude rings + meridians
@@ -2727,15 +2893,32 @@ you are now on that list. welcome.`, 'ok');
           drawArc(gSweep, sw, yaw, 'var(--globe-coast)', '1.6', '0.5');
         }
 
-        // 3) land dots
-        const frag = document.createDocumentFragment();
+        // 3) land dots. These are the bulk of the globe (about a thousand
+        //    on screen), so the circles are created once and repositioned
+        //    each frame instead of being torn down and rebuilt.
+        let used = 0;
         for (const d of landDots) {
           const p = project(d.lat, d.lon, yaw);
           if (!p.visible) continue;
-          const op = 0.18 + Math.max(0, p.z) * 0.6;
-          frag.appendChild(el('circle', { cx: p.x.toFixed(1), cy: p.y.toFixed(1), r: '1.5', fill: 'var(--globe-land)', opacity: op.toFixed(2) }));
+          let c = landPool[used];
+          if (!c) {
+            c = el('circle', { r: '1.5', fill: 'var(--globe-land)' });
+            landPool.push(c);
+            gLand.appendChild(c);
+          } else if (c.nxHidden) {
+            c.removeAttribute('display');
+            c.nxHidden = false;
+          }
+          c.setAttribute('cx', p.x.toFixed(1));
+          c.setAttribute('cy', p.y.toFixed(1));
+          c.setAttribute('opacity', (0.18 + Math.max(0, p.z) * 0.6).toFixed(2));
+          used++;
         }
-        gLand.appendChild(frag);
+        for (let i = used; i < landPool.length; i++) {
+          if (landPool[i].nxHidden) break; // everything past here is already parked
+          landPool[i].setAttribute('display', 'none');
+          landPool[i].nxHidden = true;
+        }
 
         // 4) glowing coastlines
         for (const poly of LAND) {
@@ -2851,9 +3034,9 @@ you are now on that list. welcome.`, 'ok');
     /* ---- BIG STAT (uplink time) ---- */
     const statValue = uplinkRoot.querySelector('#uplink-stat-value');
     if (statValue) {
-      let seconds = 0;
+      const startedAt = Date.now();
       function update() {
-        seconds++;
+        const seconds = Math.floor((Date.now() - startedAt) / 1000);
         const h = Math.floor(seconds / 3600);
         const m = Math.floor((seconds % 3600) / 60);
         const s = seconds % 60;

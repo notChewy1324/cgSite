@@ -18,7 +18,10 @@
 #     https://static.cloudflareinsights.com to script-src and
 #     https://cloudflareinsights.com to connect-src.
 #   - object-src/base-uri 'none': no plugins, no <base> hijack.
-#   - style-src 'unsafe-inline' covers inline style attributes.
+#   - style-src-attr 'unsafe-inline' covers inline style attributes,
+#     while style-src-elem 'self' means no injected <style> block or
+#     foreign stylesheet can ever apply. The plain style-src is only
+#     the fallback for browsers that predate the split directives.
 #   - fonts are self-hosted in /fonts, so font-src is 'self' and
 #     no Google Fonts origins appear anywhere in the policy.
 #   - frame-src/frame-ancestors 'self' so the builds page can
@@ -28,10 +31,20 @@
 #     together they drive the live local-weather rain canvas.
 #   - accelerometer/gyroscope are (self) so deviceorientation
 #     can drive the mobile tilt parallax.
+#   - "! Access-Control-Allow-Origin" detaches the wildcard CORS
+#     header Pages adds to every asset. Nothing here is meant to be
+#     read cross-origin, and CORP is already same-origin.
+#   - HSTS: this file asks for a one year preload policy, but a
+#     zone level HSTS setting in the Cloudflare dashboard overrides
+#     it. If the live header says max-age=0, fix it under
+#     SSL/TLS > Edge Certificates > HSTS.
+#   - style.css and main.js are referenced with ?v=YYYYMMDD in the
+#     HTML. Bump that stamp whenever either file changes, because
+#     the zone browser cache TTL holds them for hours.
 # ============================================================
 
 /*
-  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-GWP6yeiMZB+pmxBVRFksUz9WNUfZd5RkSiC9Q/yO7uw='; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://api.open-meteo.com https://ipwho.is; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-dWhgjKjXuieQkYS21MT+1auL8MtFopjPKbeIdY9ik3c='; style-src 'self' 'unsafe-inline'; style-src-elem 'self'; style-src-attr 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://api.open-meteo.com https://ipwho.is; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; upgrade-insecure-requests
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   X-Content-Type-Options: nosniff
   X-Frame-Options: SAMEORIGIN
@@ -42,6 +55,7 @@
   Origin-Agent-Cluster: ?1
   X-DNS-Prefetch-Control: off
   X-Permitted-Cross-Domain-Policies: none
+  ! Access-Control-Allow-Origin
 
 # Long-cache the vendored library (bump the filename if upgraded)
 /js/*

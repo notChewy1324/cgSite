@@ -11,3 +11,4 @@ wrangler.jsonc
 .dev.vars*
 .env*
 node_modules
+.claude

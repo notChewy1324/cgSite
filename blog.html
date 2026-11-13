@@ -4,25 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Field Notes // NX-1324</title>
-<meta name="description" content="Field notes from Cam Garrison: short, true stories about cybersecurity, networking, Active Directory, monitoring, and the machinery underneath enterprise IT.">
-<link rel="canonical" href="https://camgarrison.com/blog.html">
+<meta name="description" content="Field notes from Cam Garrison: a personal blog about cybersecurity, networking, projects in progress, and thoughts on tech and the machinery underneath enterprise IT.">
+<link rel="canonical" href="https://camgarrison.com/blog">
+<link rel="alternate" type="application/rss+xml" title="Field Notes // NX-1324" href="/feed.xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Personnel Archive // NX-1324">
 <meta property="og:title" content="Field Notes // NX-1324">
-<meta property="og:description" content="Field notes from Cam Garrison: short, true stories about cybersecurity, networking, Active Directory, monitoring, and the machinery underneath enterprise IT.">
-<meta property="og:url" content="https://camgarrison.com/blog.html">
+<meta property="og:description" content="Field notes from Cam Garrison: a personal blog about cybersecurity, networking, projects in progress, and thoughts on tech and the machinery underneath enterprise IT.">
+<meta property="og:url" content="https://camgarrison.com/blog">
 <meta property="og:image" content="https://camgarrison.com/imgs/og-card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Cam Garrison, Cybersecurity &amp; Network Systems Administration. Personnel archive NX-1324.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Field Notes // NX-1324">
-<meta name="twitter:description" content="Field notes from Cam Garrison: short, true stories about cybersecurity, networking, Active Directory, monitoring, and the machinery underneath enterprise IT.">
+<meta name="twitter:description" content="Field notes from Cam Garrison: a personal blog about cybersecurity, networking, projects in progress, and thoughts on tech and the machinery underneath enterprise IT.">
 <meta name="twitter:image" content="https://camgarrison.com/imgs/og-card.png">
 <link rel="preload" href="fonts/jetbrains-mono-300-800-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/major-mono-display-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/syne-400-800-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=20261113b">
 <link rel="icon" type="image/svg+xml" href="imgs/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="imgs/favicon-16.png">
@@ -30,12 +31,13 @@
 <meta name="theme-color" content="#050608">
 <script>
   (function(){
+    var d = document.documentElement, t = 'dark';
     try {
-      var t = localStorage.getItem('nx-theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', t);
-    } catch(e) {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
+      var s = localStorage.getItem('nx-theme');
+      if (s === 'light' || s === 'rain') t = s;
+    } catch(e) {}
+    d.setAttribute('data-theme', t);
+    d.className = 'js';
   })();
 </script>
 </head>
@@ -43,15 +45,15 @@
 
 <a class="skip-link" href="#main">SKIP TO CONTENT ▸</a>
 
-<div class="haze-layer"></div>
-<canvas id="dust-canvas"></canvas>
-<canvas id="rain-canvas"></canvas>
-<div class="scanlines"></div>
-<div class="grain"></div>
-<div class="vignette"></div>
+<div class="haze-layer" aria-hidden="true"></div>
+<canvas id="dust-canvas" aria-hidden="true"></canvas>
+<canvas id="rain-canvas" aria-hidden="true"></canvas>
+<div class="scanlines" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
 
-<canvas id="cursor-trail-canvas"></canvas>
-<div id="cursor-arrow">
+<canvas id="cursor-trail-canvas" aria-hidden="true"></canvas>
+<div id="cursor-arrow" aria-hidden="true">
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="cur-grad" x1="0" y1="0" x2="1" y2="1">
@@ -66,7 +68,7 @@
 </div>
 
 <nav class="nav">
-  <a href="index.html" class="nav-logo">CG // NX-1324</a>
+  <a href="./" class="nav-logo">CG // NX-1324</a>
   <ul class="nav-links">
     <li><a href="background.html">Background</a></li>
     <li><a href="builds.html">Builds</a></li>
@@ -94,7 +96,7 @@
 <aside class="nav-drawer" id="nav-drawer" aria-hidden="true">
   <div class="nav-drawer-tag">▣ NAVIGATION CHANNEL ▣</div>
   <ul>
-    <li><a href="index.html">Home</a></li>
+    <li><a href="./">Home</a></li>
     <li><a href="background.html">Background</a></li>
     <li><a href="builds.html">Builds</a></li>
     <li><a href="blog.html" class="active">Field Notes</a></li>
@@ -120,7 +122,10 @@
     <div class="page-intro-tag">CHANNEL ▸ FIELD NOTES ▸ TRANSMISSIONS</div>
     <h1 class="page-intro-title">field <em>notes</em></h1>
     <p class="page-intro-sub">
-      Short transmissions on cybersecurity, networking, and the strange machinery underneath enterprise IT. Real stories, mostly true, occasionally embellished where the details have softened with time. Tap any entry to open the full article. No new tabs, no leaving the channel.
+      My personal log. What I am building, what I am learning, and what I think about tech, security, and the strange machinery underneath enterprise IT. Real stories, mostly true, occasionally embellished where the details have softened with time. Tap any entry to open the full article. No new tabs, no leaving the channel.
+    </p>
+    <p class="feed-link">
+      <a href="feed.xml" class="contact-link ice" style="font-size:11px; padding:13px 22px;">▸ Subscribe via RSS</a>
     </p>
   </section>
 
@@ -133,6 +138,9 @@
 
     <div class="blog-grid" id="blog-grid">
       <!-- Cards rendered by JS from window.BLOG_POSTS -->
+      <noscript>
+        <p class="noscript-note">This channel needs JavaScript to decode its transmissions. Enable scripting and reload to read the field notes.</p>
+      </noscript>
     </div>
   </section>
 
@@ -183,6 +191,7 @@
      https://cloudflareinsights.com to connect-src in _headers.
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "PASTE-TOKEN-HERE"}'></script>
 -->
-<script defer src="main.js"></script>
+<script defer src="markdown.js?v=20261113b"></script>
+<script defer src="main.js?v=20261113b"></script>
 </body>
 </html>

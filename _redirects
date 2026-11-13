@@ -1,6 +1,16 @@
 # Uses and Uplink were folded into the Archive page as sections.
 # Keep the old URLs alive so shared links and search results still land.
-/uses.html    /archive.html#loadout  301
-/uses         /archive.html#loadout  301
-/uplink.html  /archive.html#uplink   301
-/uplink       /archive.html#uplink   301
+# Targets are extensionless: Pages serves /archive, and /archive.html
+# would cost a second redirect hop.
+/uses.html    /archive#loadout  301
+/uses         /archive#loadout  301
+/uplink.html  /archive#uplink   301
+/uplink       /archive#uplink   301
+
+# Repo housekeeping files are not site content. Pages uploads the whole
+# repo root, so route them to a path that does not exist (a real 404).
+/README.md       /redacted  302
+/wrangler.jsonc  /redacted  302
+/.gitignore      /redacted  302
+/.assetsignore   /redacted  302
+/tools/*         /redacted  302

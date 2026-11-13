@@ -1,0 +1,85 @@
+[
+  {
+    "id": "NX-0006",
+    "title": "the honeypot that called home",
+    "date": "2026-04-28",
+    "tags": [
+      "LAB",
+      "BLUE TEAM",
+      "STORY"
+    ],
+    "color": "",
+    "excerpt": "I stood up an SSH honeypot in the corner of my lab network expecting nothing. Three hours later it had logged 4,712 login attempts from 218 IPs.",
+    "minutes": 2,
+    "file": "NX-0006.md"
+  },
+  {
+    "id": "NX-0005",
+    "title": "why i stopped trusting my own monitoring",
+    "date": "2026-04-11",
+    "tags": [
+      "INFRASTRUCTURE",
+      "STORY",
+      "LESSON"
+    ],
+    "color": "red",
+    "excerpt": "A quiet dashboard does not mean a quiet network. The story of an alert that did not fire, and the half day it cost me to figure out why.",
+    "minutes": 2,
+    "file": "NX-0005.md"
+  },
+  {
+    "id": "NX-0004",
+    "title": "the case of the friday night gpo",
+    "date": "2026-03-22",
+    "tags": [
+      "ACTIVE DIRECTORY",
+      "STORY",
+      "INCIDENT"
+    ],
+    "color": "ice",
+    "excerpt": "A scheduled GPO change rolled out at 4:47 PM on a Friday. By Monday, two hundred users could not print, and nobody could explain why.",
+    "minutes": 2,
+    "file": "NX-0004.md"
+  },
+  {
+    "id": "NX-0003",
+    "title": "a packet capture, a vendor, and a lie",
+    "date": "2026-02-09",
+    "tags": [
+      "NETWORKING",
+      "WIRESHARK",
+      "STORY"
+    ],
+    "color": "teal",
+    "excerpt": "A vendor swore their appliance was respecting our QoS markings. Three hours of pcap said otherwise.",
+    "minutes": 2,
+    "file": "NX-0003.md"
+  },
+  {
+    "id": "NX-0002",
+    "title": "on baselines",
+    "date": "2026-01-18",
+    "tags": [
+      "THOUGHTS",
+      "BLUE TEAM",
+      "OPSEC"
+    ],
+    "color": "",
+    "excerpt": "Most security incidents are not exotic. They are the absence of a baseline. A short note on the discipline of knowing your own normal.",
+    "minutes": 2,
+    "file": "NX-0002.md"
+  },
+  {
+    "id": "NX-0001",
+    "title": "archive online",
+    "date": "2026-01-02",
+    "tags": [
+      "SYSTEM",
+      "NOTES"
+    ],
+    "color": "ice",
+    "excerpt": "First boot of the public archive. A note on what lives here, why it exists, and what to expect from future entries.",
+    "minutes": 1,
+    "file": "NX-0001.md"
+  }
+]

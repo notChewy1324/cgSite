@@ -22,7 +22,7 @@
 <link rel="preload" href="/fonts/jetbrains-mono-300-800-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/major-mono-display-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/syne-400-800-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/style.css?v=20261113b">
 <link rel="icon" type="image/svg+xml" href="/imgs/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/imgs/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/imgs/favicon-16.png">
@@ -30,12 +30,13 @@
 <meta name="theme-color" content="#050608">
 <script>
   (function(){
+    var d = document.documentElement, t = 'dark';
     try {
-      var t = localStorage.getItem('nx-theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', t);
-    } catch(e) {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
+      var s = localStorage.getItem('nx-theme');
+      if (s === 'light' || s === 'rain') t = s;
+    } catch(e) {}
+    d.setAttribute('data-theme', t);
+    d.className = 'js';
   })();
 </script>
 </head>
@@ -43,15 +44,15 @@
 
 <a class="skip-link" href="#main">SKIP TO CONTENT ▸</a>
 
-<div class="haze-layer"></div>
-<canvas id="dust-canvas"></canvas>
-<canvas id="rain-canvas"></canvas>
-<div class="scanlines"></div>
-<div class="grain"></div>
-<div class="vignette"></div>
+<div class="haze-layer" aria-hidden="true"></div>
+<canvas id="dust-canvas" aria-hidden="true"></canvas>
+<canvas id="rain-canvas" aria-hidden="true"></canvas>
+<div class="scanlines" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
 
-<canvas id="cursor-trail-canvas"></canvas>
-<div id="cursor-arrow">
+<canvas id="cursor-trail-canvas" aria-hidden="true"></canvas>
+<div id="cursor-arrow" aria-hidden="true">
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="cur-grad" x1="0" y1="0" x2="1" y2="1">
@@ -66,12 +67,12 @@
 </div>
 
 <nav class="nav">
-  <a href="/index.html" class="nav-logo">CG // NX-1324</a>
+  <a href="/" class="nav-logo">CG // NX-1324</a>
   <ul class="nav-links">
-    <li><a href="/background.html">Background</a></li>
-    <li><a href="/builds.html">Builds</a></li>
-    <li><a href="/blog.html">Field Notes</a></li>
-    <li><a href="/archive.html">Archive</a></li>
+    <li><a href="/background">Background</a></li>
+    <li><a href="/builds">Builds</a></li>
+    <li><a href="/blog">Field Notes</a></li>
+    <li><a href="/archive">Archive</a></li>
   </ul>
   <div class="nav-right">
     <div class="nav-status"><span>UPLINK 00:00:00 UTC</span></div>
@@ -94,11 +95,11 @@
 <aside class="nav-drawer" id="nav-drawer" aria-hidden="true">
   <div class="nav-drawer-tag">▣ NAVIGATION CHANNEL ▣</div>
   <ul>
-    <li><a href="/index.html">Home</a></li>
-    <li><a href="/background.html">Background</a></li>
-    <li><a href="/builds.html">Builds</a></li>
-    <li><a href="/blog.html">Field Notes</a></li>
-    <li><a href="/archive.html">Archive</a></li>
+    <li><a href="/">Home</a></li>
+    <li><a href="/background">Background</a></li>
+    <li><a href="/builds">Builds</a></li>
+    <li><a href="/blog">Field Notes</a></li>
+    <li><a href="/archive">Archive</a></li>
   </ul>
   <div class="nav-drawer-toggles">
     <button class="theme-toggle" aria-label="Toggle theme">
@@ -135,8 +136,8 @@
     </div>
 
     <div class="notfound-actions">
-      <a href="/index.html" class="contact-link">▸ Return Home</a>
-      <a href="/archive.html" class="contact-link ice">▸ Open Archive</a>
+      <a href="/" class="contact-link">▸ Return Home</a>
+      <a href="/archive" class="contact-link ice">▸ Open Archive</a>
     </div>
   </div>
 </main>
@@ -148,6 +149,6 @@
      https://cloudflareinsights.com to connect-src in _headers.
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "PASTE-TOKEN-HERE"}'></script>
 -->
-<script defer src="/main.js"></script>
+<script defer src="/main.js?v=20261113b"></script>
 </body>
 </html>

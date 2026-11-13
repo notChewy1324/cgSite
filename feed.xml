@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Field Notes // NX-1324</title>
+    <link>https://camgarrison.com/blog</link>
+    <atom:link href="https://camgarrison.com/feed.xml" rel="self" type="application/rss+xml"/>
+    <description>Cam Garrison on cybersecurity, networking, things in progress, and thoughts on tech.</description>
+    <language>en</language>
+    <lastBuildDate>Tue, 28 Apr 2026 12:00:00 GMT</lastBuildDate>
+    <item>
+      <title>the honeypot that called home</title>
+      <link>https://camgarrison.com/blog#NX-0006</link>
+      <guid isPermaLink="true">https://camgarrison.com/blog#NX-0006</guid>
+      <pubDate>Tue, 28 Apr 2026 12:00:00 GMT</pubDate>
+      <category>LAB</category>
+      <category>BLUE TEAM</category>
+      <category>STORY</category>
+      <description>I stood up an SSH honeypot in the corner of my lab network expecting nothing. Three hours later it had logged 4,712 login attempts from 218 IPs.</description>
+      <content:encoded><![CDATA[<p>I had a Raspberry Pi sitting unused on a shelf. Late one Tuesday I decided to throw <code>cowrie</code> on it, expose port 22 through a forwarded rule on my edge router, and walk away. The plan was to leave it for a weekend and see what showed up.</p>
+<p>Three hours in, I checked back. The log had grown to several megabytes. <strong>4,712 login attempts.</strong> 218 distinct source IPs. The most popular username, by a comfortable margin, was <code>root</code>. The most popular password was the literal string <code>123456</code>. The fifth most popular was the username repeated.</p>
+<h3>what surprised me</h3>
+<p>It was not the volume. The volume was expected. Anyone who has put a real SSH service on the internet for an afternoon knows the global botnet noise floor. What surprised me was the <em>structure</em> of the attempts. Some sessions were clearly automated dictionaries firing as fast as the TCP handshake would allow. Others were paced: one attempt every few seconds, varied user agents, varied passwords, almost like someone was trying to stay below a fail2ban threshold they imagined I had set.</p>
+<p>One session, after seven failed attempts, simply stopped trying passwords and ran <code>uname -a</code> against the login banner I had spoofed. Then it logged off. Twenty minutes later a different IP from the same /24 connected and went straight for credentials I had only just added to the trap. Different attacker. Same intel pipeline.</p>
+<blockquote>The internet is not a quiet place pretending to be loud. It is a loud place pretending to be quiet.</blockquote>
+<h3>what i actually learned</h3>
+<p>Three things, none of them new, all of them more concrete than they were before I ran the experiment:</p>
+<p><strong>One.</strong> Default credential exposure is not a hypothetical. Anything reachable on a routable port that accepts a username will be tested against the same global wordlist before you finish your coffee.</p>
+<p><strong>Two.</strong> Rate limiting attackers visibly exist. They are not common, but they are not rare either. If your detection only fires on brute force volume, you are missing a category of behavior entirely.</p>
+<p><strong>Three.</strong> Honeypots are an underrated training tool. I learned more about real world attack patterns in one week of reading my own cowrie logs than I did in any single chapter of any networking textbook I have read.</p>
+<p>I left the box up for another month before I retired it. By the end it had logged just under 90,000 attempts. I still have the dataset. Some weekend I will go through it properly.</p>]]></content:encoded>
+    </item>
+    <item>
+      <title>why i stopped trusting my own monitoring</title>
+      <link>https://camgarrison.com/blog#NX-0005</link>
+      <guid isPermaLink="true">https://camgarrison.com/blog#NX-0005</guid>
+      <pubDate>Sat, 11 Apr 2026 12:00:00 GMT</pubDate>
+      <category>INFRASTRUCTURE</category>
+      <category>STORY</category>
+      <category>LESSON</category>
+      <description>A quiet dashboard does not mean a quiet network. The story of an alert that did not fire, and the half day it cost me to figure out why.</description>
+      <content:encoded><![CDATA[<p>Sometime in the middle of a shift I noticed a workstation on the third floor was unreachable. Not down on the dashboard, just unreachable. The dashboard said it was fine. RDP refused. Ping refused. The desk phone next to it worked.</p>
+<p>I drove over. The machine was on. The user was at lunch. I plugged in a console keyboard, woke it, and everything looked normal. Network adapter, link light, IP address, everything. I pinged the gateway from the box itself. Worked. I pinged the box from my laptop on the same VLAN. Failed.</p>
+<p>It took me <strong>about four hours</strong> to track this down. The cause turned out to be embarrassingly small and structurally important.</p>
+<h3>the small thing</h3>
+<p>Months earlier, a static ARP entry had been added to a switch by someone who is no longer there. The MAC address it pointed to belonged to a NIC that was replaced last quarter. The new NIC had a new MAC. The static entry on the switch outranked the dynamic one. From the switch&#39;s perspective, the workstation&#39;s IP belonged to a device that no longer existed.</p>
+<p>The workstation could send traffic, and its own ARP cache was happy. Replies just never came back. Asymmetric, silent, half dead.</p>
+<h3>the structural thing</h3>
+<p>Our monitoring polled every host&#39;s <em>own self reported</em> status via an agent. The agent on the workstation reported up, healthy, all green. The dashboard agreed. Nothing was wrong, according to the system designed to tell us when something was wrong.</p>
+<blockquote>Everything was fine. Everything kept being fine. The only thing not fine was reality.</blockquote>
+<p>The fix was thirty seconds: clear the static ARP, let the switch relearn. The lesson was longer.</p>
+<h3>what i changed about how i think</h3>
+<p>I stopped trusting any single signal as evidence of &quot;up.&quot; A host saying it is up does not mean it is reachable. A switch saying a port is up does not mean traffic is flowing. A ping responding does not mean an application is healthy. Every layer can lie convincingly while every other layer is also lying convincingly.</p>
+<p>Now when I build out monitoring, I look for at least <strong>two independent vantage points</strong> per assertion. Self reported and externally reachable. Layer 3 and Layer 7. Inside the network and outside it. If only one of them is green, that is not green. That is &quot;we are not sure.&quot;</p>
+<p>This sounds obvious. It was obvious. I had heard it dozens of times. It still cost me half a day to internalize, and I think it had to.</p>]]></content:encoded>
+    </item>
+    <item>
+      <title>the case of the friday night gpo</title>
+      <link>https://camgarrison.com/blog#NX-0004</link>
+      <guid isPermaLink="true">https://camgarrison.com/blog#NX-0004</guid>
+      <pubDate>Sun, 22 Mar 2026 12:00:00 GMT</pubDate>
+      <category>ACTIVE DIRECTORY</category>
+      <category>STORY</category>
+      <category>INCIDENT</category>
+      <description>A scheduled GPO change rolled out at 4:47 PM on a Friday. By Monday, two hundred users could not print, and nobody could explain why.</description>
+      <content:encoded><![CDATA[<p>The change ticket said it was routine. A new Group Policy Object pushing an updated default printer mapping for a specific OU. Tested in a staging container, signed off, scheduled for end of day Friday. Nobody blocked it. Nobody should have.</p>
+<p>By Monday morning, the helpdesk queue was on fire. <strong>Two hundred users</strong> on the affected floor could not print. Not &quot;the printer is offline.&quot; Not &quot;the queue is stuck.&quot; The print dialog literally did not show their printer at all. The mapping had not just failed. It had quietly removed the existing one.</p>
+<h3>tracing the cause</h3>
+<p>I watched <code>gpresult /h</code> on three different machines. The new GPO was applying. The deployed printer was being added. Then, immediately on the same policy refresh, it was being removed. The removal was happening because of an <em>item level targeting</em> rule that nobody had noticed, written months ago, that excluded any user whose primary OU contained a specific keyword. The keyword had been added to the OU name in a reorg six weeks ago. The exclusion now matched everyone.</p>
+<p>The original GPO author had moved on. The targeting rule had no comment. The OU rename had no associated review of policies that referenced it. The chain of &quot;it should still work&quot; assumptions stretched back three administrative changes and at least two organizational restructures.</p>
+<blockquote>Every long lived environment is a graveyard of small decisions made by people who are no longer there. Most of the time they rest peacefully. Sometimes they get up.</blockquote>
+<h3>the fix and the lesson</h3>
+<p>The fix was twelve seconds. Edit the targeting rule, save, force <code>gpupdate</code>. Printing returned within two policy refresh cycles.</p>
+<p>The actual fix was structural and took the better part of two weeks. We pulled an inventory of every GPO with item level targeting that referenced OU paths or names. We commented every targeting rule we found uncommented. We added a checklist item to OU renames: <em>review affected GPOs first.</em> We lost a small number of unused policies in the process, which was its own kind of win.</p>
+<p>I think about this incident every time I touch a piece of policy that was written by someone I do not know. The world is full of clever conditions written by careful people that have quietly stopped meaning what they used to mean.</p>]]></content:encoded>
+    </item>
+    <item>
+      <title>a packet capture, a vendor, and a lie</title>
+      <link>https://camgarrison.com/blog#NX-0003</link>
+      <guid isPermaLink="true">https://camgarrison.com/blog#NX-0003</guid>
+      <pubDate>Mon, 09 Feb 2026 12:00:00 GMT</pubDate>
+      <category>NETWORKING</category>
+      <category>WIRESHARK</category>
+      <category>STORY</category>
+      <description>A vendor swore their appliance was respecting our QoS markings. Three hours of pcap said otherwise.</description>
+      <content:encoded><![CDATA[<p>The complaint was the kind that sounds soft until you live with it: &quot;voice calls are okay most of the time, but every now and then they get choppy for about twenty seconds.&quot; The vendor of our edge optimization appliance had been told. The vendor said the appliance was honoring our DSCP markings and that any choppy audio was upstream.</p>
+<p>I did not believe them. I had no specific reason. I just did not believe them.</p>
+<h3>the capture</h3>
+<p>I set up a SPAN port mirroring traffic on both sides of the appliance (ingress from the LAN side, egress to the WAN side) into a laptop running Wireshark with two NICs. Filter: SIP and RTP only. Then I waited.</p>
+<p>The wait was long. Choppy audio is hard to reproduce on demand. I left the capture running for three hours during business hours and went to do other work. When I came back I had an 800 MB pcap.</p>
+<p>The first thing I did was filter to RTP packets and graph the interarrival times. The graph was mostly a flat line at the expected ~20ms. Three places, it spiked. Two of those spikes lined up to the minute with user complaints from the help desk log.</p>
+<h3>the lie</h3>
+<p>I went looking for what was different about those packets. The DSCP marking on the LAN side ingress was correct: <code>EF (46)</code>, Expedited Forwarding, which is what voice should be. On the WAN side egress, during the spike windows, the DSCP marking on the same RTP flow was <code>CS0 (0)</code>. Best effort. Stripped.</p>
+<p>Not on every packet. Just on packets that arrived during periods of high overall throughput on the appliance: the periods we cared about, the periods QoS was supposed to protect.</p>
+<blockquote>The appliance was respecting our markings. Right up until the moment it mattered, at which point it was respecting something else.</blockquote>
+<p>I built a side by side filter showing the same five tuple flow before and after the appliance, with DSCP highlighted, and exported it as a screenshot. I sent the screenshot to the vendor.</p>
+<p>The next call was different.</p>
+<h3>what i took from this</h3>
+<p>Two things. First: vendors are not lying on purpose, usually. They are reporting what their dashboard tells them, and their dashboard reports what their software thinks it is doing, and software has bugs. The truth lives on the wire.</p>
+<p>Second: <strong>learn Wireshark.</strong> Not as a checkbox. Not &quot;I have used Wireshark.&quot; Actually learn it. Filters, statistics, IO graphs, expert info. Once you can sit down with a pcap and have an opinion within ten minutes, your relationship with every networking problem changes. You stop arguing about what is happening. You go look.</p>
+<p>The appliance got a firmware update three weeks later. The release notes did not mention QoS. The release notes never mention QoS. But the choppy audio went away.</p>]]></content:encoded>
+    </item>
+    <item>
+      <title>on baselines</title>
+      <link>https://camgarrison.com/blog#NX-0002</link>
+      <guid isPermaLink="true">https://camgarrison.com/blog#NX-0002</guid>
+      <pubDate>Sun, 18 Jan 2026 12:00:00 GMT</pubDate>
+      <category>THOUGHTS</category>
+      <category>BLUE TEAM</category>
+      <category>OPSEC</category>
+      <description>Most security incidents are not exotic. They are the absence of a baseline. A short note on the discipline of knowing your own normal.</description>
+      <content:encoded><![CDATA[<p>The single most underrated skill in defensive security is knowing what &quot;normal&quot; looks like on your own network. Not the textbook normal. Your normal. The specific, peculiar, slightly broken in ways you have grown fond of normal of the systems you actually maintain.</p>
+<p>Without that, every alert is suspicious and every anomaly is invisible at the same time, which is the worst of both worlds. Alert fatigue is not an inbox problem. It is a baseline problem. You cannot tell signal from noise if you do not know what the noise sounds like when the system is fine.</p>
+<h3>practical rules i try to follow</h3>
+<p><strong>Spend the first two weeks on any new system just watching it.</strong> Tail the logs. Sketch a service map. Note which processes spike at 3am because of a scheduled task and which ones spike because something is wrong. Save it somewhere durable. Refer back to it when you forget, which will be soon.</p>
+<p><strong>Document the weird normal explicitly.</strong> &quot;The legacy print server pegs CPU for 90 seconds every hour at :17 because of a vendor service nobody understands. This is fine. Do not page anyone about it.&quot; That comment will save someone a panic attack. It might be future you.</p>
+<p><strong>If you are going to alert on something, alert on a deviation from the baseline, not on a static threshold.</strong> Static thresholds are a confession that you have not measured your own environment. They alert on Tuesday afternoons because Tuesday afternoons are busy. A deviation alert fires when something is actually different.</p>
+<h3>the harder version of this</h3>
+<p>Baselines drift. Normal is not a static target. The &quot;normal&quot; you carefully captured in March is not the &quot;normal&quot; of October because you have added users, decommissioned servers, patched things, and absorbed some new SaaS integration that nobody told you about.</p>
+<p>The discipline is not just to capture a baseline. It is to <em>recapture</em> it on a schedule, compare it to last quarter&#39;s, and notice what has changed. Not to alert on it. Just to know.</p>
+<p>Most of the people I respect in this field share a quiet trait: they are deeply curious about the boring details of their own infrastructure. They run <code>netstat</code> on their own boxes for fun. They notice when a service start time has changed. They are, in a real sense, <strong>haunted</strong> by their own networks.</p>
+<p>I am trying to be that kind of haunted.</p>]]></content:encoded>
+    </item>
+    <item>
+      <title>archive online</title>
+      <link>https://camgarrison.com/blog#NX-0001</link>
+      <guid isPermaLink="true">https://camgarrison.com/blog#NX-0001</guid>
+      <pubDate>Fri, 02 Jan 2026 12:00:00 GMT</pubDate>
+      <category>SYSTEM</category>
+      <category>NOTES</category>
+      <description>First boot of the public archive. A note on what lives here, why it exists, and what to expect from future entries.</description>
+      <content:encoded><![CDATA[<p>This is the first entry in the archive. Eventually it will hold field notes, lab writeups, CTF retrospectives, infrastructure deep dives, and the occasional half baked theory about a misbehaving network appliance. The plan is short, technical, no fluff. If a post is worth writing, it should be worth rereading six months later when I forget how I solved the same problem.</p>
+<h3>what to expect</h3>
+<p>Topics will skew toward what I am actually working on at any given time: Active Directory hygiene, Azure tenant hardening, Wireshark captures, packet weirdness, scripting in PowerShell and Python, the quiet machinery underneath enterprise IT. And whatever rabbit hole I fell into that week.</p>
+<p>Some posts will be short. Some will be longer than they should be. A few will be wrong, and I will leave them up with corrections at the bottom because pretending I was right the first time is a worse habit than being wrong in public.</p>
+<h3>why post at all</h3>
+<p>Two reasons. The first is selfish: writing an explanation forces a level of clarity that just fixing the thing does not. I learn the material twice when I write it down: once to understand it, once to make it readable. The second reason is that I have read other people&#39;s writeups for years and benefited from them, and the only honest way to be in that ecosystem long term is to add to it.</p>
+<blockquote>Cells interlinked within cells interlinked within one stem.</blockquote>
+<p>So this is the stem. More to come.</p>]]></content:encoded>
+    </item>
+  </channel>
+</rss>

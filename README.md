@@ -87,6 +87,9 @@ Only once the atmosphere is convincing does the site start delivering the actual
 | 🧬 | **Voight-Kampff** | A multiple-choice interrogation that tracks a synthetic "baseline" |
 | 🧩 | **Memory reconstruction** | A node-graph salvage puzzle that unredacts operator memories as you solve it |
 | 🪪 | **Builds dossier** | Modal-driven case studies of shipped work, rendered from a single data array — with an embedded PDF document library |
+| 🔗 | **Deep links** | Every field note and build dossier has its own address (`/blog#NX-0006`, `/builds#BUILD-001`). Copy-link button, previous / next stepping, and the Back button closes the dialog |
+| 📝 | **Markdown blog** | Field Notes posts are plain Markdown files in `/posts`, rendered in the browser by a dependency-free, escape-first renderer, with an RSS feed at `/feed.xml` |
+| 🏷️ | **Field note filters** | Tag chips built from the posts themselves, plus a reading-time estimate on every card |
 | 🔤 | **Decode headings** | Section titles scramble from archive glyphs into legible text as they scroll into view |
 | 🌙 | **Idle veil** | Walk away for 90 seconds and the archive notices — the page dims behind a `SIGNAL IDLE` readout until you return |
 
@@ -99,7 +102,7 @@ The site practices what the field notes preach. Highlights of the shipped postur
 
 | Shield | Posture |
 | :-- | :-- |
-| **Content-Security-Policy** | `default-src 'none'` baseline; scripts limited to `'self'` plus a SHA-256 hash of the single inline theme-bootstrap script — no `'unsafe-inline'` in `script-src`, anywhere |
+| **Content-Security-Policy** | `default-src 'none'` baseline; scripts limited to `'self'` plus a SHA-256 hash of the single inline theme-bootstrap script — no `'unsafe-inline'` in `script-src`, anywhere. `style-src-elem 'self'` blocks injected `<style>` blocks; only style *attributes* are allowed inline |
 | **Third-party JS** | **Zero.** Three.js is vendored at `js/three.min.js` and the fonts are self-hosted in `/fonts`, so no external origin can serve script or style to this site. `connect-src` names exactly two data APIs (IP locate + weather) |
 | **HSTS** | `max-age=31536000; includeSubDomains; preload` |
 | **Framing** | `frame-ancestors 'self'` + `X-Frame-Options: SAMEORIGIN` (the site frames only its own PDFs) |
@@ -108,7 +111,7 @@ The site practices what the field notes preach. Highlights of the shipped postur
 | **Disclosure** | RFC 9116 [`/.well-known/security.txt`](./.well-known/security.txt) — found something? say something |
 | **Input handling** | The terminal escapes every byte of user input before it touches the DOM; the virtual filesystem is read-only by design |
 
-> 🔭 Verify it yourself: open the **Uplink** page and read the defense grid panel,
+> 🔭 Verify it yourself: open the **Archive** page and read the defense grid panel,
 > or open the **Archive** terminal and run `headers`. Both pull live values from the
 > response you are currently holding — not a hardcoded list.
 
@@ -127,9 +130,9 @@ flowchart TD
   HOME --> BG[" background — record "]
   HOME --> B[" builds — flagship work "]:::hot
   HOME --> FN[" field notes "]
-  HOME --> USE[" uses — 3D rig "]
-  HOME --> UP[" uplink — telemetry "]:::hot
   HOME --> AR[" archive "]
+  AR --> USE[" loadout — 3D rig "]
+  AR --> UP[" uplink — telemetry "]:::hot
   UP --> DG[" defense grid — LIVE headers "]:::teal
   B --> DOC[" bearcast document library "]:::teal
   AR --> T[" terminal + recon suite "]
@@ -147,9 +150,8 @@ index.html       🪪  Personnel file — hero, identity, recent deployments
 background.html  🎓  Full academic + internship record, skills inventory
 builds.html      🛠️  Flagship builds — Bearcast Media, NetSweep, this archive
 blog.html        📝  Field Notes — technical writeups & lab stories
-uses.html        🖥️  Loadout — interactive 3D workstation model (self-hosted Three.js)
-uplink.html      🛰️  Operations console — synthetic telemetry + one very real panel
-archive.html     🗂️  Off-record — terminal, recon suite, V-K, memory puzzle
+archive.html     🗂️  Off-record — terminal, recon suite, V-K, memory puzzle,
+                     the 3D loadout (#loadout) and the operations uplink (#uplink)
 404.html         💀  "Memory not found" — glitched fallback
 ```
 
@@ -168,6 +170,7 @@ headers              interrogate the LIVE security headers of the page you're on
 wx                   the weather where YOU are — and whether the archive is raining
 cat defense.cfg      the posture, written down
 ls                   there is a file with a .enc extension. you know what to do.
+ls field-notes       the posts, as files. cat one for a summary, open <id> to read it
 decrypt ghost.enc    cipher recovery — recovers something worth reading
 clearance            TIER-9. for now.
 override <code>      the word the baseline test keeps coming back to.
@@ -182,13 +185,13 @@ Somewhere above the terminal, a ten-key sequence from an older archive also stil
 ## 🧰 TECH STACK
 
 - 🧱 **Markup / style** — semantic HTML5, hand-authored CSS (custom properties, `color-mix`, grid, layered canvas effects)
-- ⚡ **Behavior** — vanilla ES6+, zero dependencies, one `main.js`
+- ⚡ **Behavior** — vanilla ES6+, zero dependencies, one `main.js` (plus a ~150-line `markdown.js` loaded only on the blog)
 - 🧊 **3D** — [Three.js](https://threejs.org/) r128, **vendored** at `js/three.min.js`, lazy-loaded on `archive.html` only when the loadout schematic nears the viewport; custom orbit/zoom, no OrbitControls, no CDN
 - 🔤 **Type** — Major Mono Display *(display)*, JetBrains Mono *(mono)*, Syne *(sans)* — **self-hosted** variable `woff2` in `/fonts`, preloaded, no Google Fonts at runtime
 - 🔊 **Sound** — procedural Web Audio (noise-synth rain, wind, hum, UI ticks); no audio files, context created only after opt-in
 - ⛈️ **Weather** — `ipwho.is` (IP → city, no prompt) + `open-meteo.com` (conditions), cached 30 min, drives the rain canvas
 - ☁️ **Hosting** — Cloudflare Pages with a [`_headers`](./_headers) policy, configured with [`wrangler`](https://developers.cloudflare.com/workers/wrangler/)
-- ♿ **Quality floor** — `prefers-reduced-motion` quiets the atmosphere, parallax, and decode effects; skip-to-content link; the dossier modal traps and restores keyboard focus; theme applied before first paint
+- ♿ **Quality floor** — `prefers-reduced-motion` quiets the atmosphere, parallax, and decode effects; skip-to-content link; visible keyboard focus ring; cards open with Enter / Space; the dossier modal traps and restores keyboard focus and makes the page behind it inert; content stays readable (and the native cursor stays visible) if JavaScript never loads; theme applied before first paint
 
 ---
 
@@ -242,7 +245,15 @@ wrangler pages deploy .
 
 > ⚠️ If you ever edit the inline theme-bootstrap `<script>` in the HTML heads, the CSP
 > hash in `_headers` must be recomputed — the command to do it is written in a comment
-> at the top of that file. All eight pages share one identical inline script on purpose.
+> at the top of that file. All six pages share one identical inline script on purpose.
+>
+> 🧊 `style.css` and `main.js` are linked as `style.css?v=YYYYMMDD` / `main.js?v=YYYYMMDD`.
+> Bump that stamp in all six pages whenever either file changes — the zone's browser cache
+> TTL holds them for hours, and a fresh page with a stale script is how bugs get shipped.
+>
+> 🔐 HSTS is requested in `_headers`, but the zone-level setting in the Cloudflare dashboard
+> (SSL/TLS → Edge Certificates → HSTS) wins. If the defense grid reports HSTS as `DISABLED`,
+> that toggle is why.
 
 ---
 
@@ -254,13 +265,16 @@ cgSite/
 ├── background.html         # 🎓 academic + experience record
 ├── builds.html             # 🛠️ flagship project dossiers
 ├── blog.html               # 📝 field notes
-├── uses.html               # 🖥️ 3D workstation loadout
-├── uplink.html             # 🛰️ operations console + live defense grid
-├── archive.html            # 🗂️ terminal + V-K + memory puzzle
+├── archive.html            # 🗂️ terminal + V-K + memory puzzle + 3D loadout + uplink console
 ├── 404.html                # 💀 fallback
 ├── style.css               # 🎨 all styling, themes, components
-├── main.js                 # ⚡ all behavior + content data (BLOG_POSTS, PROJECTS, etc.)
+├── main.js                 # ⚡ all behavior + build data (PROJECTS, V-K questions, etc.)
+├── markdown.js             # 🔤 tiny safe Markdown renderer for blog posts (browser + Node)
+├── posts/                  # 📝 one Markdown file per field note + generated index.json
+├── tools/blog.mjs          # 🧰 scaffolds posts, rebuilds posts/index.json and feed.xml
+├── feed.xml                # 📡 generated RSS feed
 ├── _headers                # 🛡️ Cloudflare Pages security header policy (CSP, HSTS, ...)
+├── _redirects              # ↪️ legacy URLs + keeps repo housekeeping files off the public site
 ├── robots.txt              # 🤖 crawlers welcome, replicants tolerated
 ├── sitemap.xml             # 🗺️ for the indexers
 ├── .well-known/
@@ -273,13 +287,63 @@ cgSite/
 └── imgs/                   # 🖼️ favicons, touch icons, og-card social image
 ```
 
-> 📝 **Editing content:** posts live in `window.BLOG_POSTS` and builds live in `window.PROJECTS`
-> at the top of `main.js`. Add an object — it renders itself, card *and* modal included.
+> 📝 **Editing content:** builds live in `window.PROJECTS` at the top of `main.js`. Add an
+> object — it renders itself, card *and* modal included. Blog posts are separate Markdown
+> files — see **Writing a field note** below.
 >
 > 📜 **Build documents:** the Bearcast dossier embeds PDFs from a `docs/` folder next to
 > `index.html` (committed to the repo; Cloudflare Pages serves them as static files).
 > Expected files: `docs/BearcastMedia-Technical-WhitePaper-v2.0.pdf`, `docs/BearcastMedia-Cybersecurity-WhitePaper-v2.0.pdf`,
 > and `docs/BearcastMedia-Architecture-Diagram-v2.0.pdf`. Keep each under ~25 MB (Cloudflare Pages per-file limit).
+
+---
+
+## ✍️ WRITING A FIELD NOTE
+
+Field Notes is a real blog: every post is one Markdown file in `/posts`, and nothing about
+a post lives in `main.js`.
+
+```bash
+node tools/blog.mjs new "why i rebuilt my home lab"   # creates posts/NX-0007.md as a draft
+# ...write the post, then delete the "draft: true" line...
+node tools/blog.mjs                                    # rebuilds posts/index.json + feed.xml
+```
+
+Commit the post together with the two regenerated files and deploy. That's the whole workflow.
+
+A post starts with a small header, then plain Markdown:
+
+```markdown
+---
+id: NX-0007
+title: why i rebuilt my home lab
+date: 2026-11-13
+tags: LAB, NOTES
+color: teal
+excerpt: One or two sentences for the card and the RSS feed.
+---
+
+Opening paragraph.
+
+## a section heading
+
+Text with **bold**, *italic*, `inline code`, and a [link](https://example.com).
+
+> A pull quote.
+```
+
+- **Supported Markdown:** `##` / `###` headings, paragraphs, bold, italic, inline code, fenced
+  code blocks, blockquotes, bullet and numbered lists, links, images, and `---` rules.
+  Raw HTML is shown as text on purpose — the renderer ([`markdown.js`](./markdown.js)) escapes
+  everything first, so a post can never inject markup.
+- **Images:** put them in `imgs/` and reference them as `![alt text](imgs/my-diagram.png)`.
+  The CSP only allows images from this site.
+- **`color`** tints the card: empty (steel), `teal`, `ice`, or `red`.
+- **Drafts** (`draft: true`) stay out of the index and the feed. They are unlisted, not
+  private: a committed draft file is still reachable by anyone who guesses its URL.
+- **Links:** every post is addressable as `/blog#NX-0007`, and the feed is at `/feed.xml`.
+- The tool is a convenience, not a build step — the deployed site is still plain static
+  files. `posts/index.json` can be edited by hand if you'd rather.
 
 ---
 
